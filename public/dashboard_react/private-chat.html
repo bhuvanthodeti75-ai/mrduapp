@@ -1,0 +1,209 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Private Chat — MRDU Student Portal</title>
+  <link rel="stylesheet" href="styles.css" />
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" />
+  <style>
+    .chat-container {
+      display: flex; flex-direction: column; height: calc(100vh - 120px);
+      background: var(--card-bg); border: 1px solid var(--border); border-radius: 20px; overflow: hidden;
+    }
+    .header {
+      padding: 16px 20px; background: rgba(255,255,255,0.03); border-bottom: 1px solid var(--border);
+      display: flex; align-items: center; justify-content: space-between;
+    }
+    .messages-area {
+      flex: 1; overflow-y: auto; padding: 20px; display: flex; flex-direction: column; gap: 12px;
+      background: rgba(0,0,0,0.1);
+    }
+    .message-bubble {
+      max-width: 80%; padding: 12px 16px; border-radius: 16px; font-size: 14px; position: relative;
+    }
+    .msg-received { background: rgba(255,255,255,0.05); align-self: flex-start; border-bottom-left-radius: 4px; border: 1px solid var(--border); }
+    .msg-sent { background: var(--accent); align-self: flex-end; border-bottom-right-radius: 4px; color: white; }
+    
+    .input-area {
+      padding: 16px; border-top: 1px solid var(--border); display: flex; gap: 12px;
+      background: rgba(255,10,10,0.02);
+    }
+    .chat-input {
+      flex: 1; padding: 12px 20px; border-radius: 12px; border: 1px solid var(--border);
+      background: rgba(255,255,255,0.03); color: var(--text); outline: none; transition: all 0.2s;
+    }
+    
+    .status-overlay {
+      display: flex; flex-direction: column; align-items: center; justify-content: center; height: 100%;
+      text-align: center; padding: 40px; gap: 20px;
+    }
+    .status-icon { font-size: 64px; opacity: 0.2; }
+  </style>
+</head>
+<body>
+  <div class="grid-bg"></div>
+  <div class="page">
+    <div style="max-width: 800px; width: 95%; margin: 0 auto;">
+      <div style="display: flex; align-items: center; gap: 12px; margin-bottom: 24px;">
+        <a href="/chat.html" class="btn-ghost" style="width: auto; padding: 10px 18px;">
+          <i class="fas fa-arrow-left"></i> Hub
+        </a>
+        <h1 style="font-size: 20px; margin: 0;" id="chat-title">Chat</h1>
+      </div>
+
+      <div class="chat-container">
+        <div class="header">
+          <div id="target-user-info" style="font-weight: 600;">Loading...</div>
+          <div id="connection-status" class="status-badge" style="font-size: 11px;">Checking...</div>
+        </div>
+
+        <div id="chat-content" style="flex: 1; display: flex; flex-direction: column; min-height: 0;">
+          <!-- Content will be injected based on status -->
+          <div style="text-align:center; padding: 60px;"><i class="fas fa-spinner fa-spin"></i></div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    const urlParams = new URLSearchParams(window.location.search);
+    const targetRoll = urlParams.get('roll')?.toUpperCase();
+    let myRoll = '';
+    let chatStatus = 'unknown'; // no_request, pending, accepted
+
+    async function init() {
+      if (!targetRoll) return location.href = '/chat.html';
+      document.getElementById('target-user-info').textContent = `Chat with ${targetRoll}`;
+      
+      const res = await fetch('/api/auth/me');
+      const data = await res.json();
+      myRoll = data.user.rollNumber;
+      
+      checkStatusAndLoad();
+      setInterval(checkStatusAndLoad, 5000); // Poll status/messages
+    }
+
+    async function checkStatusAndLoad() {
+      try {
+        const statusRes = await fetch(`/api/chat-request/status/${targetRoll}`);
+        if (!statusRes.ok) return;
+        const data = await statusRes.json();
+        chatStatus = data.status || 'no_request';
+        
+        const chatContent = document.getElementById('chat-content');
+        const connStatus = document.getElementById('connection-status');
+        
+        if (chatStatus === 'accepted') {
+          // CASE 3: ACCEPTED -> Enable chat, Load messages
+          const msgRes = await fetch(`/api/chat/private/${targetRoll}`);
+          if (msgRes.ok) renderChat(await msgRes.json());
+        } else if (chatStatus === 'pending') {
+          // CASE 2: PENDING -> Show "Request Pending...", Disable chat input
+          connStatus.textContent = 'PENDING';
+          connStatus.style.color = 'var(--warning)';
+          chatContent.innerHTML = `
+            <div class="status-overlay">
+              <i class="fas fa-clock status-icon"></i>
+              <h3>Request Pending...</h3>
+              <p>Waiting for the chat request to be accepted. Check your Chat Requests page for updates.</p>
+            </div>
+          `;
+        } else {
+          // CASE 1: NO REQUEST -> Show "Send Request", Disable chat input
+          connStatus.textContent = 'NOT CONNECTED';
+          connStatus.style.color = 'var(--text-muted)';
+          chatContent.innerHTML = `
+            <div class="status-overlay">
+              <i class="fas fa-user-plus status-icon"></i>
+              <h3>Start a Conversation</h3>
+              <p>Send a chat request to begin messaging with ${targetRoll}.</p>
+              <button id="req-btn" onclick="sendReq()" class="btn-primary" style="width:auto; padding: 12px 32px;">Send Request</button>
+            </div>
+          `;
+        }
+      } catch (err) { console.error(err); }
+    }
+
+    function renderChat(messages) {
+      document.getElementById('connection-status').textContent = 'CONNECTED';
+      document.getElementById('connection-status').style.color = 'var(--success)';
+      
+      const chatContent = document.getElementById('chat-content');
+      const messagesHtml = messages.length === 0 ? '<div style="text-align:center; padding: 40px; color: var(--text-muted);">No messages yet. Send a greeting!</div>' : 
+        messages.map(m => `
+          <div class="message-bubble ${m.senderRollNumber === myRoll ? 'msg-sent' : 'msg-received'}">
+            <div>${m.message}</div>
+            <div style="font-size: 9px; opacity: 0.5; margin-top: 4px; text-align: right;">${new Date(m.createdAt).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}</div>
+          </div>
+        `).join('');
+
+      let area = document.getElementById('messages-area');
+
+      if (!area) {
+        // First render: create the layout and the input field
+        chatContent.innerHTML = `
+          <div id="messages-area" class="messages-area">${messagesHtml}</div>
+          <form id="chat-form" class="input-area">
+            <input type="text" id="chat-input" class="chat-input" placeholder="Type a message..." required />
+            <button type="submit" class="btn-primary" style="width: 44px; padding: 0;"><i class="fas fa-paper-plane"></i></button>
+          </form>
+        `;
+
+        area = document.getElementById('messages-area');
+        area.scrollTop = area.scrollHeight;
+
+        document.getElementById('chat-form').onsubmit = async (e) => {
+          e.preventDefault();
+          const input = document.getElementById('chat-input');
+          const message = input.value.trim();
+          if (!message) return;
+          input.value = '';
+          await fetch('/api/chat/private', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ receiverRollNumber: targetRoll, message })
+          });
+          checkStatusAndLoad();
+        };
+      } else {
+        // Subsequent poll: just update messages to avoid destroying user input
+        const isAtBottom = area.scrollHeight - area.scrollTop <= area.clientHeight + 100;
+        area.innerHTML = messagesHtml;
+        if (isAtBottom) area.scrollTop = area.scrollHeight;
+      }
+    }
+
+    async function sendReq() {
+      const btn = document.getElementById('req-btn');
+      if(btn) {
+        btn.disabled = true;
+        btn.textContent = 'Sending...';
+      }
+      try {
+        const res = await fetch('/api/chat-request', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ receiverRollNumber: targetRoll })
+        });
+        if (res.ok) {
+          alert('Request sent!');
+          checkStatusAndLoad();
+        } else {
+          const data = await res.json();
+          alert(data.error);
+          if(btn){
+            btn.disabled = false;
+            btn.textContent = 'Send Request';
+          }
+        }
+      } catch (err) { 
+        alert('Network error'); 
+        if(btn) btn.disabled = false; 
+      }
+    }
+
+    init();
+  </script>
+</body>
+</html>

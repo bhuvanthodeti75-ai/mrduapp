@@ -1,0 +1,232 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Post Item — Student Marketplace</title>
+    <link rel="stylesheet" href="styles.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+</head>
+<body class="bg-animate">
+    <div class="grid-bg"></div>
+    
+    <div class="page">
+        <div class="auth-card" style="max-width: 550px;">
+            <div class="brand">
+                <div class="brand-icon"><i class="fas fa-store"></i></div>
+                <div class="brand-title">Marketplace</div>
+                <div class="brand-sub">Malla Reddy Deemed to be University</div>
+            </div>
+
+            <div class="form-header" style="text-align: center; margin-bottom: 30px;">
+                <h1 class="screen-title">Post New Item</h1>
+                <p class="screen-subtitle">Turn your unused items into cash or help a fellow student.</p>
+            </div>
+
+            <form id="addItemForm">
+                <div class="form-group">
+                    <label class="input-label">Item Title*</label>
+                    <div class="input-wrapper">
+                        <input type="text" id="title" class="input-field" placeholder="e.g. Engineering Maths Textbook" required>
+                        <i class="fas fa-tag input-icon"></i>
+                    </div>
+                </div>
+
+                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 16px; margin-bottom: 16px;">
+                    <div class="form-group" style="margin-bottom: 0;">
+                        <label class="input-label">Category*</label>
+                        <div class="input-wrapper">
+                            <select id="category" class="input-field" required style="appearance: none;">
+                                <option value="" disabled selected>Select Category</option>
+                                <option value="Books">Books</option>
+                                <option value="Electronics">Electronics</option>
+                                <option value="Stationery">Stationery</option>
+                                <option value="Hostel Items">Hostel Items</option>
+                                <option value="Other">Other</option>
+                            </select>
+                            <i class="fas fa-list input-icon"></i>
+                            <i class="fas fa-chevron-down" style="position: absolute; right: 16px; top: 50%; transform: translateY(-50%); font-size: 12px; color: var(--text-muted); pointer-events: none;"></i>
+                        </div>
+                    </div>
+                    <div class="form-group" style="margin-bottom: 0;">
+                        <label class="input-label">Listing Type*</label>
+                        <div class="input-wrapper">
+                            <select id="type" class="input-field" required style="appearance: none;">
+                                <option value="sell">For Sale</option>
+                                <option value="rent">For Rent</option>
+                            </select>
+                            <i class="fas fa-hand-holding-dollar input-icon"></i>
+                            <i class="fas fa-chevron-down" style="position: absolute; right: 16px; top: 50%; transform: translateY(-50%); font-size: 12px; color: var(--text-muted); pointer-events: none;"></i>
+                        </div>
+                    </div>
+                </div>
+
+                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 16px; margin-bottom: 16px;">
+                    <div class="form-group" style="margin-bottom: 0;">
+                        <label class="input-label">Price (₹)*</label>
+                        <div class="input-wrapper">
+                            <input type="number" id="price" class="input-field" placeholder="0.00" required>
+                            <i class="fas fa-indian-rupee-sign input-icon"></i>
+                        </div>
+                    </div>
+                    <div class="form-group" style="margin-bottom: 0;">
+                        <label class="input-label">WhatsApp Number*</label>
+                        <div class="input-wrapper">
+                            <input type="text" id="contact" class="input-field" placeholder="9876543210" required>
+                            <i class="fab fa-whatsapp input-icon"></i>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label class="input-label">Item Description</label>
+                    <div class="input-wrapper">
+                        <textarea id="description" class="input-field" style="height: 100px; padding-top: 12px; resize: none; padding-left: 16px;" placeholder="Describe condition, age, usage, etc."></textarea>
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label class="input-label">Product Image*</label>
+                    <div class="upload-zone" id="uploadZone">
+                        <input type="file" id="imageInput" accept="image/*" style="display: none;">
+                        <div id="uploadPlaceholder">
+                            <i class="fas fa-cloud-upload-alt upload-icon"></i>
+                            <p class="upload-text">Click or drag image to upload</p>
+                            <p style="font-size: 11px; color: var(--text-muted); margin-top: 4px;">PNG, JPG up to 5MB</p>
+                        </div>
+                        <div class="preview-container" id="previewContainer">
+                            <img src="" alt="Preview" class="preview-img" id="previewImg">
+                            <div class="preview-overlay">
+                                <button type="button" class="remove-btn" id="removeBtn">Replace Image</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div id="errorAlert" class="alert alert-error">
+                    <i class="fas fa-exclamation-circle alert-icon"></i>
+                    <span id="errorMessage"></span>
+                </div>
+
+                <div style="display: grid; grid-template-columns: 1fr 2fr; gap: 12px; margin-top: 32px;">
+                    <a href="/marketplace.html" class="btn-ghost" style="margin-top: 0; display: flex; align-items: center; justify-content: center;">Cancel</a>
+                    <button type="submit" id="submitBtn" class="btn-primary" style="margin-top: 0;">
+                        <span id="btnText">Post Item</span>
+                        <div id="btnLoading" style="display: none;">
+                            <div class="spinner"></div> Posting...
+                        </div>
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <script>
+        const uploadZone = document.getElementById('uploadZone');
+        const imageInput = document.getElementById('imageInput');
+        const previewContainer = document.getElementById('previewContainer');
+        const previewImg = document.getElementById('previewImg');
+        const uploadPlaceholder = document.getElementById('uploadPlaceholder');
+        const removeBtn = document.getElementById('removeBtn');
+        const addItemForm = document.getElementById('addItemForm');
+
+        // Handle Image Upload UI
+        uploadZone.onclick = () => imageInput.click();
+
+        uploadZone.ondragover = (e) => {
+            e.preventDefault();
+            uploadZone.classList.add('drag-over');
+        };
+
+        uploadZone.ondragleave = () => uploadZone.classList.remove('drag-over');
+
+        uploadZone.ondrop = (e) => {
+            e.preventDefault();
+            uploadZone.classList.remove('drag-over');
+            const file = e.dataTransfer.files[0];
+            if (file && file.type.startsWith('image/')) {
+                handleFile(file);
+            }
+        };
+
+        imageInput.onchange = (e) => {
+            const file = e.target.files[0];
+            if (file) handleFile(file);
+        };
+
+        function handleFile(file) {
+            const reader = new FileReader();
+            reader.onload = (e) => {
+                previewImg.src = e.target.result;
+                previewContainer.style.display = 'block';
+                uploadPlaceholder.style.display = 'none';
+            };
+            reader.readAsDataURL(file);
+        }
+
+        removeBtn.onclick = (e) => {
+            e.stopPropagation();
+            imageInput.value = '';
+            previewContainer.style.display = 'none';
+            uploadPlaceholder.style.display = 'flex';
+        };
+
+        // Handle Form Submission
+        addItemForm.onsubmit = async (e) => {
+            e.preventDefault();
+            
+            const btnText = document.getElementById('btnText');
+            const btnLoading = document.getElementById('btnLoading');
+            const submitBtn = document.getElementById('submitBtn');
+            const errorAlert = document.getElementById('errorAlert');
+            const errorMessage = document.getElementById('errorMessage');
+
+            // Validation
+            if (!imageInput.files[0]) {
+                errorAlert.classList.add('show');
+                errorMessage.textContent = "Please upload an image for the item.";
+                return;
+            }
+
+            const formData = new FormData();
+            formData.append('title', document.getElementById('title').value);
+            formData.append('category', document.getElementById('category').value);
+            formData.append('type', document.getElementById('type').value);
+            formData.append('price', document.getElementById('price').value);
+            formData.append('contact', document.getElementById('contact').value);
+            formData.append('description', document.getElementById('description').value);
+            formData.append('image', imageInput.files[0]);
+
+            btnText.style.display = 'none';
+            btnLoading.style.display = 'block';
+            submitBtn.disabled = true;
+            errorAlert.classList.remove('show');
+
+            try {
+                const res = await fetch('/api/marketplace', {
+                    method: 'POST',
+                    body: formData
+                });
+
+                const data = await res.json();
+                if (!res.ok) throw new Error(data.error || 'Failed to post item');
+
+                window.location.href = '/marketplace.html';
+            } catch (err) {
+                errorAlert.classList.add('show');
+                errorMessage.textContent = err.message;
+                btnText.style.display = 'block';
+                btnLoading.style.display = 'none';
+                submitBtn.disabled = false;
+            }
+        };
+
+        // Auth Check
+        window.onload = async () => {
+            const res = await fetch('/api/auth/me');
+            if (!res.ok) window.location.href = '/';
+        };
+    </script>
+</body>
+
+</html>

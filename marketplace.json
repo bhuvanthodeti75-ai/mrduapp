@@ -1,0 +1,79 @@
+[
+  {
+    "id": "1",
+    "title": "Engineering Maths Book",
+    "category": "Books",
+    "price": 200,
+    "type": "sell",
+    "description": "Good condition, first year book",
+    "image": "url",
+    "sellerRollNumber": "25EU06R0001",
+    "contact": "9876543210",
+    "isAvailable": true
+  },
+  {
+    "id": "1774166928200",
+    "title": "bike ",
+    "category": "Other",
+    "price": 70,
+    "type": "rent",
+    "description": "sdfvvyhcyfht",
+    "image": "/uploads/1774166928182-97965788.jpg",
+    "sellerRollNumber": "25EU08R0137",
+    "contact": "1234567890",
+    "isAvailable": true,
+    "createdAt": 1774166928200
+  },
+  {
+    "id": "1774175044511",
+    "title": "saefedfwe",
+    "category": "Electronics",
+    "price": 23,
+    "type": "rent",
+    "description": "dnvkdsnfvs",
+    "image": "/uploads/1774175044500-174192857.jpg",
+    "sellerRollNumber": "25EU08R0137",
+    "contact": "0987654321",
+    "isAvailable": true,
+    "createdAt": 1774175044511
+  },
+  {
+    "id": "1774176218944",
+    "title": "qqqq",
+    "category": "Electronics",
+    "price": 123,
+    "type": "rent",
+    "description": "1212",
+    "image": "/uploads/1774176218934-232708817.jpg",
+    "sellerRollNumber": "25EU08R0624",
+    "contact": "1231231231",
+    "isAvailable": true,
+    "createdAt": 1774176218944
+  },
+  {
+    "id": "1774178075818",
+    "title": "jndsf,dsnv",
+    "category": "Stationery",
+    "price": 5,
+    "type": "rent",
+    "description": "sdvmnds,fns",
+    "image": "/uploads/1774178075810-789684081.jpeg",
+    "sellerRollNumber": "25EU08R0624",
+    "contact": "1345678907",
+    "isAvailable": true,
+    "createdAt": 1774178075818
+  },
+  {
+    "id": "1774181160897",
+    "title": "sfsefe",
+    "category": "Electronics",
+    "price": 2342,
+    "type": "rent",
+    "description": "dsfesf",
+    "image": "/uploads/1774181160890-179893371.jpg",
+    "sellerRollNumber": "25EU08R0137",
+    "contact": "1231231231",
+    "isAvailable": true,
+    "createdAt": 1774181160897
+  }
+]

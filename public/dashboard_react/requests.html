@@ -1,0 +1,235 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>MRDU App Item Requests — Student Portal</title>
+    <link rel="stylesheet" href="styles.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        .request-card {
+            background: rgba(255, 255, 255, 0.02);
+            border: 1px solid var(--border);
+            border-radius: 16px;
+            padding: 24px;
+            display: flex;
+            flex-direction: column;
+            gap: 16px;
+        }
+        .request-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+        }
+        .request-title {
+            font-size: 18px;
+            font-weight: 700;
+            color: var(--text-primary);
+            margin: 0 0 8px 0;
+        }
+        .request-desc {
+            font-size: 14px;
+            color: var(--text-muted);
+            line-height: 1.5;
+            margin: 0;
+        }
+        .request-meta {
+            display: flex;
+            align-items: center;
+            gap: 16px;
+            font-size: 12px;
+            color: var(--text-muted);
+        }
+    </style>
+</head>
+
+<body class="bg-animate">
+    <div class="glass-container dashboard-card" style="max-width: 1000px;">
+        <div class="market-header">
+            <div>
+                <h1 class="welcome-name"><i class="fas fa-store"></i> Student Marketplace</h1>
+                <p class="welcome-roll">Buy, sell, or request items within Malla Reddy Deemed to be University(MRDU)</p>
+            </div>
+            <div style="display: flex; gap: 10px;">
+                <a href="/notifications.html" id="nav-bell" style="text-decoration:none; position:relative; background: rgba(242, 110, 81, 0.08); border: 1px solid rgba(242, 110, 81, 0.25); color: #F26E51; padding: 9px 12px; border-radius: 8px; display:inline-flex; align-items:center; justify-content:center; transition:0.2s;">
+                  <i class="fas fa-bell"></i>
+                  <span id="unread-badge" style="position:absolute; top:-5px; right:-5px; background:var(--error); color:white; font-size:10px; font-weight:bold; padding:2px 5px; border-radius:10px; display:none;">0</span>
+                </a>
+                <a href="/dashboard.html" class="btn-ghost" style="width: auto; margin-top: 0;"><i class="fas fa-arrow-left"></i> Dashboard</a>
+                <a href="/add-request.html" class="btn-primary" style="width: auto; margin-top: 0; padding: 10px 20px;"><i class="fas fa-bullhorn"></i> Request Item</a>
+            </div>
+        </div>
+
+        <div style="display: flex; gap: 24px; margin-bottom: 24px; border-bottom: 1px solid var(--border); padding-bottom: 0;">
+            <a href="/marketplace.html" style="color: var(--text-muted); font-weight: 500; text-decoration: none; padding-bottom: 12px; transition: 0.2s;">🛒 Items for Sale/Rent</a>
+            <a href="/requests.html" style="color: var(--accent); font-weight: 600; text-decoration: none; border-bottom: 2px solid var(--accent); padding-bottom: 12px; margin-bottom: -1px;">📢 Item Requests (WTB)</a>
+        </div>
+
+        <div class="search-filter-bar" style="grid-template-columns: 1fr;">
+            <div class="search-box">
+                <i class="fas fa-search"></i>
+                <input type="text" id="searchInput" placeholder="Search requests by title or description..." oninput="fetchRequests()">
+            </div>
+        </div>
+
+        <div id="loadingState" class="loading-text">
+            <i class="fas fa-circle-notch fa-spin"></i> Loading item requests...
+        </div>
+
+        <div id="requestGrid" style="display: none; display: flex; flex-direction: column; gap: 16px;">
+            <!-- Requests will be injected here -->
+        </div>
+
+        <div id="emptyState" class="empty-state" style="display: none;">
+            <span class="empty-icon">😅</span>
+            <h3>No requests yet</h3>
+            <p>Need something? Post an item request so others can help you out!</p>
+            <a href="/add-request.html" class="btn-primary" style="width: auto; display: inline-block; margin-top: 1rem;">Post a Request</a>
+        </div>
+    </div>
+
+    <script>
+        let myRoll = '';
+
+        function timeAgo(dateParam) {
+            const date = typeof dateParam === 'object' ? dateParam : new Date(dateParam);
+            const today = new Date();
+            const seconds = Math.round((today - date) / 1000);
+            const minutes = Math.round(seconds / 60);
+            const hours = Math.round(minutes / 60);
+            const days = Math.round(hours / 24);
+
+            if (seconds < 60) return 'Just now';
+            else if (minutes < 60) return `${minutes} minute${minutes > 1 ? 's' : ''} ago`;
+            else if (hours < 24) return `${hours} hour${hours > 1 ? 's' : ''} ago`;
+            else return `${days} day${days > 1 ? 's' : ''} ago`;
+        }
+
+        async function fetchRequests() {
+            const search = document.getElementById('searchInput').value;
+            const grid = document.getElementById('requestGrid');
+            const loading = document.getElementById('loadingState');
+            const empty = document.getElementById('emptyState');
+
+            loading.style.display = 'block';
+            grid.style.display = 'none';
+            empty.style.display = 'none';
+
+            try {
+                const [meRes, reqRes] = await Promise.all([
+                    fetch('/api/auth/me'),
+                    fetch(`/api/requests?search=${encodeURIComponent(search)}`)
+                ]);
+                
+                if (!meRes.ok) { window.location.href = '/'; return; }
+                const meData = await meRes.json();
+                myRoll = meData.user.rollNumber;
+                
+                const requests = await reqRes.json();
+                loading.style.display = 'none';
+
+                if (requests.length === 0) {
+                    empty.style.display = 'block';
+                } else {
+                    grid.style.display = 'flex';
+                    grid.innerHTML = '';
+
+                    for (const req of requests) {
+                        const isMine = req.requestedBy === myRoll;
+                        let contactHtml = '';
+                        
+                        if (isMine) {
+                            contactHtml = `<span style="color:var(--text-muted); font-size: 13px;">This is your request</span>`;
+                        } else if (!req.requireApproval) {
+                            contactHtml = `<a href="https://wa.me/91${req.contact}" target="_blank" class="btn-primary" style="width:auto; padding: 10px 20px; font-size:13px; text-decoration:none;"><i class="fab fa-whatsapp"></i> WhatsApp</a>`;
+                        } else {
+                            // Check contact request status
+                            const statusRes = await fetch(`/api/contact-request/status/${req.id}?targetType=request`);
+                            let statusData = { status: 'none' };
+                            if (statusRes.ok) statusData = await statusRes.json();
+
+                            if (statusData.status === 'accepted') {
+                                contactHtml = `<a href="https://wa.me/91${statusData.contact}" target="_blank" class="btn-primary" style="width:auto; padding: 10px 20px; font-size:13px; text-decoration:none;"><i class="fab fa-whatsapp"></i> WhatsApp</a>`;
+                            } else if (statusData.status === 'pending') {
+                                contactHtml = `<button class="btn-ghost" disabled style="width:auto; padding: 10px 20px; font-size:13px; color:var(--warning);"><i class="fas fa-clock"></i> Request Pending</button>`;
+                            } else if (statusData.status === 'rejected') {
+                                contactHtml = `<button class="btn-ghost" disabled style="width:auto; padding: 10px 20px; font-size:13px; color:var(--error);"><i class="fas fa-times"></i> Request Rejected</button>`;
+                            } else {
+                                contactHtml = `<button onclick="sendContactRequest('${req.id}')" id="req-btn-${req.id}" class="btn-primary" style="width:auto; padding: 10px 20px; font-size:13px;"><i class="fas fa-paper-plane"></i> Request Contact</button>`;
+                            }
+                        }
+
+                        const card = document.createElement('div');
+                        card.className = 'request-card';
+                        card.innerHTML = `
+                            <div class="request-header">
+                                <div>
+                                    <h3 class="request-title">${req.title}</h3>
+                                    <div class="request-meta" style="margin-bottom: 12px;">
+                                        <span><i class="fas fa-user-circle"></i> ${req.requestedBy}</span>
+                                        <span><i class="fas fa-history"></i> Posted ${timeAgo(req.createdAt)}</span>
+                                    </div>
+                                    <p class="request-desc">${req.description}</p>
+                                </div>
+                                <div style="display:flex; align-items:center;">
+                                    ${contactHtml}
+                                </div>
+                            </div>
+                        `;
+                        grid.appendChild(card);
+                    }
+                }
+            } catch (err) {
+                console.error(err);
+                loading.innerHTML = '<i class="fas fa-exclamation-triangle"></i> Error loading requests.';
+            }
+        }
+
+        async function sendContactRequest(id) {
+            const btn = document.getElementById(`req-btn-${id}`);
+            if (btn) { btn.disabled = true; btn.textContent = 'Sending...'; }
+
+            try {
+                const res = await fetch('/api/contact-request', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ targetId: id, targetType: 'request' })
+                });
+
+                if (res.ok) {
+                    alert('Contact request sent! The requester will be notified.');
+                    fetchRequests();
+                } else {
+                    const data = await res.json();
+                    alert(data.error || 'Failed to send request');
+                    if (btn) { btn.disabled = false; btn.innerHTML = '<i class="fas fa-paper-plane"></i> Request Contact'; }
+                }
+            } catch (err) {
+                alert('Network error');
+            }
+        }
+
+        window.onload = fetchRequests;
+
+        async function pollNotifications() {
+            try {
+                const res = await fetch('/api/notifications/unread-count');
+                if (!res.ok) return;
+                const { count } = await res.json();
+                const badge = document.getElementById('unread-badge');
+                if (badge) {
+                    if (count > 0) {
+                        badge.style.display = 'block';
+                        badge.textContent = count > 99 ? '99+' : count;
+                    } else {
+                        badge.style.display = 'none';
+                    }
+                }
+            } catch (err) {}
+        }
+        setInterval(pollNotifications, 10000);
+        setTimeout(pollNotifications, 500);
+    </script>
+</body>
+</html>

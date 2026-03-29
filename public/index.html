@@ -1,0 +1,156 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>MRDU Student Portal — Login</title>
+  <meta name="description"
+    content="Malla Reddy Deemed to be University Student Portal — Secure login for registered first-year students only." />
+  <link rel="stylesheet" href="styles.css" />
+</head>
+
+<body>
+  <div class="grid-bg"></div>
+  <div class="page">
+    <div class="auth-card">
+
+      <!-- Brand -->
+      <div class="brand">
+        <div class="brand-icon">🎓</div>
+        <div class="brand-title">Malla Reddy Deemed to be University</div>
+        <div class="brand-sub">STUDENT PORTAL · SECURE ACCESS</div>
+      </div>
+
+      <!-- Title -->
+      <h1 class="screen-title">Welcome Back</h1>
+      <p class="screen-subtitle">Enter your roll number and password to access the portal.</p>
+
+      <!-- Error Alert -->
+      <div id="alert" class="alert alert-error">
+        <span class="alert-icon">⚠️</span>
+        <span id="alert-msg">Error message</span>
+      </div>
+
+      <!-- Login Form -->
+      <form id="login-form" novalidate autocomplete="off">
+        <div class="form-group">
+          <label class="form-label" for="rollNumber">Roll Number</label>
+          <div class="input-wrap">
+            <input type="text" id="rollNumber" class="form-input" placeholder="e.g. 25EU0_R0___" autocomplete="off"
+              spellcheck="false" maxlength="20" style="text-transform: uppercase;" />
+            <span class="input-icon">🪪</span>
+          </div>
+        </div>
+
+        <div class="form-group">
+          <label class="form-label" for="password">Password</label>
+          <div class="input-wrap">
+            <input type="password" id="password" class="form-input" placeholder="Enter your password"
+              autocomplete="current-password" />
+            <span class="input-icon">🔑</span>
+            <button type="button" class="pw-toggle" id="pw-toggle" aria-label="Toggle password visibility">👁</button>
+          </div>
+          <div style="text-align: right; margin-top: 8px;">
+            <a href="/forgot-password.html" style="color: var(--primary); font-size: 13px; text-decoration: none; font-weight: 500;">Forgot Password?</a>
+          </div>
+        </div>
+
+        <button type="submit" class="btn-primary" id="login-btn">Sign In</button>
+      </form>
+
+      <div class="divider">RESTRICTED ACCESS</div>
+      <p style="text-align:center; font-size:12px; color: var(--text-muted);">
+        Only pre-approved students of MRDU can access this portal.<br>
+        No registration is available.
+      </p>
+
+    </div>
+  </div>
+
+  <script>
+    // Check if already logged in
+    (async () => {
+      try {
+        const r = await fetch('/api/auth/me', { credentials: 'include' });
+        if (r.ok) window.location.replace('/dashboard.html');
+      } catch { }
+    })();
+
+    const form = document.getElementById('login-form');
+    const rollInput = document.getElementById('rollNumber');
+    const pwInput = document.getElementById('password');
+    const pwToggle = document.getElementById('pw-toggle');
+    const loginBtn = document.getElementById('login-btn');
+    const alert = document.getElementById('alert');
+    const alertMsg = document.getElementById('alert-msg');
+
+    // Auto-uppercase roll number
+    rollInput.addEventListener('input', () => {
+      const pos = rollInput.selectionStart;
+      rollInput.value = rollInput.value.toUpperCase();
+      rollInput.setSelectionRange(pos, pos);
+    });
+
+    // Toggle password visibility
+    pwToggle.addEventListener('click', () => {
+      const isText = pwInput.type === 'text';
+      pwInput.type = isText ? 'password' : 'text';
+      pwToggle.textContent = isText ? '👁' : '🙈';
+    });
+
+    function showAlert(msg, type = 'error') {
+      alert.className = `alert alert-${type} show`;
+      alertMsg.textContent = msg;
+    }
+
+    function hideAlert() { alert.className = 'alert alert-error'; }
+
+    function setLoading(loading) {
+      loginBtn.disabled = loading;
+      loginBtn.innerHTML = loading
+        ? '<span class="spinner"></span> Signing In...'
+        : 'Sign In';
+    }
+
+    form.addEventListener('submit', async (e) => {
+      e.preventDefault();
+      hideAlert();
+
+      const rollNumber = rollInput.value.trim().toUpperCase();
+      const password = pwInput.value;
+
+      if (!rollNumber) { showAlert('Please enter your roll number.'); return; }
+      if (!password) { showAlert('Please enter your password.'); return; }
+
+      setLoading(true);
+
+      try {
+        const res = await fetch('/api/auth/login', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ rollNumber, password }),
+          credentials: 'include',
+        });
+
+        const data = await res.json();
+
+        if (!res.ok) {
+          showAlert(data.error || 'Login failed. Please try again.');
+          if (data.attemptsLeft !== undefined && data.attemptsLeft > 0) {
+            showAlert(`${data.error} (${data.attemptsLeft} attempt${data.attemptsLeft === 1 ? '' : 's'} left)`);
+          }
+          return;
+        }
+
+        window.location.href = '/dashboard.html';
+      } catch (err) {
+        showAlert('Network error. Please check your connection.');
+      } finally {
+        setLoading(false);
+      }
+    });
+  </script>
+</body>
+
+</html>

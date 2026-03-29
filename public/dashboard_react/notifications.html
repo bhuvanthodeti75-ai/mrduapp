@@ -1,0 +1,171 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Notifications — MRDU Student Portal</title>
+  <link rel="stylesheet" href="styles.css">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <style>
+    .notif-card {
+      background: rgba(255, 255, 255, 0.02);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 16px;
+      margin-bottom: 12px;
+      display: flex;
+      align-items: flex-start;
+      gap: 16px;
+      cursor: pointer;
+      transition: all 0.2s;
+      text-decoration: none;
+      color: inherit;
+    }
+    .notif-card:hover {
+      background: rgba(255, 255, 255, 0.05);
+      border-color: rgba(242, 110, 81, 0.3);
+    }
+    .notif-unread {
+      background: rgba(242, 110, 81, 0.08);
+      border-color: rgba(242, 110, 81, 0.4);
+    }
+    .notif-icon {
+      width: 40px;
+      height: 40px;
+      border-radius: 10px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 16px;
+      flex-shrink: 0;
+    }
+    .notif-content {
+      flex: 1;
+    }
+    .notif-message {
+      font-size: 14px;
+      color: var(--text-primary);
+      margin-bottom: 4px;
+      line-height: 1.4;
+    }
+    .notif-time {
+      font-size: 11px;
+      color: var(--text-muted);
+    }
+    
+    /* Icon Themes based on type */
+    .icon-chat { background: rgba(59, 130, 246, 0.1); color: #3b82f6; }
+    .icon-contact { background: rgba(16, 185, 129, 0.1); color: #10b981; }
+    .icon-feed { background: rgba(245, 158, 11, 0.1); color: #f59e0b; }
+    .icon-default { background: rgba(242, 110, 81, 0.1); color: #F26E51; }
+
+    @media (max-width: 480px) {
+      .notif-card { padding: 12px; gap: 12px; }
+      .notif-icon { width: 32px; height: 32px; font-size: 14px; }
+      .notif-message { font-size: 13px; }
+      .notif-time { font-size: 10px; }
+      .market-header { flex-direction: column; align-items: flex-start; gap: 10px; }
+      .market-header .btn-ghost { width: 100%; text-align: center; }
+    }
+  </style>
+</head>
+<body class="bg-animate">
+  <div class="glass-container dashboard-card" style="max-width: 800px;">
+    <div class="market-header" style="border-bottom: 1px solid var(--border); padding-bottom: 20px; margin-bottom: 20px;">
+      <div>
+        <h1 class="welcome-name"><i class="fas fa-bell"></i> Notifications</h1>
+        <p class="welcome-roll">Stay updated with your campus activity</p>
+      </div>
+      <div>
+        <a href="/dashboard.html" class="btn-ghost" style="width: auto; margin-top: 0;"><i class="fas fa-arrow-left"></i> Dashboard</a>
+      </div>
+    </div>
+
+    <div id="loadingState" class="loading-text">
+        <i class="fas fa-circle-notch fa-spin"></i> Loading...
+    </div>
+
+    <div id="notifList" style="display: none;">
+      <!-- Dynamically filled -->
+    </div>
+
+    <div id="emptyState" class="empty-state" style="display: none;">
+        <span class="empty-icon">🔔</span>
+        <h3>No notifications yet</h3>
+        <p>You're all caught up!</p>
+    </div>
+  </div>
+
+  <script>
+    function timeAgo(dateParam) {
+        const date = new Date(dateParam);
+        const seconds = Math.floor((new Date() - date) / 1000);
+        if (seconds < 60) return `${Math.max(1, seconds)} sec ago`;
+        const minutes = Math.floor(seconds / 60);
+        if (minutes < 60) return `${minutes} min${minutes > 1 ? 's' : ''} ago`;
+        const hours = Math.floor(minutes / 60);
+        if (hours < 24) return `${hours} hr${hours > 1 ? 's' : ''} ago`;
+        const days = Math.floor(hours / 24);
+        return `${days} day${days > 1 ? 's' : ''} ago`;
+    }
+
+    function getIconInfo(type) {
+      if (type.includes('chat')) return { class: 'icon-chat', icon: 'fa-comment-dots' };
+      if (type.includes('contact')) return { class: 'icon-contact', icon: 'fa-address-book' };
+      if (type.includes('feed')) return { class: 'icon-feed', icon: 'fa-bullhorn' };
+      return { class: 'icon-default', icon: 'fa-bell' };
+    }
+
+    async function loadNotifications() {
+      const loading = document.getElementById('loadingState');
+      const list = document.getElementById('notifList');
+      const empty = document.getElementById('emptyState');
+
+      try {
+        const res = await fetch('/api/notifications');
+        if (!res.ok) window.location.href = '/';
+        const notifs = await res.json();
+
+        loading.style.display = 'none';
+
+        if (notifs.length === 0) {
+          empty.style.display = 'block';
+        } else {
+          list.style.display = 'block';
+          list.innerHTML = notifs.map(n => {
+            const ui = getIconInfo(n.type);
+            return `
+              <div class="notif-card ${!n.isRead ? 'notif-unread' : ''}" onclick="handleNotifClick('${n.id}', '${n.link}', ${n.isRead})">
+                <div class="notif-icon ${ui.class}">
+                  <i class="fas ${ui.icon}"></i>
+                </div>
+                <div class="notif-content">
+                  <div class="notif-message" style="font-weight: ${!n.isRead ? '600' : '400'}">${n.message}</div>
+                  <div class="notif-time">${timeAgo(n.createdAt)}</div>
+                </div>
+                ${!n.isRead ? '<div style="width:10px; height:10px; background:var(--accent); border-radius:50%; align-self:center;"></div>' : ''}
+              </div>
+            `;
+          }).join('');
+        }
+      } catch (err) {
+        console.error(err);
+      }
+    }
+
+    async function handleNotifClick(id, link, isRead) {
+      if (!isRead) {
+        await fetch(`/api/notifications/${id}/read`, { method: 'PATCH' });
+      }
+      if (link && link !== '#') {
+        window.location.href = link;
+      } else {
+        // If no link, just reload to reflect read state visually
+        loadNotifications();
+      }
+    }
+
+    window.onload = loadNotifications;
+  </script>
+</body>
+</html>

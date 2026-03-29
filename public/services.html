@@ -1,0 +1,156 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Academic Services — Student Portal</title>
+    <link rel="stylesheet" href="styles.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+</head>
+<body class="bg-animate">
+    <div class="glass-container dashboard-card" style="max-width: 1000px;">
+        <div class="market-header">
+            <div>
+                <h1 class="welcome-name"><i class="fas fa-graduation-cap"></i> Student Services</h1>
+                <p class="welcome-roll">Get help with assignments, labs, and projects from fellow students</p>
+            </div>
+            <div style="display: flex; gap: 10px;">
+                <a href="/notifications.html" id="nav-bell" style="text-decoration:none; position:relative; background: rgba(242, 110, 81, 0.08); border: 1px solid rgba(242, 110, 81, 0.25); color: #F26E51; padding: 9px 12px; border-radius: 8px; display:inline-flex; align-items:center; justify-content:center; transition:0.2s;">
+                  <i class="fas fa-bell"></i>
+                  <span id="unread-badge" style="position:absolute; top:-5px; right:-5px; background:var(--error); color:white; font-size:10px; font-weight:bold; padding:2px 5px; border-radius:10px; display:none;">0</span>
+                </a>
+                <a href="/dashboard.html" class="btn-ghost" style="width: auto; margin-top: 0;"><i class="fas fa-arrow-left"></i> Dashboard</a>
+                <a href="/add-service.html" class="btn-primary" style="width: auto; margin-top: 0; padding: 10px 20px;"><i class="fas fa-plus"></i> Offer Service</a>
+            </div>
+        </div>
+
+        <div class="search-filter-bar">
+            <div class="search-box">
+                <i class="fas fa-search"></i>
+                <input type="text" id="searchInput" placeholder="Search for assignments, PPTs, help..." oninput="fetchServices()">
+            </div>
+            <div class="filter-controls">
+                <select id="categoryFilter" class="market-select" onchange="fetchServices()">
+                    <option value="All">All Categories</option>
+                    <option value="Assignment">Assignment</option>
+                    <option value="Lab Record">Lab Record</option>
+                    <option value="PPT">PPT</option>
+                    <option value="Notes">Notes</option>
+                    <option value="Project">Project</option>
+                </select>
+            </div>
+        </div>
+
+        <div id="loadingState" class="loading-text">
+            <i class="fas fa-circle-notch fa-spin"></i> Loading academic services...
+        </div>
+
+        <div id="serviceGrid" class="item-grid" style="display: none;">
+            <!-- Services will be injected here -->
+        </div>
+
+        <div id="emptyState" class="empty-state" style="display: none;">
+            <span class="empty-icon">📝</span>
+            <h3>No services found</h3>
+            <p>Be the first to offer help with assignments or projects!</p>
+            <a href="/add-service.html" class="btn-primary" style="width: auto; display: inline-block; margin-top: 1rem;">Post a Service</a>
+        </div>
+    </div>
+
+    <script>
+        async function fetchServices() {
+            const search = document.getElementById('searchInput').value;
+            const category = document.getElementById('categoryFilter').value;
+
+            const grid = document.getElementById('serviceGrid');
+            const loading = document.getElementById('loadingState');
+            const empty = document.getElementById('emptyState');
+
+            loading.style.display = 'block';
+            grid.style.display = 'none';
+            empty.style.display = 'none';
+
+            try {
+                const params = new URLSearchParams({ search, category });
+                const res = await fetch(`/api/services?${params}`);
+                
+                if (res.status === 401) {
+                    window.location.href = '/';
+                    return;
+                }
+
+                const services = await res.json();
+                loading.style.display = 'none';
+
+                if (services.length === 0) {
+                    empty.style.display = 'block';
+                } else {
+                    grid.style.display = 'grid';
+                    grid.innerHTML = services.map(service => `
+                        <div class="item-card" onclick="location.href='/service-details.html?id=${service.id}'">
+                            <div class="item-img-wrap" style="height: 150px; background: linear-gradient(135deg, var(--bg-card), var(--bg-app)); display: flex; align-items: center; justify-content: center;">
+                                <i class="fas ${getIcon(service.category)}" style="font-size: 3rem; color: var(--accent); opacity: 0.6;"></i>
+                                <span class="item-badge" style="background: rgba(242, 110, 81,0.1); color: var(--accent); border: 1px solid rgba(242, 110, 81,0.2);">${service.category}</span>
+                            </div>
+                            <div class="item-body">
+                                <h3 class="item-title">${service.title}</h3>
+                                <p style="font-size: 13px; color: var(--text-muted); margin: 8px 0; overflow: hidden; text-overflow: ellipsis; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical;">
+                                    ${service.description}
+                                </p>
+                                <div class="item-price">₹${service.price}</div>
+                                <div class="item-meta">
+                                    <span class="item-seller"><i class="fas fa-user-graduate"></i> ${service.providerRollNumber}</span>
+                                    <span class="item-seller"><i class="fas fa-clock"></i> ${new Date(service.createdAt).toLocaleDateString()}</span>
+                                </div>
+                            </div>
+                        </div>
+                    `).join('');
+                }
+            } catch (err) {
+                console.error('Error fetching services:', err);
+                loading.innerHTML = '<i class="fas fa-exclamation-triangle"></i> Error loading services. Please refresh.';
+            }
+        }
+
+        function getIcon(category) {
+            switch(category) {
+                case 'Assignment': return 'fa-file-alt';
+                case 'Lab Record': return 'fa-flask';
+                case 'PPT': return 'fa-file-powerpoint';
+                case 'Notes': return 'fa-book-open';
+                case 'Project': return 'fa-project-diagram';
+                default: return 'fa-hands-helping';
+            }
+        }
+
+        async function checkSession() {
+            const res = await fetch('/api/auth/me');
+            if (!res.ok) window.location.href = '/';
+        }
+
+        window.onload = () => {
+            checkSession();
+            fetchServices();
+        };
+
+        async function pollNotifications() {
+            try {
+                const res = await fetch('/api/notifications/unread-count');
+                if (!res.ok) return;
+                const { count } = await res.json();
+                const badge = document.getElementById('unread-badge');
+                if (badge) {
+                    if (count > 0) {
+                        badge.style.display = 'block';
+                        badge.textContent = count > 99 ? '99+' : count;
+                    } else {
+                        badge.style.display = 'none';
+                    }
+                }
+            } catch (err) {}
+        }
+        setInterval(pollNotifications, 10000);
+        setTimeout(pollNotifications, 500);
+    </script>
+</body>
+</html>

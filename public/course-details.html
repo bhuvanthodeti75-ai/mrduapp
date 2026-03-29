@@ -1,0 +1,305 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Course Details — MRDU Student Portal</title>
+  <link rel="stylesheet" href="styles.css" />
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" />
+  <style>
+    .details-container {
+      display: flex;
+      flex-direction: column;
+      gap: 24px;
+    }
+
+    .hero-section {
+      padding: 40px;
+      background: linear-gradient(135deg, rgba(242, 110, 81, 0.15), rgba(124, 58, 237, 0.08));
+      border: 1px solid var(--border);
+      border-radius: 20px;
+      text-align: center;
+    }
+
+    .price-tag {
+      font-size: 24px;
+      font-weight: 800;
+      color: var(--accent);
+      margin: 16px 0;
+    }
+
+    .price-tag.free {
+      color: var(--success);
+    }
+
+    .content-box {
+      background: rgba(255, 255, 255, 0.02);
+      border: 1px solid var(--border);
+      border-radius: 16px;
+      padding: 24px;
+    }
+
+    .lock-overlay {
+      text-align: center;
+      padding: 40px 20px;
+      color: var(--text-muted);
+    }
+
+    .lock-overlay i {
+      font-size: 48px;
+      margin-bottom: 20px;
+      color: var(--warning);
+      opacity: 0.6;
+    }
+
+    .link-list {
+      list-style: none;
+      padding: 0;
+      margin-top: 16px;
+    }
+
+    .link-item {
+      padding: 14px;
+      background: rgba(255, 255, 255, 0.05);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      margin-bottom: 10px;
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      transition: all 0.2s;
+      text-decoration: none;
+      color: var(--text);
+    }
+
+    .link-item:hover {
+      background: rgba(255, 255, 255, 0.08);
+      border-color: var(--accent);
+      transform: translateX(5px);
+    }
+
+    .link-item i {
+      color: var(--accent);
+    }
+  </style>
+</head>
+
+<body>
+  <div class="grid-bg"></div>
+  <div class="page">
+    <div class="auth-card" style="max-width: 800px; width: 95%;">
+      <div style="margin-bottom: 20px; display: flex; gap: 8px;">
+        <a href="/dashboard.html" class="btn-ghost" style="width: auto; margin: 0; padding: 6px 12px; font-size: 12px;">
+          <i class="fas fa-home"></i> Dashboard
+        </a>
+        <a href="/courses.html" class="btn-ghost" style="width: auto; margin: 0; padding: 6px 12px; font-size: 12px;">
+          <i class="fas fa-arrow-left"></i> Back to Hub
+        </a>
+        <div id="owner-controls" style="display: none; gap: 8px; margin-left: auto;">
+            <a id="edit-course-btn" class="btn-ghost" style="width: auto; margin: 0; padding: 6px 12px; font-size: 12px; color: var(--accent); border-color: rgba(242, 110, 81, 0.3); text-decoration: none;">
+                <i class="fas fa-edit"></i> Edit
+            </a>
+            <button onclick="deleteCourse()" class="btn-ghost" style="width: auto; margin: 0; padding: 6px 12px; font-size: 12px; color: var(--error); border-color: rgba(239, 68, 68, 0.3);">
+                <i class="fas fa-trash"></i> Delete
+            </button>
+        </div>
+      </div>
+
+      <div id="course-content-area" class="details-container">
+        <!-- Details injected here -->
+        <div style="text-align:center; padding: 40px;">
+          <i class="fas fa-circle-notch fa-spin" style="font-size: 32px; color: var(--accent);"></i>
+          <p style="margin-top: 10px;">Loading course details...</p>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    const urlParams = new URLSearchParams(window.location.search);
+    const courseId = urlParams.get('id');
+
+    async function loadCourse() {
+      if (!courseId) {
+        window.location.href = '/courses.html';
+        return;
+      }
+
+      try {
+        const res = await fetch(`/api/courses/${courseId}`);
+        if (!res.ok) throw new Error('Course not found');
+        const course = await res.json();
+
+        let reqStatus = 'none';
+        if (!course.isInstructor && !course.isEnrolled) {
+          try {
+            const statusRes = await fetch(`/api/contact-request/status/${courseId}?targetType=course`);
+            if (statusRes.ok) {
+              const statusData = await statusRes.json();
+              reqStatus = statusData.status;
+              if (reqStatus === 'accepted' && statusData.contact) {
+                course.contact = statusData.contact;
+                course.isEnrolled = true; // since it was just accepted and auto-enrolled!
+                // We should actually re-fetch courses to get the content if we are enrolled!
+              }
+            }
+          } catch(e){}
+        }
+
+        // If auto-enrolled via request just now but content is missing, reload data:
+        if (reqStatus === 'accepted' && !course.content) {
+          const resFull = await fetch(`/api/courses/${courseId}`);
+          const courseFull = await resFull.json();
+          renderCourse(courseFull, reqStatus);
+        } else {
+          renderCourse(course, reqStatus);
+        }
+
+        if (course.isInstructor) {
+          document.getElementById('owner-controls').style.display = 'flex';
+          document.getElementById('edit-course-btn').href = `/edit-course.html?id=${course.id}`;
+        }
+      } catch (err) {
+        document.getElementById('course-content-area').innerHTML = `
+          <div style="text-align:center; padding: 40px;">
+             <i class="fas fa-exclamation-triangle" style="font-size: 48px; color: var(--error);"></i>
+             <h3>Course not found</h3>
+             <a href="/courses.html" class="btn-primary" style="display:inline-block; width:auto; margin-top:20px;">Back to Hub</a>
+          </div>
+        `;
+      }
+    }
+
+    function renderCourse(course, reqStatus) {
+      const container = document.getElementById('course-content-area');
+
+      const isPaid = course.price > 0;
+      const priceHtml = isPaid ? `₹${course.price}` : 'FREE';
+      const priceClass = isPaid ? '' : 'free';
+
+      let actionsHtml = '';
+      if (course.isEnrolled || course.isInstructor) {
+        actionsHtml = `<span class="status-badge" style="color:var(--success);"><i class="fas fa-check-circle"></i> ${course.isInstructor ? 'INSTRUCTOR' : 'ENROLLED'}</span>`;
+      } else {
+        if (reqStatus === 'pending') {
+          actionsHtml = `<span class="status-badge" style="color:var(--warning); border: 1px solid var(--warning); padding: 8px 16px;"><i class="fas fa-clock"></i> Enrollment Pending</span>`;
+        } else if (reqStatus === 'rejected') {
+          actionsHtml = `<span class="status-badge" style="color:var(--error); border: 1px solid var(--error); padding: 8px 16px;"><i class="fas fa-times-circle"></i> Enrollment Rejected</span>`;
+        } else {
+          actionsHtml = `<button id="enroll-btn" class="btn-primary" onclick="enroll()" style="width: auto; padding: 12px 32px;">Enroll Now — ${priceHtml}</button>`;
+        }
+      }
+
+      let contentHtml = '';
+      if (course.content) {
+        contentHtml = `
+          <div class="content-box">
+            <h3 style="margin-bottom: 16px;"><i class="fas fa-play-circle"></i> Course Content</h3>
+            <div class="link-list">
+              ${course.content.map((link, idx) => {
+                const isUpload = link.startsWith('/uploads/');
+                const fileName = isUpload ? decodeURIComponent(link.split('-').slice(1).join('-')) : `External Link #${idx + 1}`;
+                const icon = isUpload ? 'fa-file-download' : 'fa-link';
+                const rightIcon = isUpload ? 'fa-download' : 'fa-external-link-alt';
+                return `
+                <a href="${link}" target="_blank" class="link-item" ${isUpload ? 'download' : ''}>
+                  <i class="fas ${icon}"></i>
+                  <span style="overflow:hidden; text-overflow:ellipsis; white-space:nowrap; max-width:80%;">${fileName}</span>
+                  <i class="fas ${rightIcon}" style="margin-left:auto; font-size:12px; opacity: 0.5;"></i>
+                </a>
+                `;
+              }).join('')}
+            </div>
+          </div>
+        `;
+      } else {
+        contentHtml = `
+          <div class="content-box">
+            <div class="lock-overlay">
+              <i class="fas fa-lock"></i>
+              <h3>Content Protected</h3>
+              <p>Please enroll in this course to access the learning materials.</p>
+              ${!course.isEnrolled ? `<button class="btn-primary" onclick="enroll()" style="width:auto; margin-top:16px;">Enroll to Unlock</button>` : ''}
+            </div>
+          </div>
+        `;
+      }
+
+      container.innerHTML = `
+        <div class="hero-section">
+          <div style="font-size: 12px; color: var(--text-muted); margin-bottom: 8px; text-transform: uppercase; letter-spacing: 1px;">Course Details</div>
+          <h1 style="font-size: 32px; margin: 0 0 12px 0;">${course.title}</h1>
+          <div class="instructor-tag" style="display: inline-block; font-size: 13px;">
+            <i class="fas fa-user-graduate"></i> Instructor: ${course.instructorRollNumber}
+          </div>
+          ${course.contact ? `
+            <div style="margin-top: 8px;">
+              <a href="https://wa.me/91${course.contact.replace(/\D/g, '')}?text=Hi, I am interested in your course %22${encodeURIComponent(course.title)}%22 on MRDU Portal." target="_blank" style="color: #25D366; text-decoration: none; font-size: 14px; display: inline-flex; align-items: center; gap: 4px;">
+                <i class="fab fa-whatsapp"></i> Chat on WhatsApp
+              </a>
+            </div>
+          ` : ''}
+          <div class="price-tag ${priceClass}">${priceHtml}</div>
+          <div style="margin-top: 24px;">${actionsHtml}</div>
+        </div>
+
+        <div class="content-box">
+          <h3 style="margin-bottom: 12px;"><i class="fas fa-align-left"></i> About this course</h3>
+          <p style="color: var(--text-muted); line-height: 1.6; white-space: pre-line;">${course.description}</p>
+        </div>
+
+        ${contentHtml}
+
+        <div style="font-size: 12px; color: var(--text-muted); text-align: center;">
+          Course created on ${new Date(course.createdAt).toLocaleDateString()}
+        </div>
+      `;
+    }
+
+    async function enroll() {
+      const btn = document.getElementById('enroll-btn');
+      if (btn) btn.disabled = true;
+
+      try {
+        const res = await fetch('/api/contact-request', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ targetId: courseId, targetType: 'course' })
+        });
+
+        if (res.ok) {
+          alert('Enrollment Request Sent! Once the instructor accepts, you will gain access.');
+          loadCourse();
+        } else {
+          const data = await res.json();
+          alert(data.error || 'Failed to send request');
+        }
+      } catch (err) {
+        alert('Network error');
+      } finally {
+        if (btn) btn.disabled = false;
+      }
+    }
+
+    async function deleteCourse() {
+      if (!confirm('Are you sure you want to permanently delete this course? This action cannot be undone.')) return;
+      try {
+        const res = await fetch(`/api/courses/${courseId}`, { method: 'DELETE' });
+        if (res.ok) {
+          alert('Course deleted successfully.');
+          window.location.href = '/courses.html';
+        } else {
+          const data = await res.json();
+          alert(data.error || 'Failed to delete course');
+        }
+      } catch (err) {
+        alert('Network error');
+      }
+    }
+
+    loadCourse();
+  </script>
+</body>
+
+</html>

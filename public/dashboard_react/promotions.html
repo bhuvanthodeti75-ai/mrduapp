@@ -1,0 +1,214 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Campus Feed — MRDU Student Portal</title>
+  <link rel="stylesheet" href="styles.css" />
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" />
+  <style>
+    .feed-container { max-width: 800px; margin: 0 auto; padding-top: 24px; padding-bottom: 40px; }
+    
+    .feed-header {
+      display: flex; justify-content: space-between; align-items: center; margin-bottom: 24px;
+      background: var(--card-bg); padding: 20px; border-radius: 16px; border: 1px solid var(--border);
+    }
+    
+    .post-card {
+      background: var(--card-bg); border: 1px solid var(--border); border-radius: 16px;
+      overflow: hidden; margin-bottom: 20px; transition: transform 0.2s;
+    }
+    .post-card:hover { transform: translateY(-2px); border-color: rgba(255,255,255,0.1); }
+    
+    .post-header {
+      padding: 16px; display: flex; align-items: center; justify-content: space-between;
+      border-bottom: 1px solid rgba(255,255,255,0.05);
+    }
+    .post-author { display: flex; align-items: center; gap: 12px; }
+    .author-avatar {
+      width: 40px; height: 40px; border-radius: 50%; background: linear-gradient(135deg, #f43f5e, #be123c);
+      display: flex; align-items: center; justify-content: center; font-weight: bold; font-size: 14px;
+    }
+    .author-info div:first-child { font-weight: 600; font-size: 14px; }
+    .author-info div:last-child { font-size: 12px; color: var(--text-muted); }
+    
+    .post-content { padding: 16px; }
+    .post-title { font-size: 18px; font-weight: bold; margin-bottom: 8px; color: white; }
+    .post-body { font-size: 14px; color: rgba(255,255,255,0.8); line-height: 1.5; white-space: pre-wrap; margin-bottom: 12px; }
+    
+    .post-event-date {
+      display: inline-flex; align-items: center; gap: 6px; background: rgba(244, 63, 94, 0.1);
+      color: #fda4af; padding: 6px 12px; border-radius: 8px; font-size: 12px; font-weight: 600; margin-bottom: 16px;
+    }
+    
+    .post-image {
+      width: calc(100% + 32px); margin-left: -16px; margin-right: -16px; margin-bottom: -16px;
+      max-height: 400px; object-fit: cover; display: block; border-top: 1px solid rgba(255,255,255,0.05);
+      cursor: pointer; transition: opacity 0.2s;
+    }
+    .post-image:hover { opacity: 0.85; }
+    
+    .btn-delete {
+      background: transparent; border: none; color: var(--text-muted); cursor: pointer;
+      padding: 8px; border-radius: 8px; transition: all 0.2s;
+    }
+    .btn-delete:hover { background: rgba(239, 68, 68, 0.1); color: #ef4444; }
+
+    /* Modal styles */
+    .image-modal {
+      display: none; position: fixed; z-index: 9999; left: 0; top: 0; width: 100%; height: 100%;
+      background-color: rgba(15, 17, 23, 0.95); justify-content: center; align-items: center;
+      backdrop-filter: blur(10px); opacity: 0; transition: opacity 0.3s ease;
+    }
+    .image-modal.active { opacity: 1; }
+    .image-modal img {
+      max-width: 90%; max-height: 90vh; border-radius: 12px; box-shadow: 0 10px 40px rgba(0,0,0,0.5);
+      object-fit: contain; transform: scale(0.95); transition: transform 0.3s ease; cursor: zoom-out;
+    }
+    .image-modal.active img { transform: scale(1); }
+    .image-modal-close {
+      position: absolute; top: 24px; right: 32px; color: white; font-size: 36px; font-weight: 300; 
+      cursor: pointer; z-index: 10000; opacity: 0.7; transition: opacity 0.2s;
+    }
+    .image-modal-close:hover { opacity: 1; text-shadow: 0 0 10px rgba(255,255,255,0.3); }
+  </style>
+</head>
+<body>
+  <div class="grid-bg"></div>
+  <div class="page">
+    <div class="feed-container">
+      
+      <div class="feed-header">
+        <div style="display: flex; align-items: center; gap: 16px;">
+          <a href="/dashboard.html" class="btn-ghost" style="width: 44px; height: 44px; padding: 0; display: flex; align-items: center; justify-content: center; border-radius: 12px;">
+            <i class="fas fa-arrow-left"></i>
+          </a>
+          <div>
+            <h1 style="font-size: 24px; margin: 0; color: white;">Campus Feed</h1>
+            <div style="font-size: 13px; color: var(--text-muted);">Stay updated with university events and promotions</div>
+          </div>
+        </div>
+        <a href="/add-promotion.html" class="btn-primary" style="width: auto; padding: 10px 20px; text-decoration: none;">
+          <i class="fas fa-plus"></i> Create Post
+        </a>
+      </div>
+
+      <div id="feed-root">
+        <div style="text-align:center; padding: 40px;"><i class="fas fa-spinner fa-spin"></i> Loading latest updates...</div>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- Image Expand Modal -->
+  <div id="imgModal" class="image-modal" onclick="closeImage()">
+    <span class="image-modal-close" onclick="closeImage()">&times;</span>
+    <img id="modalImgOut" src="" />
+  </div>
+
+  <script>
+    let myRoll = '';
+
+    async function init() {
+      try {
+        const authRes = await fetch('/api/auth/me', { credentials: 'include' });
+        if (!authRes.ok) { window.location.href = '/login.html'; return; }
+        const authData = await authRes.json();
+        myRoll = authData.user.rollNumber;
+        
+        loadFeed();
+      } catch { window.location.href = '/login.html'; }
+    }
+
+    function timeAgo(dateParam) {
+      if (!dateParam) return "";
+      const date = typeof dateParam === 'object' ? dateParam : new Date(dateParam);
+      const today = new Date();
+      const seconds = Math.round((today - date) / 1000);
+      const minutes = Math.round(seconds / 60);
+      const isToday = today.toDateString() === date.toDateString();
+
+      if (seconds < 5) return 'just now';
+      else if (seconds < 60) return `${seconds} seconds ago`;
+      else if (seconds < 90) return 'about a minute ago';
+      else if (minutes < 60) return `${minutes} minutes ago`;
+      else if (isToday) return `${Math.floor(minutes / 60)} hours ago`;
+      return date.toLocaleDateString();
+    }
+
+    async function loadFeed() {
+      try {
+        const res = await fetch('/api/promotions', { credentials: 'include' });
+        const posts = await res.json();
+        const root = document.getElementById('feed-root');
+        
+        if (posts.length === 0) {
+          root.innerHTML = `
+            <div style="text-align:center; padding: 60px 20px; background: rgba(255,255,255,0.02); border-radius: 16px; border: 1px dashed rgba(255,255,255,0.1);">
+              <i class="fas fa-bullhorn" style="font-size: 48px; color: var(--text-muted); opacity: 0.3; margin-bottom: 16px;"></i>
+              <h3 style="color: white; margin-bottom: 8px;">No posts yet</h3>
+              <p style="color: var(--text-muted); font-size: 14px;">Be the first to share an announcement with the campus!</p>
+            </div>
+          `;
+          return;
+        }
+
+        root.innerHTML = posts.map(post => {
+          const isMine = post.createdBy === myRoll;
+          return `
+            <div class="post-card">
+              <div class="post-header">
+                <div class="post-author">
+                  <div class="author-avatar">${post.createdBy.substring(0,2)}</div>
+                  <div class="author-info">
+                    <div>${post.createdBy}</div>
+                    <div>${timeAgo(post.createdAt)}</div>
+                  </div>
+                </div>
+                <div>
+                  ${isMine ? `<button class="btn-delete" onclick="location.href='/edit-promotion.html?id=${post.id}'" title="Edit Post" style="margin-right: 4px;"><i class="fas fa-edit"></i></button><button class="btn-delete" onclick="deletePost('${post.id}')" title="Delete Post"><i class="fas fa-trash"></i></button>` : ''}
+                </div>
+              </div>
+              <div class="post-content">
+                <div class="post-title">${post.title}</div>
+                <div style="display: flex; gap: 8px; flex-wrap: wrap; margin-bottom: 12px;">
+                  ${post.eventDate ? `<div class="post-event-date" style="margin-bottom: 0;"><i class="far fa-calendar-alt"></i> ${new Date(post.eventDate).toLocaleDateString()}</div>` : ''}
+                  ${post.contact ? `<a href="https://wa.me/91${post.contact.replace(/\\D/g,'')}" target="_blank" class="post-event-date" style="margin-bottom: 0; background: rgba(16, 185, 129, 0.1); color: #10b981; text-decoration: none;"><i class="fab fa-whatsapp"></i> ${post.contact}</a>` : ''}
+                </div>
+                <div class="post-body">${post.description}</div>
+                ${post.image ? `<img src="${post.image}" class="post-image" alt="Promotion visual" onclick="expandImage('${post.image}')" title="Click to expand">` : ''}
+              </div>
+            </div>
+          `;
+        }).join('');
+      } catch (err) {
+        document.getElementById('feed-root').innerHTML = `<div style="text-align:center; color:#ef4444;">Failed to load feed.</div>`;
+      }
+    }
+
+    function expandImage(src) {
+      document.getElementById('modalImgOut').src = src;
+      const modal = document.getElementById('imgModal');
+      modal.style.display = 'flex';
+      // tiny delay to allow display flex to apply before opacity fade in
+      setTimeout(() => modal.classList.add('active'), 10);
+    }
+    
+    function closeImage() {
+      const modal = document.getElementById('imgModal');
+      modal.classList.remove('active');
+      setTimeout(() => modal.style.display = 'none', 300);
+    }
+
+    async function deletePost(id) {
+      if(!confirm('Delete this post permanently?')) return;
+      try {
+        await fetch(`/api/promotions/${id}`, { method: 'DELETE', credentials: 'include' });
+        loadFeed();
+      } catch(err) { alert('Failed to delete post.'); }
+    }
+
+    init();
+  </script>
+</body>
+</html>

@@ -1,0 +1,162 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>MRDU App Marketplace — Student Portal</title>
+    <link rel="stylesheet" href="styles.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+</head>
+
+<body class="bg-animate">
+    <div class="glass-container dashboard-card" style="max-width: 1000px;">
+        <div class="market-header">
+            <div>
+                <h1 class="welcome-name"><i class="fas fa-store"></i> Student Marketplace</h1>
+                <p class="welcome-roll">Buy, sell, or rent items within Malla Reddy Deemed to be University(MRDU)</p>
+            </div>
+            <div style="display: flex; gap: 10px;">
+                <a href="/notifications.html" id="nav-bell" style="text-decoration:none; position:relative; background: rgba(242, 110, 81, 0.08); border: 1px solid rgba(242, 110, 81, 0.25); color: #F26E51; padding: 9px 12px; border-radius: 8px; display:inline-flex; align-items:center; justify-content:center; transition:0.2s;">
+                  <i class="fas fa-bell"></i>
+                  <span id="unread-badge" style="position:absolute; top:-5px; right:-5px; background:var(--error); color:white; font-size:10px; font-weight:bold; padding:2px 5px; border-radius:10px; display:none;">0</span>
+                </a>
+                <a href="/dashboard.html" class="btn-ghost" style="width: auto; margin-top: 0;"><i
+                        class="fas fa-arrow-left"></i> Dashboard</a>
+                <a href="/add-item.html" class="btn-primary" style="width: auto; margin-top: 0; padding: 10px 20px;"><i
+                        class="fas fa-plus"></i> Post Item</a>
+            </div>
+        </div>
+
+        <div style="display: flex; gap: 24px; margin-bottom: 24px; border-bottom: 1px solid var(--border); padding-bottom: 0;">
+            <a href="/marketplace.html" style="color: var(--accent); font-weight: 600; text-decoration: none; border-bottom: 2px solid var(--accent); padding-bottom: 12px; margin-bottom: -1px;">🛒 Items for Sale/Rent</a>
+            <a href="/requests.html" style="color: var(--text-muted); font-weight: 500; text-decoration: none; padding-bottom: 12px; transition: 0.2s;">📢 Item Requests (WTB)</a>
+        </div>
+
+        <div class="search-filter-bar">
+            <div class="search-box">
+                <i class="fas fa-search"></i>
+                <input type="text" id="searchInput" placeholder="Search by title or description..."
+                    oninput="fetchItems()">
+            </div>
+            <div class="filter-controls">
+                <select id="categoryFilter" class="market-select" onchange="fetchItems()">
+                    <option value="All">All Categories</option>
+                    <option value="Books">Books</option>
+                    <option value="Electronics">Electronics</option>
+                    <option value="Stationery">Stationery</option>
+                    <option value="Hostel Items">Hostel Items</option>
+                    <option value="Other">Other</option>
+                </select>
+                <select id="typeFilter" class="market-select" onchange="fetchItems()">
+                    <option value="All">All Types</option>
+                    <option value="sell">For Sale</option>
+                    <option value="rent">For Rent</option>
+                </select>
+            </div>
+        </div>
+
+        <div id="loadingState" class="loading-text">
+            <i class="fas fa-circle-notch fa-spin"></i> Loading marketplace items...
+        </div>
+
+        <div id="itemGrid" class="item-grid" style="display: none;">
+            <!-- Items will be injected here -->
+        </div>
+
+        <div id="emptyState" class="empty-state" style="display: none;">
+            <span class="empty-icon">😅</span>
+            <h3>No items available yet</h3>
+            <p>Be the first to post something in the marketplace!</p>
+            <a href="/add-item.html" class="btn-primary"
+                style="width: auto; display: inline-block; margin-top: 1rem;">Post an Item</a>
+        </div>
+    </div>
+
+    <script>
+        async function fetchItems() {
+            const search = document.getElementById('searchInput').value;
+            const category = document.getElementById('categoryFilter').value;
+            const type = document.getElementById('typeFilter').value;
+
+            const grid = document.getElementById('itemGrid');
+            const loading = document.getElementById('loadingState');
+            const empty = document.getElementById('emptyState');
+
+            loading.style.display = 'block';
+            grid.style.display = 'none';
+            empty.style.display = 'none';
+
+            try {
+                const params = new URLSearchParams({ search, category, type });
+                const res = await fetch(`/api/marketplace?${params}`);
+
+                if (res.status === 401) {
+                    window.location.href = '/';
+                    return;
+                }
+
+                const items = await res.json();
+                loading.style.display = 'none';
+
+                if (items.length === 0) {
+                    empty.style.display = 'block';
+                } else {
+                    grid.style.display = 'grid';
+                    grid.innerHTML = items.map(item => `
+                        <div class="item-card" onclick="location.href='/item-details.html?id=${item.id}'">
+                            <div class="item-img-wrap">
+                                ${item.image ? `<img src="${item.image}" alt="${item.title}" onerror="this.src='https://placehold.co/400x300/12121e/a78bfa?text=Item'">` : `<div class="sold-tag" style="background: rgba(242, 110, 81,0.05)"><i class="fas fa-image" style="font-size: 2rem; color: rgba(255,255,255,0.1)"></i></div>`}
+                                <span class="item-badge badge-${item.type}">${item.type === 'sell' ? 'For Sale' : 'For Rent'}</span>
+                            </div>
+                            <div class="item-body">
+                                <div class="item-cat">${item.category}</div>
+                                <h3 class="item-title">${item.title}</h3>
+                                <div class="item-price">₹${item.price}</div>
+                                <div class="item-meta">
+                                    <span class="item-seller"><i class="fas fa-user"></i> ${item.sellerRollNumber}</span>
+                                    <span class="item-seller"><i class="fas fa-clock"></i> ${new Date(item.createdAt).toLocaleDateString()}</span>
+                                </div>
+                            </div>
+                        </div>
+                    `).join('');
+                }
+            } catch (err) {
+                console.error('Error fetching items:', err);
+                loading.innerHTML = '<i class="fas fa-exclamation-triangle"></i> Error loading items. Please refresh.';
+            }
+        }
+
+        // Check authentication
+        async function checkSession() {
+            const res = await fetch('/api/auth/me');
+            if (!res.ok) window.location.href = '/';
+        }
+
+        window.onload = () => {
+            checkSession();
+            fetchItems();
+        };
+
+        async function pollNotifications() {
+            try {
+                const res = await fetch('/api/notifications/unread-count');
+                if (!res.ok) return;
+                const { count } = await res.json();
+                const badge = document.getElementById('unread-badge');
+                if (badge) {
+                    if (count > 0) {
+                        badge.style.display = 'block';
+                        badge.textContent = count > 99 ? '99+' : count;
+                    } else {
+                        badge.style.display = 'none';
+                    }
+                }
+            } catch (err) {}
+        }
+        setInterval(pollNotifications, 10000);
+        setTimeout(pollNotifications, 500);
+    </script>
+</body>
+
+</html>

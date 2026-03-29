@@ -1,0 +1,658 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>MRDU Student Portal — Dashboard</title>
+  <meta name="description"
+    content="Malla Reddy Deemed to be University Student Portal — Your personal student dashboard." />
+  <link rel="stylesheet" href="styles.css" />
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
+  <style>
+    .logout-btn {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      background: rgba(248, 113, 113, 0.08);
+      border: 1px solid rgba(248, 113, 113, 0.25);
+      color: #fca5a5;
+      font-family: 'Inter', sans-serif;
+      font-size: 13px;
+      font-weight: 600;
+      padding: 9px 18px;
+      border-radius: 8px;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+
+    .logout-btn:hover {
+      background: rgba(248, 113, 113, 0.15);
+      border-color: rgba(248, 113, 113, 0.5);
+    }
+
+    .top-bar {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 24px;
+    }
+
+    .portal-label {
+      font-size: 11px;
+      font-weight: 700;
+      letter-spacing: 2px;
+      color: var(--text-muted);
+      text-transform: uppercase;
+    }
+
+    .confetti-icon {
+      font-size: 48px;
+      display: block;
+      text-align: center;
+      margin-bottom: 8px;
+      animation: bounceIn 0.6s cubic-bezier(0.34, 1.56, 0.64, 1);
+    }
+
+    @keyframes bounceIn {
+      from {
+        transform: scale(0.3);
+        opacity: 0;
+      }
+
+      to {
+        transform: scale(1);
+        opacity: 1;
+      }
+    }
+
+    .dept-chip {
+      display: inline-block;
+      background: rgba(129, 140, 248, 0.1);
+      border: 1px solid rgba(129, 140, 248, 0.25);
+      color: var(--accent-2);
+      font-size: 12px;
+      font-weight: 600;
+      padding: 4px 12px;
+      border-radius: 20px;
+      margin-top: 6px;
+      letter-spacing: 0.3px;
+    }
+
+    .notice-box {
+      background: rgba(252, 191, 73, 0.06);
+      border: 1px solid rgba(252, 191, 73, 0.2);
+      border-radius: 10px;
+      padding: 14px 16px;
+      font-size: 13px;
+      color: #d97706;
+      margin-bottom: 20px;
+      display: flex;
+      gap: 10px;
+      align-items: flex-start;
+    }
+
+    .premium-card {
+      position: relative;
+      background: rgba(255, 255, 255, 0.02);
+      border: 1px solid rgba(255, 255, 255, 0.05);
+      border-radius: 24px;
+      padding: 32px 24px;
+      cursor: pointer;
+      overflow: hidden;
+      transition: all 0.5s cubic-bezier(0.23, 1, 0.32, 1);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      text-align: center;
+      gap: 20px;
+      backdrop-filter: blur(10px);
+    }
+
+    .premium-card:hover {
+      transform: translateY(-12px);
+      background: rgba(255, 255, 255, 0.04);
+      border-color: rgba(255, 255, 255, 0.2);
+      box-shadow: 0 40px 80px rgba(0, 0, 0, 0.5);
+    }
+
+    .premium-card::before {
+      content: '';
+      position: absolute;
+      top: -50%;
+      left: -50%;
+      width: 200%;
+      height: 200%;
+      background: radial-gradient(circle at var(--mouse-x) var(--mouse-y), rgba(242, 110, 81, 0.1), transparent 30%);
+      z-index: 0;
+      pointer-events: none;
+      opacity: 0;
+      transition: opacity 0.5s;
+    }
+
+    .premium-card:hover::before {
+      opacity: 1;
+    }
+
+    .card-icon-box {
+      width: 64px;
+      height: 64px;
+      border-radius: 20px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 28px;
+      position: relative;
+      z-index: 1;
+      transition: transform 0.5s cubic-bezier(0.23, 1, 0.32, 1);
+    }
+
+    .premium-card:hover .card-icon-box {
+      transform: scale(1.1) rotate(5deg);
+    }
+
+    .card-content {
+      position: relative;
+      z-index: 1;
+    }
+
+    .card-title {
+      font-size: 20px;
+      font-weight: 800;
+      color: white;
+      margin-bottom: 8px;
+      letter-spacing: -0.03em;
+      filter: drop-shadow(0 0 8px rgba(255, 255, 255, 0.2));
+    }
+
+    .card-subtitle {
+      font-size: 13px;
+      color: rgba(255, 255, 255, 0.5);
+      line-height: 1.6;
+      font-weight: 500;
+      max-width: 180px;
+      margin: 0 auto;
+    }
+
+    .glow-purple {
+      background: linear-gradient(135deg, #F26E51 0%, #FFC010 100%);
+      box-shadow: 0 10px 25px rgba(124, 58, 237, 0.3), inset 0 2px 4px rgba(255, 255, 255, 0.2);
+    }
+
+    .glow-green {
+      background: linear-gradient(135deg, #34d399 0%, #10b981 100%);
+      box-shadow: 0 10px 25px rgba(16, 185, 129, 0.3), inset 0 2px 4px rgba(255, 255, 255, 0.2);
+    }
+
+    .glow-orange {
+      background: linear-gradient(135deg, #fb923c 0%, #ea580c 100%);
+      box-shadow: 0 10px 25px rgba(234, 88, 12, 0.3), inset 0 2px 4px rgba(255, 255, 255, 0.2);
+    }
+
+    .glow-cyan {
+      background: linear-gradient(135deg, #22d3ee 0%, #0891b2 100%);
+      box-shadow: 0 10px 25px rgba(8, 145, 178, 0.3), inset 0 2px 4px rgba(255, 255, 255, 0.2);
+    }
+
+    .card-badge {
+      position: absolute;
+      top: 12px;
+      right: 12px;
+      font-size: 9px;
+      font-weight: 900;
+      text-transform: uppercase;
+      padding: 4px 10px;
+      border-radius: 12px;
+      background: rgba(255, 255, 255, 0.03);
+      color: rgba(255, 255, 255, 0.4);
+      border: 1px solid rgba(255, 255, 255, 0.06);
+      letter-spacing: 1px;
+    }
+  </style>
+</head>
+
+<body>
+  <div class="grid-bg"></div>
+  <div class="page">
+    <div class="auth-card dashboard-card">
+
+      <!-- Top bar -->
+      <div class="top-bar">
+        <div class="portal-label">🎓 MRDU Student Portal</div>
+        <div style="display: flex; gap: 10px;">
+          <a href="/notifications.html" id="nav-bell"
+            style="text-decoration:none; position:relative; background: rgba(242, 110, 81, 0.08); border: 1px solid rgba(242, 110, 81, 0.25); color: #F26E51; padding: 9px 12px; border-radius: 8px; display:inline-flex; align-items:center; justify-content:center; transition:0.2s;">
+            <i class="fas fa-bell"></i>
+            <span id="unread-badge"
+              style="position:absolute; top:-5px; right:-5px; background:var(--error); color:white; font-size:10px; font-weight:bold; padding:2px 5px; border-radius:10px; display:none;">0</span>
+          </a>
+          <button onclick="secureNavigate('/profile.html')" class="logout-btn"
+            style="text-decoration: none; color: #F26E51; background: rgba(242, 110, 81, 0.08); border-color: rgba(242, 110, 81, 0.25);">👤
+            My Profile</button>
+          <button class="logout-btn" id="logout-btn">🚪 Logout</button>
+        </div>
+      </div>
+
+      <!-- Success icon -->
+      <span class="confetti-icon" id="confetti">🎉</span>
+
+      <!-- Welcome Banner -->
+      <div class="welcome-banner">
+        <div class="welcome-tag">AUTHENTICATED STUDENT</div>
+        <div class="welcome-name" id="student-name">Loading...</div>
+        <div class="welcome-roll" id="student-roll">Roll No: —</div>
+        <div class="dept-chip" id="student-dept">Department</div>
+        <div style="margin-top: 12px;">
+          <span class="status-badge">
+            <span class="pulse-dot"></span>
+            VERIFIED &amp; ACTIVE
+          </span>
+        </div>
+      </div>
+
+      <!-- Info Grid -->
+      <div class="info-grid">
+        <div class="info-tile">
+          <div class="info-tile-label">📧 Email</div>
+          <div class="info-tile-value" id="student-email" style="font-size:12px;">—</div>
+        </div>
+        <div class="info-tile">
+          <div class="info-tile-label">🏛 University</div>
+          <div class="info-tile-value" style="font-size:12px;">Malla Reddy Deemed to be University</div>
+        </div>
+        <div class="info-tile">
+          <div class="info-tile-label">📅 Academic Year</div>
+          <div class="info-tile-value">2025 – 26</div>
+        </div>
+        <div class="info-tile">
+          <div class="info-tile-label">📚 Year</div>
+          <div class="info-tile-value">First Year</div>
+        </div>
+      </div>
+
+      <!-- Quick Actions -->
+      <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 16px; margin-top: 24px;">
+        <div class="premium-card" onclick="secureNavigate('/marketplace.html')">
+          <div class="card-badge">Shopping</div>
+          <div class="card-icon-box glow-orange">
+            <i class="fas fa-store"></i>
+          </div>
+          <div class="card-content">
+            <div class="card-title">Marketplace</div>
+            <div class="card-subtitle">Buy and sell items within the university community</div>
+          </div>
+        </div>
+        <div class="premium-card" onclick="secureNavigate('/courses.html')">
+          <div class="card-badge">Learning</div>
+          <div class="card-icon-box glow-cyan">
+            <i class="fas fa-book-open"></i>
+          </div>
+          <div class="card-content">
+            <div class="card-title">Courses</div>
+            <div class="card-subtitle">Access learning materials and enroll in new courses</div>
+          </div>
+        </div>
+        <div class="premium-card" onclick="secureNavigate('/services.html')">
+          <div class="card-badge">Academic</div>
+          <div class="card-icon-box glow-green">
+            <i class="fas fa-handshake"></i>
+          </div>
+          <div class="card-content">
+            <div class="card-title">Services</div>
+            <div class="card-subtitle">Offer your skills or get academic help from peers</div>
+          </div>
+        </div>
+        <div class="premium-card" onclick="secureNavigate('/chat.html')">
+          <div class="card-badge">Social</div>
+          <div class="card-icon-box glow-purple">
+            <i class="fas fa-comments"></i>
+          </div>
+          <div class="card-content">
+            <div class="card-title">Chat Hub</div>
+            <div class="card-subtitle">Connect, collaborate & chat with fellow students</div>
+          </div>
+        </div>
+
+        <!-- Card 5: Campus Feed -->
+        <div class="premium-card" onclick="location.href='/promotions.html'">
+          <div class="card-badge">News</div>
+          <div class="card-icon-box glow-purple" style="background: linear-gradient(135deg, #f43f5e 0%, #be123c 100%);">
+            <i class="fas fa-bullhorn"></i>
+          </div>
+          <div class="card-content">
+            <div class="card-title">Campus Feed</div>
+            <div class="card-subtitle">Events, announcements, and university updates.</div>
+          </div>
+        </div>
+
+      </div>
+
+      <!-- Notice -->
+      <div class="notice-box" style="margin-top: 24px;">
+        <span>⚠️</span>
+        <span>This is your secure student portal. Always log out when using shared devices. Do not share your
+          credentials.</span>
+      </div>
+
+      <!-- My Listings Section -->
+      <div id="my-listings-section"
+        style="display: none; margin-top: 32px; padding-top: 24px; border-top: 1px solid var(--border);">
+        <div class="section-head"
+          style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 16px;">
+          <div class="portal-label"><i class="fas fa-list"></i> My Listings</div>
+          <button onclick="secureNavigate('/add-item.html')" class="btn-ghost"
+            style="width: auto; margin: 0; padding: 4px 10px; font-size: 11px;">+ New Post</button>
+        </div>
+        <div id="my-items-grid" class="item-grid"
+          style="grid-template-columns: repeat(auto-fill, minmax(140px, 1fr)); gap: 12px;">
+          <!-- Items injected here -->
+        </div>
+      </div>
+
+      <!-- My Services Section -->
+      <div id="my-services-section"
+        style="display: none; margin-top: 32px; padding-top: 24px; border-top: 1px solid var(--border);">
+        <div class="section-head"
+          style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 16px;">
+          <div class="portal-label"><i class="fas fa-graduation-cap"></i> My Offered Services</div>
+          <button onclick="secureNavigate('/add-service.html')" class="btn-ghost"
+            style="width: auto; margin: 0; padding: 4px 10px; font-size: 11px;">+ New Service</button>
+        </div>
+        <div id="my-services-list" style="display: flex; flex-direction: column; gap: 12px;">
+          <!-- Services injected here -->
+        </div>
+      </div>
+
+      <!-- My Item Requests Section -->
+      <div id="my-requests-section"
+        style="display: none; margin-top: 32px; padding-top: 24px; border-top: 1px solid var(--border);">
+        <div class="section-head"
+          style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 16px;">
+          <div class="portal-label"><i class="fas fa-bullhorn"></i> My Item Requests</div>
+          <button onclick="secureNavigate('/add-request.html')" class="btn-ghost"
+            style="width: auto; margin: 0; padding: 4px 10px; font-size: 11px;">+ New Request</button>
+        </div>
+        <div id="my-requests-list" style="display: flex; flex-direction: column; gap: 12px;">
+          <!-- Requests injected here -->
+        </div>
+      </div>
+
+      <!-- Logout -->
+      <a href="/marketplace.html" class="btn-primary" id="logout-btn-2"
+        style="background: linear-gradient(135deg, #dc2626, #991b1b); text-decoration: none; display: flex; align-items: center; justify-content: center; margin-top: 32px;">
+        🚪 Sign Out Securely
+      </a>
+
+      <!-- Contact Requests Section (Incoming) -->
+      <div id="contact-requests-section"
+        style="display: none; margin-top: 32px; padding-top: 24px; border-top: 1px solid var(--border);">
+        <div class="portal-label" style="margin-bottom: 16px;"><i class="fas fa-envelope-open-text"></i> Incoming
+          Contact Requests</div>
+        <div id="requests-list" style="display: flex; flex-direction: column; gap: 12px;">
+          <!-- Requests injected here -->
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+  <script>
+    let currentUser = null;
+
+    async function loadUser() {
+      try {
+        const res = await fetch('/api/auth/me', { credentials: 'include' });
+        if (!res.ok) {
+          window.location.replace('/');
+          return;
+        }
+        const data = await res.json();
+        currentUser = data.user;
+        populateUI(currentUser);
+
+        // Parallel fetch
+        fetchMyListings();
+        fetchMyServices();
+        fetchContactRequests();
+        fetchMyRequests();
+      } catch {
+        window.location.replace('/');
+      }
+    }
+
+    function secureNavigate(url) {
+      if (currentUser && !currentUser.isVerified) {
+        window.location.href = '/otp.html';
+      } else {
+        window.location.href = url;
+      }
+    }
+
+    function populateUI(user) {
+      if (!user) return;
+      document.getElementById('student-name').textContent = user.name || 'Student';
+      document.getElementById('student-roll').textContent = `Roll No: ${user.rollNumber}`;
+      document.getElementById('student-dept').textContent = user.department || 'Department';
+      document.getElementById('student-email').textContent = user.email || '—';
+      document.title = `${user.name || 'Dashboard'} — MRDU Portal`;
+    }
+
+    async function fetchMyListings() {
+      try {
+        const res = await fetch('/api/marketplace/my');
+        if (!res.ok) return;
+        const items = await res.json();
+
+        if (items.length > 0) {
+          document.getElementById('my-listings-section').style.display = 'block';
+          const grid = document.getElementById('my-items-grid');
+          grid.innerHTML = items.map(item => `
+            <div class="item-card" onclick="location.href='/item-details.html?id=${item.id}'" style="cursor: pointer;">
+              <div class="item-img-wrap" style="height: 100px;">
+                <img src="${item.image}" alt="" onerror="this.src='https://placehold.co/200x150/12121e/a78bfa?text=Item'">
+                ${!item.isAvailable ? '<div class="sold-tag"><span class="sold-label" style="padding: 4px 10px; font-size: 8px;">SOLD</span></div>' : ''}
+              </div>
+              <div class="item-body" style="padding: 10px;">
+                <div class="item-title" style="font-size: 13px; margin-bottom: 4px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;">${item.title}</div>
+                <div class="item-price" style="font-size: 14px; margin-bottom: 0;">₹${item.price}</div>
+              </div>
+            </div>
+          `).join('');
+        }
+      } catch (err) {
+        console.error('Error fetching my listings:', err);
+      }
+    }
+
+    async function fetchMyServices() {
+      try {
+        const res = await fetch('/api/services/my');
+        if (!res.ok) return;
+        const services = await res.json();
+
+        if (services.length > 0) {
+          document.getElementById('my-services-section').style.display = 'block';
+          const list = document.getElementById('my-services-list');
+          list.innerHTML = services.map(s => `
+            <div class="info-tile" style="display: flex; justify-content: space-between; align-items: center; gap: 15px;">
+              <div>
+                <div class="info-tile-label">${s.title}</div>
+                <div class="info-tile-value" style="font-size: 12px; color: var(--accent);">₹${s.price} • ${s.category}</div>
+              </div>
+              <div style="display: flex; gap: 8px;">
+                <button onclick="toggleService('${s.id}')" class="status-badge" style="cursor: pointer; ${s.isAvailable ? 'color: var(--warning);' : 'color: var(--success);'}">
+                  <i class="fas ${s.isAvailable ? 'fa-toggle-on' : 'fa-toggle-off'}"></i> ${s.isAvailable ? 'Active' : 'Paused'}
+                </button>
+                <button onclick="deleteService('${s.id}')" class="status-badge" style="color: var(--error); cursor: pointer; border-color: rgba(239,68,68,0.2);">
+                  <i class="fas fa-trash"></i>
+                </button>
+              </div>
+            </div>
+          `).join('');
+        }
+      } catch (err) {
+        console.error('Error fetching my services:', err);
+      }
+    }
+
+    async function toggleService(id) {
+      const res = await fetch(`/api/services/${id}/toggle`, { method: 'PATCH' });
+      if (res.ok) fetchMyServices();
+    }
+
+    async function deleteService(id) {
+      if (!confirm('Delete this service?')) return;
+      const res = await fetch(`/api/services/${id}`, { method: 'DELETE' });
+      if (res.ok) fetchMyServices();
+    }
+
+    async function fetchMyRequests() {
+      try {
+        const res = await fetch('/api/requests/my');
+        if (!res.ok) return;
+        const requests = await res.json();
+
+        document.getElementById('my-requests-section').style.display = 'block';
+        const list = document.getElementById('my-requests-list');
+
+        if (requests.length > 0) {
+          list.innerHTML = requests.map(r => `
+            <div class="info-tile" style="display: flex; justify-content: space-between; align-items: center; gap: 15px; opacity: ${r.isResolved ? '0.6' : '1'};">
+              <div>
+                <div class="info-tile-label">${r.title}</div>
+                <div class="info-tile-value" style="font-size: 12px;">${r.isResolved ? '<span style="color:var(--success);"><i class="fas fa-check-double"></i> Resolved</span>' : '<span style="color:var(--warning);"><i class="fas fa-clock"></i> Active</span>'} • ${new Date(r.createdAt).toLocaleDateString()}</div>
+              </div>
+              <div style="display: flex; gap: 8px;">
+                <button onclick="resolveRequest('${r.id}')" class="status-badge" style="cursor: pointer; ${r.isResolved ? 'color: var(--text-muted);' : 'color: var(--success);'}">
+                  <i class="fas ${r.isResolved ? 'fa-undo' : 'fa-check'}"></i> ${r.isResolved ? 'Reopen' : 'Mark Resolved'}
+                </button>
+                <button onclick="deleteRequest('${r.id}')" class="status-badge" style="color: var(--error); cursor: pointer; border-color: rgba(239,68,68,0.2);">
+                  <i class="fas fa-trash"></i>
+                </button>
+              </div>
+            </div>
+          `).join('');
+        } else {
+          list.innerHTML = `
+            <div style="text-align:center; padding: 20px; background: rgba(255,255,255,0.02); border-radius: 12px; border: 1px dashed var(--border);">
+              <span style="font-size: 24px;">😅</span>
+              <p style="color: var(--text-muted); font-size: 13px; margin-top: 8px;">No requests yet</p>
+            </div>
+          `;
+        }
+      } catch (err) {
+        console.error('Error fetching my requests:', err);
+      }
+    }
+
+    async function resolveRequest(id) {
+      const res = await fetch(`/api/requests/${id}/resolve`, { method: 'PATCH' });
+      if (res.ok) fetchMyRequests();
+    }
+
+    async function deleteRequest(id) {
+      if (!confirm('Delete this request?')) return;
+      const res = await fetch(`/api/requests/${id}`, { method: 'DELETE' });
+      if (res.ok) fetchMyRequests();
+    }
+
+    async function fetchContactRequests() {
+      try {
+        const res = await fetch('/api/contact-request/my');
+        if (!res.ok) return;
+        const requests = await res.json();
+
+        if (requests.length > 0) {
+          document.getElementById('contact-requests-section').style.display = 'block';
+          const list = document.getElementById('requests-list');
+          list.innerHTML = requests.map(req => `
+            <div class="info-tile" style="display: flex; justify-content: space-between; align-items: center; gap: 15px;">
+              <div>
+                <div class="info-tile-label">
+                  <span style="font-size: 9px; padding: 2px 6px; border-radius: 4px; background: rgba(255,255,255,0.05); color: var(--text-muted); margin-right: 5px; text-transform: uppercase;">${req.targetType}</span>
+                  ${req.itemName}
+                </div>
+                <div class="info-tile-value" style="font-size: 12px;">Buyer: ${req.buyerRollNumber}</div>
+              </div>
+              <div style="display: flex; gap: 8px;">
+                ${req.status === 'pending' ? `
+                  <button onclick="handleRequest('${req.id}', 'accepted')" class="status-badge" style="background: rgba(52,211,153,0.1); border: 1px solid rgba(52,211,153,0.3); color: var(--success); cursor: pointer;">Accept</button>
+                  <button onclick="handleRequest('${req.id}', 'rejected')" class="status-badge" style="background: rgba(248,113,113,0.1); border: 1px solid rgba(248,113,113,0.3); color: var(--error); cursor: pointer;">Reject</button>
+                ` : `
+                  <span class="status-badge" style="${req.status === 'accepted' ? 'color: var(--success); border-color: var(--success);' : 'color: var(--error); border-color: var(--error);'} text-transform: uppercase;">
+                    ${req.status}
+                  </span>
+                `}
+              </div>
+            </div>
+          `).join('');
+        }
+      } catch (err) {
+        console.error('Error fetching contact requests:', err);
+      }
+    }
+
+    async function handleRequest(requestId, status) {
+      try {
+        const res = await fetch(`/api/contact-request/${requestId}`, {
+          method: 'PATCH',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ status })
+        });
+        if (res.ok) fetchContactRequests();
+      } catch (err) {
+        alert('Action failed');
+      }
+    }
+
+    async function logout() {
+      try {
+        await fetch('/api/auth/logout', { method: 'POST', credentials: 'include' });
+      } catch { }
+      sessionStorage.clear();
+      window.location.replace('/');
+    }
+
+    document.getElementById('logout-btn').addEventListener('click', logout);
+    const logBtn2 = document.getElementById('logout-btn-2');
+    logBtn2.onclick = (e) => { e.preventDefault(); logout(); };
+    logBtn2.textContent = '🚪 Sign Out Securely';
+    logBtn2.style.cursor = 'pointer';
+
+    loadUser();
+
+    // Mouse follow effect for premium cards
+    document.addEventListener('mousemove', e => {
+      document.querySelectorAll('.premium-card').forEach(card => {
+        const rect = card.getBoundingClientRect();
+        const x = e.clientX - rect.left;
+        const y = e.clientY - rect.top;
+        card.style.setProperty('--mouse-x', `${x}px`);
+        card.style.setProperty('--mouse-y', `${y}px`);
+      });
+    });
+
+    async function pollNotifications() {
+      try {
+        const res = await fetch('/api/notifications/unread-count');
+        if (!res.ok) return;
+        const { count } = await res.json();
+        const badge = document.getElementById('unread-badge');
+        if (badge) {
+          if (count > 0) {
+            badge.style.display = 'block';
+            badge.textContent = count > 99 ? '99+' : count;
+          } else {
+            badge.style.display = 'none';
+          }
+        }
+      } catch (err) { }
+    }
+
+    // Start polling every 10 seconds
+    setInterval(pollNotifications, 10000);
+    setTimeout(pollNotifications, 500);
+  </script>
+</body>
+
+</html>

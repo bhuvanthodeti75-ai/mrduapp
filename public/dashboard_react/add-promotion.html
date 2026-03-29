@@ -1,0 +1,120 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Create Post — MRDU Student Portal</title>
+  <link rel="stylesheet" href="styles.css" />
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" />
+  <style>
+    .form-container { max-width: 600px; margin: 40px auto; background: var(--card-bg); padding: 32px; border-radius: 20px; border: 1px solid var(--border); }
+    textarea.form-input { min-height: 120px; resize: vertical; padding-top: 12px; }
+  </style>
+</head>
+<body>
+  <div class="grid-bg"></div>
+  <div class="page">
+    <div class="form-container">
+      
+      <div style="display: flex; align-items: center; gap: 16px; margin-bottom: 24px;">
+        <a href="/promotions.html" class="btn-ghost" style="width: 44px; height: 44px; padding: 0; display: flex; align-items: center; justify-content: center; border-radius: 12px;">
+          <i class="fas fa-arrow-left"></i>
+        </a>
+        <h1 style="font-size: 24px; margin: 0; color: white;">Create Promotion</h1>
+      </div>
+
+      <div id="alert" class="alert">
+        <span class="alert-icon">⚠️</span>
+        <span id="alert-msg">Error</span>
+      </div>
+
+      <form id="post-form">
+        <div class="form-group">
+          <label class="form-label" for="title">Title <span style="color:#ef4444">*</span></label>
+          <input type="text" id="title" class="form-input" placeholder="e.g. Hackathon Registration Open!" required />
+        </div>
+
+        <div class="form-group">
+          <label class="form-label" for="description">Description <span style="color:#ef4444">*</span></label>
+          <textarea id="description" class="form-input" placeholder="Explain the details, rules, or announcements..." required></textarea>
+        </div>
+
+        <div class="form-group">
+          <label class="form-label" for="contact">Phone/WhatsApp <span style="font-weight:normal; color:var(--text-muted);">(Optional)</span></label>
+          <input type="tel" id="contact" class="form-input" placeholder="e.g. 9876543210" pattern="[0-9]{10}" />
+        </div>
+
+        <div class="form-group">
+          <label class="form-label" for="eventDate">Event Date <span style="font-weight:normal; color:var(--text-muted);">(Optional)</span></label>
+          <input type="date" id="eventDate" class="form-input" />
+        </div>
+
+        <div class="form-group">
+          <label class="form-label" for="image">Cover Image <span style="font-weight:normal; color:var(--text-muted);">(Optional | Max 5MB)</span></label>
+          <input type="file" id="image" class="form-input" accept="image/*" style="padding: 10px;" />
+        </div>
+
+        <button type="submit" class="btn-primary" id="submit-btn" style="margin-top: 16px;">Post to Campus Feed</button>
+      </form>
+    </div>
+  </div>
+
+  <script>
+    async function init() {
+      try {
+        const authRes = await fetch('/api/auth/me', { credentials: 'include' });
+        if (!authRes.ok) { window.location.href = '/login.html'; return; }
+        const authData = await authRes.json();
+      } catch { window.location.href = '/login.html'; }
+    }
+
+    const form = document.getElementById('post-form');
+    const btn = document.getElementById('submit-btn');
+
+    function showAlert(msg) {
+      document.getElementById('alert').className = 'alert alert-error show';
+      document.getElementById('alert-msg').textContent = msg;
+    }
+
+    form.onsubmit = async (e) => {
+      e.preventDefault();
+      document.getElementById('alert').className = 'alert';
+      
+      const title = document.getElementById('title').value.trim();
+      const description = document.getElementById('description').value.trim();
+      if (!title || !description) { showAlert('Title and description are required.'); return; }
+
+      btn.disabled = true;
+      btn.innerHTML = '<span class="spinner"></span> Posting...';
+
+      const formData = new FormData();
+      formData.append('title', title);
+      formData.append('description', description);
+      formData.append('contact', document.getElementById('contact').value);
+      formData.append('eventDate', document.getElementById('eventDate').value);
+      
+      const fileInput = document.getElementById('image');
+      if (fileInput.files.length > 0) {
+        if (fileInput.files[0].size > 5 * 1024 * 1024) {
+          showAlert('Image is too large. Max size is 5MB.');
+          btn.disabled = false; btn.textContent = 'Post to Campus Feed';
+          return;
+        }
+        formData.append('image', fileInput.files[0]);
+      }
+
+      try {
+        const res = await fetch('/api/promotions', { method: 'POST', body: formData, credentials: 'include' });
+        const data = await res.json();
+        if (!res.ok) { showAlert(data.error || 'Failed to post.'); throw new Error(); }
+        window.location.href = '/promotions.html';
+      } catch (err) {
+        btn.disabled = false;
+        btn.textContent = 'Post to Campus Feed';
+      }
+    };
+
+    init();
+  </script>
+</body>
+</html>

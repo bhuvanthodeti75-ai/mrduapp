@@ -1,0 +1,303 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Offer a Service — Student Portal</title>
+    <link rel="stylesheet" href="styles.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        .category-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(100px, 1fr));
+            gap: 10px;
+            margin: 20px 0;
+        }
+        .cat-item {
+            background: rgba(255, 255, 255, 0.03);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 12px;
+            padding: 15px 10px;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 8px;
+        }
+        .cat-item i {
+            font-size: 1.5rem;
+            color: var(--text-muted);
+            transition: color 0.3s;
+        }
+        .cat-item span {
+            font-size: 11px;
+            font-weight: 500;
+            color: var(--text-muted);
+        }
+        .cat-item.active {
+            background: rgba(242, 110, 81, 0.1);
+            border-color: var(--accent);
+            transform: translateY(-2px);
+        }
+        .cat-item.active i, .cat-item.active span {
+            color: var(--accent);
+        }
+        .cat-item:hover:not(.active) {
+            background: rgba(255, 255, 255, 0.05);
+            border-color: rgba(255, 255, 255, 0.2);
+        }
+
+        .preview-card {
+            background: rgba(15, 15, 26, 0.4);
+            border: 1px solid rgba(242, 110, 81, 0.2);
+            border-radius: 16px;
+            padding: 20px;
+            margin-top: 30px;
+            position: relative;
+            overflow: hidden;
+        }
+        .preview-card::before {
+            content: "PREVIEW";
+            position: absolute;
+            top: 10px;
+            right: 10px;
+            font-size: 10px;
+            font-weight: 900;
+            color: var(--accent);
+            opacity: 0.5;
+            letter-spacing: 2px;
+        }
+        .input-floating {
+            position: relative;
+            margin-bottom: 20px;
+        }
+        .input-floating input, .input-floating textarea {
+            width: 100%;
+            padding: 15px 15px 15px 45px;
+            background: rgba(255, 255, 255, 0.03);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 12px;
+            color: #fff;
+            font-family: inherit;
+            transition: all 0.3s;
+        }
+        .input-floating i {
+            position: absolute;
+            left: 15px;
+            top: 50%;
+            transform: translateY(-50%);
+            color: var(--text-muted);
+            transition: color 0.3s;
+        }
+        .input-floating textarea + i {
+            top: 20px;
+            transform: none;
+        }
+        .input-floating input:focus, .input-floating textarea:focus {
+            border-color: var(--accent);
+            background: rgba(242, 110, 81, 0.05);
+            outline: none;
+        }
+        .input-floating input:focus + i, .input-floating textarea:focus + i {
+            color: var(--accent);
+        }
+    </style>
+</head>
+<body class="bg-animate">
+    <div class="glass-container auth-card" style="max-width: 800px; padding: 40px;">
+        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 30px;">
+            <div class="auth-header" style="text-align: left; margin: 0;">
+                <h1 class="welcome-name" style="font-size: 32px;"><i class="fas fa-sparkles" style="color: var(--accent);"></i> Create New Service</h1>
+                <p class="welcome-roll">Enter details to showcase your academic skills</p>
+            </div>
+            <a href="/services.html" class="btn-ghost" style="width: auto; margin: 0; padding: 10px 20px;"><i class="fas fa-times"></i></a>
+        </div>
+
+        <div id="errorAlert" class="alert alert-error" style="display: none; margin-bottom: 25px; border-radius: 12px; animation: slideDown 0.3s ease;">
+            <i class="fas fa-exclamation-circle"></i> <span id="errorMessage">Error message here</span>
+        </div>
+
+        <div style="display: grid; grid-template-columns: 1.2fr 1fr; gap: 40px;">
+            <!-- Form Side -->
+            <form id="addServiceForm">
+                <div class="portal-label" style="margin-bottom: 10px;">General Information</div>
+                <div class="input-floating">
+                    <i class="fas fa-heading"></i>
+                    <input type="text" id="title" placeholder="Service Title (e.g. OS Lab Record Completion)" required maxlength="60" oninput="updatePreview()">
+                </div>
+
+                <div class="portal-label" style="margin-bottom: 10px;">Select Category</div>
+                <div class="category-grid" id="categoryGrid">
+                    <div class="cat-item" data-value="Assignment" onclick="selectCategory(this)">
+                        <i class="fas fa-file-alt"></i>
+                        <span>Assignment</span>
+                    </div>
+                    <div class="cat-item" data-value="Lab Record" onclick="selectCategory(this)">
+                        <i class="fas fa-flask"></i>
+                        <span>Lab Record</span>
+                    </div>
+                    <div class="cat-item" data-value="PPT" onclick="selectCategory(this)">
+                        <i class="fas fa-file-powerpoint"></i>
+                        <span>PPT</span>
+                    </div>
+                    <div class="cat-item" data-value="Notes" onclick="selectCategory(this)">
+                        <i class="fas fa-book-open"></i>
+                        <span>Notes</span>
+                    </div>
+                    <div class="cat-item" data-value="Project" onclick="selectCategory(this)">
+                        <i class="fas fa-project-diagram"></i>
+                        <span>Project</span>
+                    </div>
+                </div>
+                <input type="hidden" id="category" required>
+
+                <div style="display: grid; grid-template-columns: 1fr 1.2fr; gap: 15px;">
+                    <div class="input-floating">
+                        <i class="fas fa-rupee-sign"></i>
+                        <input type="number" id="price" placeholder="Price" required min="1" oninput="updatePreview()">
+                    </div>
+                    <div class="input-floating">
+                        <i class="fab fa-whatsapp"></i>
+                        <input type="tel" id="contact" placeholder="WhatsApp (10 digits)" required pattern="[0-9]{10}">
+                    </div>
+                </div>
+
+                <div class="input-floating">
+                    <i class="fas fa-align-left"></i>
+                    <textarea id="description" placeholder="Describe exactly what help you provide..." required style="height: 120px;" oninput="updatePreview()"></textarea>
+                </div>
+
+                <button type="submit" id="submitBtn" class="btn-primary" style="height: 55px; font-size: 16px; margin-top: 10px;">
+                    <i class="fas fa-paper-plane"></i> Launch Service
+                </button>
+            </form>
+
+            <!-- Preview Side -->
+            <div style="display: flex; flex-direction: column;">
+                <div class="portal-label" style="margin-bottom: 10px;">Live Preview</div>
+                <div class="preview-card">
+                    <div style="display: flex; align-items: center; gap: 15px; margin-bottom: 20px;">
+                        <div id="prevIconBox" style="width: 60px; height: 60px; background: rgba(242, 110, 81, 0.1); border-radius: 12px; display: flex; align-items: center; justify-content: center;">
+                            <i id="prevIcon" class="fas fa-hands-helping" style="font-size: 24px; color: var(--accent);"></i>
+                        </div>
+                        <div>
+                            <div id="prevCat" style="font-size: 10px; color: var(--accent); font-weight: 700; text-transform: uppercase; letter-spacing: 1px;">CATEGORY</div>
+                            <h3 id="prevTitle" style="margin: 0; font-size: 18px; color: #fff;">Service Title</h3>
+                        </div>
+                    </div>
+                    <div id="prevPrice" style="font-size: 24px; font-weight: 800; color: #fff; margin-bottom: 15px;">₹0</div>
+                    <p id="prevDesc" style="font-size: 13px; color: var(--text-muted); line-height: 1.6; margin-bottom: 20px; min-height: 60px;">Your description will appear here...</p>
+                    <div style="display: flex; justify-content: space-between; align-items: center; padding-top: 15px; border-top: 1px solid rgba(255,255,255,0.05);">
+                        <span style="font-size: 11px; color: var(--text-muted);"><i class="fas fa-user-graduate"></i> You (Provider)</span>
+                        <span class="item-badge" style="position: static; font-size: 9px; padding: 4px 8px;">AVAILABLE</span>
+                    </div>
+                </div>
+                
+                <div style="margin-top: auto; padding: 20px; background: rgba(52, 211, 153, 0.05); border-radius: 12px; border: 1px solid rgba(52, 211, 153, 0.1); font-size: 12px; color: var(--success); display: flex; gap: 10px; align-items: flex-start;">
+                    <i class="fas fa-shield-check" style="margin-top: 3px;"></i>
+                    <span>Your WhatsApp number will only be shared with students who you approve in your dashboard.</span>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Check session
+        async function checkSession() {
+            const res = await fetch('/api/auth/me');
+            if (!res.ok) window.location.href = '/';
+        }
+        window.onload = checkSession;
+
+        function selectCategory(el) {
+            document.querySelectorAll('.cat-item').forEach(item => item.classList.remove('active'));
+            el.classList.add('active');
+            document.getElementById('category').value = el.dataset.value;
+            updatePreview();
+        }
+
+        function updatePreview() {
+            const title = document.getElementById('title').value || 'Service Title';
+            const cat = document.getElementById('category').value || 'CATEGORY';
+            const price = document.getElementById('price').value || '0';
+            const desc = document.getElementById('description').value || 'Your description will appear here...';
+
+            document.getElementById('prevTitle').textContent = title;
+            document.getElementById('prevCat').textContent = cat;
+            document.getElementById('prevPrice').textContent = `₹${price}`;
+            document.getElementById('prevDesc').textContent = desc;
+
+            const iconMap = {
+                'Assignment': 'fa-file-alt',
+                'Lab Record': 'fa-flask',
+                'PPT': 'fa-file-powerpoint',
+                'Notes': 'fa-book-open',
+                'Project': 'fa-project-diagram'
+            };
+            document.getElementById('prevIcon').className = `fas ${iconMap[cat] || 'fa-hands-helping'}`;
+        }
+
+        document.getElementById('addServiceForm').onsubmit = async (e) => {
+            e.preventDefault();
+            
+            const btn = document.getElementById('submitBtn');
+            const errorAlert = document.getElementById('errorAlert');
+            const errorMessage = document.getElementById('errorMessage');
+
+            if (!document.getElementById('category').value) {
+                errorAlert.style.display = 'flex';
+                errorMessage.textContent = 'Please select a category above.';
+                return;
+            }
+
+            btn.disabled = true;
+            btn.innerHTML = '<i class="fas fa-circle-notch fa-spin"></i> Initializing...';
+            errorAlert.style.display = 'none';
+
+            const payload = {
+                title: document.getElementById('title').value,
+                category: document.getElementById('category').value,
+                price: document.getElementById('price').value,
+                contact: document.getElementById('contact').value,
+                description: document.getElementById('description').value
+            };
+
+            try {
+                const res = await fetch('/api/services', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(payload)
+                });
+
+                // Check if response is JSON
+                const contentType = res.headers.get("content-type");
+                if (!contentType || !contentType.includes("application/json")) {
+                    const text = await res.text();
+                    console.error('Server returned non-JSON response:', text);
+                    throw new Error(`Server Error: ${res.status} ${res.statusText}`);
+                }
+
+                const data = await res.json();
+
+                if (res.ok) {
+                    btn.innerHTML = '<i class="fas fa-check"></i> Success!';
+                    setTimeout(() => window.location.href = '/services.html', 500);
+                } else {
+                    errorAlert.style.display = 'flex';
+                    errorMessage.textContent = data.error || 'Failed to post service.';
+                    btn.disabled = false;
+                    btn.innerHTML = '<i class="fas fa-paper-plane"></i> Launch Service';
+                }
+            } catch (err) {
+                console.error('Fetch error:', err);
+                errorAlert.style.display = 'flex';
+                errorMessage.textContent = `${err.message || 'Connection error'}. Please check if the server is running.`;
+                btn.disabled = false;
+                btn.innerHTML = '<i class="fas fa-paper-plane"></i> Launch Service';
+            }
+        };
+    </script>
+</body>
+</html>

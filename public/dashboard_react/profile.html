@@ -1,0 +1,542 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>My Profile - MRDU App</title>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="/styles.css">
+  <style>
+    :root {
+      --primary: #6366f1;
+      --primary-hover: #F26E51;
+      --bg-dark: #0f1117;
+      --bg-card: #1e212b;
+      --text-main: #f8fafc;
+      --text-muted: #94a3b8;
+      --border: #2e3342;
+      --danger: #ef4444;
+      --success: #10b981;
+      --warning: #f59e0b;
+    }
+
+    body {
+      background-color: var(--bg-dark);
+      color: var(--text-main);
+      font-family: 'Inter', sans-serif;
+      margin: 0;
+      padding: 0;
+    }
+
+    .container {
+      max-width: 1000px;
+      margin: 0 auto;
+      padding: 2rem;
+    }
+
+    /* ─── Header ─── */
+    .profile-header {
+      display: flex;
+      align-items: center;
+      gap: 1.5rem;
+      background: var(--bg-card);
+      padding: 2rem;
+      border-radius: 1rem;
+      border: 1px solid var(--border);
+      margin-bottom: 2rem;
+    }
+
+    .avatar {
+      width: 80px;
+      height: 80px;
+      border-radius: 50%;
+      background: linear-gradient(135deg, var(--primary), #a855f7);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 2rem;
+      font-weight: 700;
+      color: white;
+      text-transform: uppercase;
+    }
+
+    .profile-info h1 {
+      margin: 0 0 0.5rem 0;
+      font-size: 1.8rem;
+    }
+
+    .profile-info p {
+      margin: 0 0 0.25rem 0;
+      color: var(--text-muted);
+      font-size: 0.95rem;
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+    }
+
+    .tag {
+      background: rgba(99, 102, 241, 0.15);
+      color: #a5b4fc;
+      padding: 0.25rem 0.75rem;
+      border-radius: 999px;
+      font-size: 0.8rem;
+      font-weight: 600;
+      margin-top: 0.5rem;
+      display: inline-block;
+    }
+
+    /* ─── Quick Actions ─── */
+    .quick-actions {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+      gap: 1rem;
+      margin-bottom: 3rem;
+    }
+
+    .action-btn {
+      background: var(--bg-card);
+      color: var(--text-main);
+      border: 1px solid var(--border);
+      padding: 1rem;
+      border-radius: 0.75rem;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.2s;
+      text-align: center;
+      text-decoration: none;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 0.5rem;
+    }
+
+    .action-btn:hover {
+      background: rgba(99, 102, 241, 0.1);
+      border-color: var(--primary);
+      transform: translateY(-2px);
+    }
+    .action-btn.danger:hover {
+      background: rgba(239, 68, 68, 0.1);
+      border-color: var(--danger);
+      color: var(--danger);
+    }
+
+    /* ─── Sections ─── */
+    .section-title {
+      font-size: 1.4rem;
+      margin-bottom: 1.5rem;
+      padding-bottom: 0.5rem;
+      border-bottom: 1px solid var(--border);
+    }
+
+    .grid-layout {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+      gap: 1.5rem;
+      margin-bottom: 3rem;
+    }
+
+    .card {
+      background: var(--bg-card);
+      border: 1px solid var(--border);
+      border-radius: 1rem;
+      padding: 1.25rem;
+      display: flex;
+      flex-direction: column;
+    }
+    
+    .card-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-start;
+      margin-bottom: 1rem;
+    }
+
+    .card-title {
+      font-size: 1.1rem;
+      font-weight: 600;
+      margin: 0;
+    }
+
+    .card-price {
+      font-weight: 700;
+      color: var(--success);
+    }
+
+    .card-meta {
+      font-size: 0.85rem;
+      color: var(--text-muted);
+      margin-bottom: 1.5rem;
+      flex-grow: 1;
+    }
+
+    .card-actions {
+      display: flex;
+      gap: 0.75rem;
+      margin-top: auto;
+    }
+
+    .btn-small {
+      flex: 1;
+      padding: 0.5rem;
+      border: none;
+      border-radius: 0.5rem;
+      font-weight: 600;
+      font-size: 0.85rem;
+      cursor: pointer;
+      transition: opacity 0.2s;
+    }
+
+    .btn-toggle {
+      background: rgba(245, 158, 11, 0.15);
+      color: var(--warning);
+    }
+    .btn-toggle.active {
+      background: rgba(16, 185, 129, 0.15);
+      color: var(--success);
+    }
+    
+    .btn-delete {
+      background: rgba(239, 68, 68, 0.15);
+      color: var(--danger);
+    }
+
+    .btn-small:hover {
+      opacity: 0.8;
+    }
+
+    .empty-state {
+      grid-column: 1 / -1;
+      text-align: center;
+      padding: 3rem;
+      background: rgba(30, 33, 43, 0.5);
+      border-radius: 1rem;
+      border: 1px dashed var(--border);
+      color: var(--text-muted);
+    }
+
+    /* Course specific */
+    .course-tabs {
+      display: flex;
+      gap: 1rem;
+      margin-bottom: 1.5rem;
+    }
+
+    .tab-btn {
+      background: transparent;
+      border: none;
+      color: var(--text-muted);
+      font-weight: 600;
+      padding: 0.5rem 1rem;
+      cursor: pointer;
+      font-size: 1rem;
+      border-bottom: 2px solid transparent;
+    }
+
+    .tab-btn.active {
+      color: var(--primary);
+      border-bottom-color: var(--primary);
+    }
+    
+    #courseEnrolledArea { display: none; }
+    #courseEnrolledArea.active { display: grid; }
+    #courseCreatedArea { display: none; }
+    #courseCreatedArea.active { display: grid; }
+  </style>
+</head>
+<body>
+
+  <div class="container">
+    <nav style="margin-bottom: 2rem;">
+      <a href="/dashboard.html" style="color: var(--text-muted); text-decoration: none;">← Back to Dashboard</a>
+    </nav>
+
+    <!-- HEADER -->
+    <div class="profile-header" id="profileHeader">
+      <div class="avatar" id="avatarDisplay">?</div>
+      <div class="profile-info">
+        <h1 id="userName">Loading...</h1>
+        <p>🆔 <span id="userRollNumber"></span></p>
+        <p>📧 <span id="userEmail"></span></p>
+        <div class="tag" id="userCourseSection"></div>
+      </div>
+    </div>
+
+    <!-- QUICK ACTIONS -->
+    <div class="quick-actions">
+      <a href="/marketplace.html" class="action-btn">🛒 Go to Marketplace</a>
+      <a href="/services.html" class="action-btn">💼 Go to Services</a>
+      <a href="/courses.html" class="action-btn">🎓 Go to Courses</a>
+      <button class="action-btn danger" onclick="logout()">🚪 Logout</button>
+    </div>
+
+    <!-- MARKETPLACE LISTINGS -->
+    <h2 class="section-title">My Marketplace Listings</h2>
+    <div class="grid-layout" id="marketplaceArea">
+      <div class="empty-state">Loading your listings...</div>
+    </div>
+
+    <!-- SERVICES -->
+    <h2 class="section-title">My Services</h2>
+    <div class="grid-layout" id="servicesArea">
+      <div class="empty-state">Loading your services...</div>
+    </div>
+
+    <!-- PRIVATE CHATS -->
+    <h2 class="section-title">My Private Chats</h2>
+    <div class="grid-layout" id="privateChatsArea">
+      <div class="empty-state">Loading your private chats...</div>
+    </div>
+
+    <!-- COURSES -->
+    <h2 class="section-title">My Courses</h2>
+    <div class="course-tabs">
+      <button class="tab-btn active" onclick="switchCourseTab('enrolled')" id="tabEnrolled">Enrolled Courses</button>
+      <button class="tab-btn" onclick="switchCourseTab('created')" id="tabCreated">Created Courses</button>
+    </div>
+    
+    <div class="grid-layout active" id="courseEnrolledArea">
+      <div class="empty-state">Loading enrolled courses...</div>
+    </div>
+    <div class="grid-layout" id="courseCreatedArea">
+      <div class="empty-state">Loading created courses...</div>
+    </div>
+
+  </div>
+
+  <script>
+    let currentUser = null;
+
+    async function checkAuth() {
+      try {
+        const res = await fetch('/api/auth/me');
+        if (!res.ok) throw new Error('Not logged in');
+        const data = await res.json();
+        currentUser = data.user;
+        renderHeader();
+        
+        // Load data in parallel
+        Promise.all([
+          loadMarketplace(),
+          loadServices(),
+          loadCourses(),
+          loadPrivateChats()
+        ]);
+      } catch (err) {
+        window.location.href = '/login.html';
+      }
+    }
+
+    function renderHeader() {
+      const name = currentUser.name || 'Student';
+      document.getElementById('userName').innerText = name;
+      document.getElementById('userRollNumber').innerText = currentUser.rollNumber;
+      document.getElementById('userEmail').innerText = currentUser.email || 'Email missing';
+      
+      const initials = name.substring(0, 2).toUpperCase();
+      document.getElementById('avatarDisplay').innerText = initials;
+      
+      document.getElementById('userCourseSection').innerText = `🏫 ${currentUser.course || 'CSE'} - Section ${currentUser.section || 'A'}`;
+    }
+
+    async function logout() {
+      if(!confirm('Are you sure you want to logout?')) return;
+      await fetch('/api/auth/logout', { method: 'POST' });
+      window.location.href = '/login.html';
+    }
+
+    // ─── MARKETPLACE ───
+    async function loadMarketplace() {
+      try {
+        const res = await fetch('/api/marketplace/my');
+        const items = await res.json();
+        const area = document.getElementById('marketplaceArea');
+        
+        if (items.length === 0) {
+          area.innerHTML = `<div class="empty-state">You haven't posted any items yet.</div>`;
+          return;
+        }
+
+        area.innerHTML = items.map(item => `
+          <div class="card">
+            <div class="card-header">
+              <h3 class="card-title">${item.title}</h3>
+              <div class="card-price">₹${item.price}</div>
+            </div>
+            <div class="card-meta">
+              <span style="display:inline-block; margin-bottom: 0.5rem; padding: 2px 8px; border-radius: 4px; font-size: 0.75rem; background: ${item.isAvailable ? 'rgba(16,185,129,0.1)' : 'rgba(239,68,68,0.1)'}; color: ${item.isAvailable ? '#10b981' : '#ef4444'}">
+                ${item.isAvailable ? 'Available' : 'Sold / Unavailable'}
+              </span><br>
+              ${item.category} • ${item.type}
+            </div>
+            <div class="card-actions">
+              <button class="btn-small btn-toggle ${item.isAvailable ? 'active' : ''}" onclick="toggleMarketplace('${item.id}')">
+                ${item.isAvailable ? 'Mark as Sold' : 'Mark Available'}
+              </button>
+              <button class="btn-small btn-delete" onclick="deleteMarketplace('${item.id}')">Delete</button>
+            </div>
+          </div>
+        `).join('');
+      } catch (err) {
+        console.error(err);
+      }
+    }
+
+    async function toggleMarketplace(id) {
+      await fetch(`/api/marketplace/${id}/toggle-availability`, { method: 'PATCH' });
+      loadMarketplace();
+    }
+
+    async function deleteMarketplace(id) {
+      if(!confirm('Delete this item permanently?')) return;
+      await fetch(`/api/marketplace/${id}`, { method: 'DELETE' });
+      loadMarketplace();
+    }
+
+    // ─── SERVICES ───
+    async function loadServices() {
+      try {
+        const res = await fetch('/api/services/my');
+        const items = await res.json();
+        const area = document.getElementById('servicesArea');
+        
+        if (items.length === 0) {
+          area.innerHTML = `<div class="empty-state">You aren't offering any services yet.</div>`;
+          return;
+        }
+
+        area.innerHTML = items.map(item => `
+          <div class="card">
+            <div class="card-header">
+              <h3 class="card-title">${item.title}</h3>
+              <div class="card-price">₹${item.price}</div>
+            </div>
+            <div class="card-meta">
+              <span style="display:inline-block; margin-bottom: 0.5rem; padding: 2px 8px; border-radius: 4px; font-size: 0.75rem; background: ${item.isAvailable ? 'rgba(16,185,129,0.1)' : 'rgba(239,68,68,0.1)'}; color: ${item.isAvailable ? '#10b981' : '#ef4444'}">
+                ${item.isAvailable ? 'Active' : 'Paused'}
+              </span><br>
+              ${item.category}
+            </div>
+            <div class="card-actions">
+              <button class="btn-small btn-toggle ${item.isAvailable ? 'active' : ''}" onclick="toggleService('${item.id}')">
+                ${item.isAvailable ? 'Pause' : 'Activate'}
+              </button>
+              <button class="btn-small btn-delete" onclick="deleteService('${item.id}')">Delete</button>
+            </div>
+          </div>
+        `).join('');
+      } catch (err) {
+        console.error(err);
+      }
+    }
+
+    async function toggleService(id) {
+      await fetch(`/api/services/${id}/toggle`, { method: 'PATCH' });
+      loadServices();
+    }
+
+    async function deleteService(id) {
+      if(!confirm('Delete this service permanently?')) return;
+      await fetch(`/api/services/${id}`, { method: 'DELETE' });
+      loadServices();
+    }
+
+    // ─── PRIVATE CHATS ───
+    async function loadPrivateChats() {
+      try {
+        const res = await fetch('/api/chat-request/all-accepted');
+        const accepted = await res.json();
+        const area = document.getElementById('privateChatsArea');
+        
+        if (accepted.length === 0) {
+          area.innerHTML = `<div class="empty-state">No active private conversations found.</div>`;
+          return;
+        }
+
+        area.innerHTML = accepted.map(req => {
+          const otherUser = req.senderRollNumber === currentUser.rollNumber ? req.receiverRollNumber : req.senderRollNumber;
+          return `
+            <div class="card" style="flex-direction: row; align-items: center; justify-content: space-between; cursor: pointer; transition: all 0.2s;" onclick="location.href='/private-chat.html?roll=${otherUser}'" onmouseover="this.style.background='rgba(255,255,255,0.06)'" onmouseout="this.style.background=''">
+              <div style="display: flex; align-items: center; gap: 16px;">
+                <div style="width: 48px; height: 48px; border-radius: 12px; background: var(--success); display: flex; align-items: center; justify-content: center; font-size: 16px; font-weight: bold; color: white;">
+                  ${otherUser.slice(0, 2)}
+                </div>
+                <div>
+                  <div style="font-weight: 700; font-size: 16px;">${otherUser}</div>
+                  <div style="font-size: 13px; color: var(--success);">Connected ${new Date(req.createdAt).toLocaleDateString()}</div>
+                </div>
+              </div>
+              <span style="font-size: 1.5rem; color: var(--text-muted); opacity: 0.5;">💬</span>
+            </div>
+          `;
+        }).join('');
+      } catch (err) {
+        console.error('Load private chats error:', err);
+      }
+    }
+
+    // ─── COURSES ───
+    async function loadCourses() {
+      try {
+        const [enrolledRes, createdRes] = await Promise.all([
+          fetch('/api/courses/enrolled'),
+          fetch('/api/courses/my')
+        ]);
+        
+        const enrolled = await enrolledRes.json();
+        const created = await createdRes.json();
+
+        const enrolledArea = document.getElementById('courseEnrolledArea');
+        const createdArea = document.getElementById('courseCreatedArea');
+
+        if (enrolled.length === 0) {
+          enrolledArea.innerHTML = `<div class="empty-state">You are not enrolled in any courses.</div>`;
+        } else {
+          enrolledArea.innerHTML = enrolled.map(c => `
+            <div class="card">
+              <div class="card-header"><h3 class="card-title">${c.title}</h3></div>
+              <div class="card-meta">${c.description.substring(0, 60)}...</div>
+              <a href="/courses.html?id=${c.id}" class="action-btn" style="padding: 0.5rem;">View Course</a>
+            </div>
+          `).join('');
+        }
+
+        if (created.length === 0) {
+          createdArea.innerHTML = `<div class="empty-state">You haven't created any courses.</div>`;
+        } else {
+          createdArea.innerHTML = created.map(c => `
+            <div class="card">
+              <div class="card-header">
+                <h3 class="card-title">${c.title}</h3>
+                <div class="card-price">₹${c.price}</div>
+              </div>
+              <div class="card-meta">${c.description.substring(0, 60)}...</div>
+              <a href="/courses.html?id=${c.id}" class="action-btn" style="padding: 0.5rem;">Manage Course</a>
+            </div>
+          `).join('');
+        }
+      } catch (err) {
+        console.error(err);
+      }
+    }
+
+    function switchCourseTab(tab) {
+      document.getElementById('tabEnrolled').classList.remove('active');
+      document.getElementById('tabCreated').classList.remove('active');
+      document.getElementById('courseEnrolledArea').classList.remove('active');
+      document.getElementById('courseCreatedArea').classList.remove('active');
+
+      if (tab === 'enrolled') {
+        document.getElementById('tabEnrolled').classList.add('active');
+        document.getElementById('courseEnrolledArea').classList.add('active');
+      } else {
+        document.getElementById('tabCreated').classList.add('active');
+        document.getElementById('courseCreatedArea').classList.add('active');
+      }
+    }
+
+    // Initialize
+    checkAuth();
+  </script>
+</body>
+</html>

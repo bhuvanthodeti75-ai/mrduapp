@@ -1,0 +1,152 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>My Courses — MRDU Student Portal</title>
+  <link rel="stylesheet" href="styles.css" />
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" />
+  <style>
+    .tab-container {
+      display: flex;
+      gap: 4px;
+      background: rgba(255, 255, 255, 0.03);
+      padding: 4px;
+      border-radius: 12px;
+      margin-bottom: 24px;
+      border: 1px solid var(--border);
+    }
+
+    .tab-btn {
+      flex: 1;
+      padding: 10px;
+      border-radius: 8px;
+      border: none;
+      background: transparent;
+      color: var(--text-muted);
+      cursor: pointer;
+      font-weight: 600;
+      font-size: 14px;
+      transition: all 0.2s;
+    }
+
+    .tab-btn.active {
+      background: var(--accent);
+      color: white;
+    }
+
+    .course-list {
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+    }
+
+    .mini-card {
+      background: rgba(255, 255, 255, 0.02);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 16px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 16px;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+
+    .mini-card:hover {
+      border-color: var(--accent);
+      background: rgba(255, 255, 255, 0.04);
+      transform: translateX(5px);
+    }
+  </style>
+</head>
+
+<body>
+  <div class="grid-bg"></div>
+  <div class="page">
+    <div class="auth-card" style="max-width: 800px; width: 95%;">
+      <div style="margin-bottom: 24px; display: flex; justify-content: space-between; align-items: center;">
+        <div style="display: flex; gap: 8px;">
+          <a href="/dashboard.html" class="btn-ghost"
+            style="width: auto; margin: 0; padding: 6px 12px; font-size: 12px;">
+            <i class="fas fa-home"></i> Dashboard
+          </a>
+          <a href="/courses.html" class="btn-ghost" style="width: auto; margin: 0; padding: 6px 12px; font-size: 12px;">
+            <i class="fas fa-arrow-left"></i> Back to Hub
+          </a>
+        </div>
+        <h1 style="font-size: 20px; margin: 0;">📚 My Learning</h1>
+      </div>
+
+      <div class="tab-container">
+        <button class="tab-btn active" id="tab-enrolled" onclick="switchTab('enrolled')">Enrolled</button>
+        <button class="tab-btn" id="tab-created" onclick="switchTab('created')">Teaching</button>
+      </div>
+
+      <div id="course-list" class="course-list">
+        <!-- Injected here -->
+      </div>
+
+      <div id="empty-state" style="display:none; text-align:center; padding: 40px; color: var(--text-muted);">
+        <i class="fas fa-ghost" style="font-size: 40px; margin-bottom: 12px; opacity: 0.3;"></i>
+        <p id="empty-msg">No courses found here.</p>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    let currentTab = 'enrolled';
+
+    async function loadTab(tab) {
+      currentTab = tab;
+      document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+      document.getElementById(`tab-${tab}`).classList.add('active');
+
+      const list = document.getElementById('course-list');
+      const empty = document.getElementById('empty-state');
+      list.innerHTML = `<div style="text-align:center; padding: 20px;"><i class="fas fa-spinner fa-spin"></i></div>`;
+      empty.style.display = 'none';
+
+      try {
+        const res = await fetch(`/api/courses/${tab === 'enrolled' ? 'enrolled' : 'my'}`);
+        const courses = await res.json();
+
+        if (courses.length === 0) {
+          list.innerHTML = '';
+          empty.style.display = 'block';
+          document.getElementById('empty-msg').textContent = tab === 'enrolled'
+            ? "You haven't enrolled in any courses yet."
+            : "You haven't created any courses yet.";
+          return;
+        }
+
+        list.innerHTML = courses.map(c => `
+          <div class="mini-card" onclick="location.href='/course-details.html?id=${c.id}'">
+            <div style="display:flex; align-items:center; gap: 16px;">
+              <div style="width: 44px; height: 44px; border-radius: 10px; background: rgba(242, 110, 81, 0.1); display:flex; align-items:center; justify-content:center;">
+                <i class="fas fa-book-open" style="color: var(--accent);"></i>
+              </div>
+              <div>
+                <div style="font-weight: 600; margin-bottom: 2px;">${c.title}</div>
+                <div style="font-size: 12px; color: var(--text-muted);">Instructor: ${c.instructorRollNumber}</div>
+              </div>
+            </div>
+            <i class="fas fa-chevron-right" style="color: var(--text-muted); font-size: 12px;"></i>
+          </div>
+        `).join('');
+      } catch (err) {
+        list.innerHTML = `<p style="color: var(--error); text-align:center;">Failed to load courses.</p>`;
+      }
+    }
+
+    function switchTab(tab) {
+      loadTab(tab);
+    }
+
+    loadTab('enrolled');
+  </script>
+</body>
+
+</html>

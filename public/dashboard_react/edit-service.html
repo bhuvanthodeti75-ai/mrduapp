@@ -1,0 +1,168 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Edit Service — Student Portal</title>
+    <link rel="stylesheet" href="styles.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        .category-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(100px, 1fr)); gap: 10px; margin: 20px 0; }
+        .cat-item { background: rgba(255, 255, 255, 0.03); border: 1px solid rgba(255, 255, 255, 0.1); border-radius: 12px; padding: 15px 10px; text-align: center; cursor: pointer; transition: all 0.3s ease; display: flex; flex-direction: column; align-items: center; gap: 8px; }
+        .cat-item i { font-size: 1.5rem; color: var(--text-muted); }
+        .cat-item span { font-size: 11px; font-weight: 500; color: var(--text-muted); }
+        .cat-item.active { background: rgba(242, 110, 81, 0.1); border-color: var(--accent); transform: translateY(-2px); }
+        .cat-item.active i, .cat-item.active span { color: var(--accent); }
+        .input-floating { position: relative; margin-bottom: 20px; }
+        .input-floating input, .input-floating textarea { width: 100%; padding: 15px 15px 15px 45px; background: rgba(255, 255, 255, 0.03); border: 1px solid rgba(255, 255, 255, 0.1); border-radius: 12px; color: #fff; font-family: inherit; transition: all 0.3s; }
+        .input-floating i { position: absolute; left: 15px; top: 50%; transform: translateY(-50%); color: var(--text-muted); }
+        .input-floating textarea + i { top: 20px; transform: none; }
+        .input-floating input:focus, .input-floating textarea:focus { border-color: var(--accent); background: rgba(242, 110, 81, 0.05); outline: none; }
+    </style>
+</head>
+<body class="bg-animate">
+    <div class="glass-container auth-card" style="max-width: 600px; padding: 40px;">
+        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 30px;">
+            <div class="auth-header" style="text-align: left; margin: 0;">
+                <h1 class="welcome-name" style="font-size: 32px;"><i class="fas fa-edit" style="color: var(--accent);"></i> Edit Service</h1>
+                <p class="welcome-roll">Update your service details</p>
+            </div>
+            <button onclick="history.back()" class="btn-ghost" style="width: auto; margin: 0; padding: 10px 20px;"><i class="fas fa-times"></i></button>
+        </div>
+
+        <div id="loadingForm" style="text-align: center; padding: 40px;">
+            <i class="fas fa-circle-notch fa-spin" style="font-size: 32px; color: var(--accent);"></i>
+            <p style="margin-top: 10px;">Fetching service details...</p>
+        </div>
+
+        <form id="editServiceForm" style="display: none;">
+            <div class="portal-label" style="margin-bottom: 10px;">General Information</div>
+            <div class="input-floating">
+                <i class="fas fa-heading"></i>
+                <input type="text" id="title" placeholder="Service Title" required maxlength="60">
+            </div>
+
+            <div class="portal-label" style="margin-bottom: 10px;">Select Category</div>
+            <div class="category-grid" id="categoryGrid">
+                <div class="cat-item" data-value="Assignment" onclick="selectCategory(this)">
+                    <i class="fas fa-file-alt"></i>
+                    <span>Assignment</span>
+                </div>
+                <div class="cat-item" data-value="Lab Record" onclick="selectCategory(this)">
+                    <i class="fas fa-flask"></i>
+                    <span>Lab Record</span>
+                </div>
+                <div class="cat-item" data-value="PPT" onclick="selectCategory(this)">
+                    <i class="fas fa-file-powerpoint"></i>
+                    <span>PPT</span>
+                </div>
+                <div class="cat-item" data-value="Notes" onclick="selectCategory(this)">
+                    <i class="fas fa-book-open"></i>
+                    <span>Notes</span>
+                </div>
+                <div class="cat-item" data-value="Project" onclick="selectCategory(this)">
+                    <i class="fas fa-project-diagram"></i>
+                    <span>Project</span>
+                </div>
+            </div>
+            <input type="hidden" id="category" required>
+
+            <div style="display: grid; grid-template-columns: 1fr 1.2fr; gap: 15px;">
+                <div class="input-floating">
+                    <i class="fas fa-rupee-sign"></i>
+                    <input type="number" id="price" placeholder="Price" required min="1">
+                </div>
+                <div class="input-floating">
+                    <i class="fab fa-whatsapp"></i>
+                    <input type="tel" id="contact" placeholder="WhatsApp (10 digits)" required pattern="[0-9]{10}">
+                </div>
+            </div>
+
+            <div class="input-floating">
+                <i class="fas fa-align-left"></i>
+                <textarea id="description" placeholder="Describe exactly what help you provide..." required style="height: 120px;"></textarea>
+            </div>
+
+            <button type="submit" id="submitBtn" class="btn-primary" style="height: 55px; font-size: 16px; margin-top: 10px;">
+                <i class="fas fa-save"></i> Save Changes
+            </button>
+        </form>
+    </div>
+
+    <script>
+        const urlParams = new URLSearchParams(window.location.search);
+        const serviceId = urlParams.get('id');
+
+        async function loadService() {
+            if (!serviceId) { window.location.href = '/services.html'; return; }
+            try {
+                const res = await fetch(`/api/services/${serviceId}`);
+                if (!res.ok) throw new Error('Service not found');
+                const service = await res.json();
+
+                document.getElementById('title').value = service.title;
+                document.getElementById('price').value = service.price;
+                document.getElementById('contact').value = service.contact;
+                document.getElementById('description').value = service.description;
+                document.getElementById('category').value = service.category;
+
+                // Set active category UI
+                document.querySelectorAll('.cat-item').forEach(item => {
+                    if (item.dataset.value === service.category) item.classList.add('active');
+                });
+
+                document.getElementById('loadingForm').style.display = 'none';
+                document.getElementById('editServiceForm').style.display = 'block';
+
+            } catch (err) {
+                alert(err.message);
+                window.location.href = '/services.html';
+            }
+        }
+
+        function selectCategory(el) {
+            document.querySelectorAll('.cat-item').forEach(item => item.classList.remove('active'));
+            el.classList.add('active');
+            document.getElementById('category').value = el.dataset.value;
+        }
+
+        document.getElementById('editServiceForm').onsubmit = async (e) => {
+            e.preventDefault();
+            const btn = document.getElementById('submitBtn');
+            btn.disabled = true;
+            btn.innerHTML = '<i class="fas fa-circle-notch fa-spin"></i> Saving...';
+
+            const payload = {
+                title: document.getElementById('title').value,
+                category: document.getElementById('category').value,
+                price: document.getElementById('price').value,
+                contact: document.getElementById('contact').value,
+                description: document.getElementById('description').value
+            };
+
+            try {
+                const res = await fetch(`/api/services/${serviceId}`, {
+                    method: 'PATCH',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(payload)
+                });
+
+                if (res.ok) {
+                    window.location.href = `/service-details.html?id=${serviceId}`;
+                } else {
+                    const data = await res.json();
+                    alert(data.error || 'Failed to update service');
+                    btn.disabled = false;
+                    btn.innerHTML = '<i class="fas fa-save"></i> Save Changes';
+                }
+            } catch (err) {
+                alert('Connection error');
+                btn.disabled = false;
+                btn.innerHTML = '<i class="fas fa-save"></i> Save Changes';
+            }
+        };
+
+        window.onload = loadService;
+    </script>
+</body>
+</html>

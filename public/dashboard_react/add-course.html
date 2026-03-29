@@ -1,0 +1,254 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Create Course — MRDU Student Portal</title>
+  <link rel="stylesheet" href="styles.css" />
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" />
+  <style>
+    .form-group {
+      margin-bottom: 20px;
+    }
+
+    .form-label {
+      display: block;
+      font-size: 13px;
+      font-weight: 600;
+      color: var(--text-muted);
+      margin-bottom: 8px;
+    }
+
+    .form-input,
+    .form-textarea {
+      width: 100%;
+      padding: 12px 16px;
+      border-radius: 10px;
+      border: 1px solid var(--border);
+      background: rgba(255, 255, 255, 0.03);
+      color: var(--text);
+      outline: none;
+      transition: all 0.2s;
+    }
+
+    .form-input:focus,
+    .form-textarea:focus {
+      border-color: var(--accent);
+      background: rgba(255, 255, 255, 0.05);
+    }
+
+    .form-textarea {
+      height: 100px;
+      resize: vertical;
+    }
+
+    .content-links-container {
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+    }
+
+    .link-row {
+      display: flex;
+      gap: 10px;
+    }
+
+    .remove-link {
+      background: rgba(239, 68, 68, 0.1);
+      border: 1px solid rgba(239, 68, 68, 0.2);
+      color: #7f1d1d;
+      width: 44px;
+      height: 44px;
+      border-radius: 10px;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: all 0.2s;
+    }
+
+    .remove-link:hover {
+      background: rgba(239, 68, 68, 0.2);
+      border-color: rgba(239, 68, 68, 0.4);
+    }
+  </style>
+</head>
+
+<body>
+  <div class="grid-bg"></div>
+  <div class="page">
+    <div class="auth-card" style="max-width: 600px;">
+      <div style="margin-bottom: 32px;">
+        <div style="display: flex; gap: 8px; margin-bottom: 16px;">
+          <a href="/dashboard.html" class="btn-ghost"
+            style="width: auto; margin: 0; padding: 6px 12px; font-size: 12px;">
+            <i class="fas fa-home"></i> Dashboard
+          </a>
+          <a href="/courses.html" class="btn-ghost" style="width: auto; margin: 0; padding: 6px 12px; font-size: 12px;">
+            <i class="fas fa-arrow-left"></i> Back to Hub
+          </a>
+        </div>
+        <h1 style="font-size: 24px; margin: 0;">🚀 Launch Your Course</h1>
+        <p style="color: var(--text-muted); font-size: 14px; margin-top: 4px;">Share your expertise with the student
+          community.(MRDU)</p>
+      </div>
+
+      <form id="course-form">
+        <div class="form-group">
+          <label class="form-label">Course Title <span style="color: var(--error, #ef4444);">*</span></label>
+          <input type="text" id="title" class="form-input" placeholder="e.g. Master Competitive Programming" required />
+        </div>
+
+        <div class="form-group">
+          <label class="form-label">Description <span style="color: var(--error, #ef4444);">*</span></label>
+          <textarea id="description" class="form-textarea" placeholder="What will students learn in this course?"
+            required></textarea>
+        </div>
+
+        <div class="form-group">
+          <label class="form-label">Contact/WhatsApp Number <span style="color: var(--error, #ef4444);">*</span></label>
+          <input type="tel" id="contact" class="form-input" placeholder="e.g. 9876543210" required />
+        </div>
+
+        <div class="form-group">
+          <label class="form-label">Price (0 for Free) <span style="color: var(--error, #ef4444);">*</span></label>
+          <div style="position: relative;">
+            <span style="position: absolute; left: 16px; top: 12px; color: var(--text-muted);">₹</span>
+            <input type="number" id="price" class="form-input" style="padding-left: 32px;" value="0" min="0" required />
+          </div>
+          <p style="font-size: 11px; color: var(--text-muted); margin-top: 6px;">
+            <i class="fas fa-info-circle"></i> Paid courses will be labeled as "Paid".
+          </p>
+        </div>
+
+        <div class="form-group">
+          <label class="form-label">Course Content (Links & Uploads)</label>
+          <div id="content-links" class="content-links-container">
+            <div class="link-row">
+              <input type="url" class="form-input content-link" placeholder="External link (e.g. Drive, YouTube...)" />
+              <button type="button" class="remove-link" onclick="this.parentElement.remove()"
+                style="visibility: hidden;"><i class="fas fa-times"></i></button>
+            </div>
+          </div>
+          <button type="button" id="add-link-btn" class="btn-ghost"
+            style="width: auto; margin: 12px 0 0 0; padding: 8px 16px; font-size: 13px;">
+            <i class="fas fa-plus"></i> Add Another Link
+          </button>
+
+          <div id="drop-zone" style="margin-top: 16px; border: 2px dashed rgba(255,255,255,0.2); border-radius: 12px; padding: 32px; text-align: center; cursor: pointer; transition: 0.2s;">
+            <i class="fas fa-cloud-upload-alt" style="font-size: 32px; color: var(--accent); margin-bottom: 12px;"></i>
+            <h3 style="margin: 0 0 8px 0; font-size: 16px;">Drag & Drop files here</h3>
+            <p style="margin: 0; font-size: 13px; color: var(--text-muted);">or click to browse from device</p>
+            <input type="file" id="file-input" style="display: none;" multiple />
+            <div id="file-list" style="margin-top: 16px; display: flex; flex-direction: column; gap: 8px; text-align: left;"></div>
+          </div>
+        </div>
+
+        <button type="submit" id="submit-btn" class="btn-primary" style="margin-top: 12px;">Create Course</button>
+      </form>
+    </div>
+  </div>
+
+  <script>
+    const contentLinks = document.getElementById('content-links');
+    const addLinkBtn = document.getElementById('add-link-btn');
+    
+    const dropZone = document.getElementById('drop-zone');
+    const fileInput = document.getElementById('file-input');
+    const fileList = document.getElementById('file-list');
+    let selectedFiles = [];
+
+    addLinkBtn.onclick = () => {
+      const div = document.createElement('div');
+      div.className = 'link-row';
+      div.innerHTML = `
+        <input type="url" class="form-input content-link" placeholder="External link (e.g. Drive, YouTube...)" />
+        <button type="button" class="remove-link" onclick="this.parentElement.remove()"><i class="fas fa-times"></i></button>
+      `;
+      contentLinks.appendChild(div);
+    };
+
+    dropZone.addEventListener('click', () => fileInput.click());
+    dropZone.addEventListener('dragover', (e) => {
+      e.preventDefault();
+      dropZone.style.borderColor = 'var(--accent)';
+      dropZone.style.background = 'rgba(242, 110, 81, 0.05)';
+    });
+    dropZone.addEventListener('dragleave', (e) => {
+      e.preventDefault();
+      dropZone.style.borderColor = 'rgba(255,255,255,0.2)';
+      dropZone.style.background = 'transparent';
+    });
+    dropZone.addEventListener('drop', (e) => {
+      e.preventDefault();
+      dropZone.style.borderColor = 'rgba(255,255,255,0.2)';
+      dropZone.style.background = 'transparent';
+      handleFiles(e.dataTransfer.files);
+    });
+    fileInput.addEventListener('change', () => handleFiles(fileInput.files));
+
+    function handleFiles(files) {
+      for (let f of files) selectedFiles.push(f);
+      renderFiles();
+    }
+
+    function renderFiles() {
+      fileList.innerHTML = '';
+      selectedFiles.forEach((file, index) => {
+        const div = document.createElement('div');
+        div.style.cssText = 'display: flex; justify-content: space-between; align-items: center; background: rgba(255,255,255,0.05); padding: 8px 12px; border-radius: 8px; font-size: 13px;';
+        div.innerHTML = `
+          <span style="overflow: hidden; text-overflow: ellipsis; white-space: nowrap;"><i class="fas fa-file-alt" style="margin-right:8px; color:var(--accent);"></i> ${file.name}</span>
+          <button type="button" style="background:none; border:none; color:#ef4444; cursor:pointer;" onclick="event.stopPropagation(); removeFile(${index})"><i class="fas fa-times"></i></button>
+        `;
+        fileList.appendChild(div);
+      });
+    }
+
+    window.removeFile = (index) => {
+      selectedFiles.splice(index, 1);
+      renderFiles();
+    };
+
+    document.getElementById('course-form').onsubmit = async (e) => {
+      e.preventDefault();
+      const btn = document.getElementById('submit-btn');
+      btn.disabled = true;
+      btn.textContent = 'Launching...';
+
+      const formData = new FormData();
+      formData.append('title', document.getElementById('title').value);
+      formData.append('description', document.getElementById('description').value);
+      formData.append('contact', document.getElementById('contact').value);
+      formData.append('price', document.getElementById('price').value);
+
+      const links = Array.from(document.querySelectorAll('.content-link')).map(input => input.value).filter(v => v.trim() !== '');
+      links.forEach(l => formData.append('content', l));
+      selectedFiles.forEach(f => formData.append('files', f));
+
+      try {
+        const res = await fetch('/api/courses', {
+          method: 'POST',
+          body: formData
+        });
+
+        if (res.ok) {
+          alert('Course launched successfully!');
+          window.location.href = '/courses.html';
+        } else {
+          const data = await res.json();
+          alert(data.error || 'Failed to create course');
+          btn.disabled = false;
+          btn.textContent = 'Create Course';
+        }
+      } catch (err) {
+        alert('Network error');
+        btn.disabled = false;
+        btn.textContent = 'Create Course';
+      }
+    };
+  </script>
+</body>
+
+</html>

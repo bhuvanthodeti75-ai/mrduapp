@@ -1,0 +1,126 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Post Item Request — MRDU Student Portal</title>
+    <link rel="stylesheet" href="styles.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        .form-group {
+            margin-bottom: 20px;
+        }
+        .form-label {
+            display: block;
+            margin-bottom: 8px;
+            font-size: 13px;
+            font-weight: 600;
+            color: var(--text-muted);
+        }
+        .form-input, .form-textarea, .form-select {
+            width: 100%;
+            padding: 12px 16px;
+            background: rgba(255,255,255,0.03);
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            color: white;
+            outline: none;
+            transition: 0.2s;
+        }
+        .form-input:focus, .form-textarea:focus, .form-select:focus {
+            border-color: var(--accent);
+            background: rgba(255,255,255,0.05);
+        }
+        .form-textarea {
+            height: 120px;
+            resize: vertical;
+        }
+    </style>
+</head>
+
+<body class="bg-animate">
+    <div class="glass-container dashboard-card" style="max-width: 600px;">
+        <div style="display: flex; gap: 8px; margin-bottom: 24px;">
+            <a href="/requests.html" class="btn-ghost" style="width: auto; margin: 0; padding: 6px 12px; font-size: 12px;">
+              <i class="fas fa-arrow-left"></i> Back to Requests
+            </a>
+        </div>
+        
+        <h1 style="font-size: 24px; margin-bottom: 8px;"><i class="fas fa-bullhorn" style="color:var(--accent);"></i> Post Item Request</h1>
+        <p style="color: var(--text-muted); font-size: 14px; margin-bottom: 32px;">Need something? Let the university community know.</p>
+
+        <form id="requestForm">
+            <div class="form-group">
+                <label class="form-label">Item Title <span style="color:red">*</span></label>
+                <input type="text" id="title" class="form-input" placeholder="e.g. Engineering Drawing Kit, First Year Textbooks..." required>
+            </div>
+
+            <div class="form-group">
+                <label class="form-label">Description <span style="color:red">*</span></label>
+                <textarea id="description" class="form-textarea" placeholder="Detail exactly what you are looking for..." required></textarea>
+            </div>
+
+            <div class="form-group">
+                <label class="form-label">Contact / WhatsApp Number <span style="color:red">*</span></label>
+                <input type="tel" id="contact" class="form-input" placeholder="10-digit mobile number" pattern="[0-9]{10}" required>
+                <p style="font-size: 11px; color: var(--text-muted); margin-top: 6px;">Must be exactly 10 digits.</p>
+            </div>
+
+            <div class="form-group">
+                <label class="form-label">Contact Privacy <span style="color:red">*</span></label>
+                <div style="background: rgba(255,255,255,0.02); border: 1px solid var(--border); padding: 16px; border-radius: 12px;">
+                    <label style="display: flex; align-items: center; gap: 12px; cursor: pointer;">
+                        <input type="checkbox" id="requireApproval" style="width: 20px; height: 20px; accent-color: var(--accent);">
+                        <div>
+                            <div style="font-weight: 600; font-size: 14px;">Require Contact Approval</div>
+                            <div style="font-size: 11px; color: var(--text-muted); margin-top: 4px;">If checked, students must send a request and wait for you to accept before seeing your WhatsApp number.</div>
+                        </div>
+                    </label>
+                </div>
+            </div>
+
+            <button type="submit" id="submitBtn" class="btn-primary" style="margin-top: 16px;">Publish Request</button>
+        </form>
+    </div>
+
+    <script>
+        document.getElementById('requestForm').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const btn = document.getElementById('submitBtn');
+            btn.disabled = true;
+            btn.textContent = 'Publishing...';
+
+            const payload = {
+                title: document.getElementById('title').value,
+                description: document.getElementById('description').value,
+                contact: document.getElementById('contact').value,
+                requireApproval: document.getElementById('requireApproval').checked
+            };
+
+            try {
+                const res = await fetch('/api/requests', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(payload)
+                });
+
+                if (res.ok) {
+                    alert('Request posted successfully!');
+                    window.location.href = '/requests.html';
+                } else {
+                    const data = await res.json();
+                    alert(data.error || 'Failed to post request.');
+                    btn.disabled = false;
+                    btn.textContent = 'Publish Request';
+                }
+            } catch (err) {
+                alert('Network error. Please try again.');
+                btn.disabled = false;
+                btn.textContent = 'Publish Request';
+            }
+        });
+    </script>
+</body>
+
+</html>

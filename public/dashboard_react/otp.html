@@ -1,0 +1,264 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>MRDU Student Portal — OTP Verification</title>
+  <meta name="description" content="Verify your identity with a one-time password sent to your registered email." />
+  <link rel="stylesheet" href="styles.css" />
+</head>
+<body>
+  <div class="grid-bg"></div>
+  <div class="page">
+    <div class="auth-card">
+
+      <!-- Brand -->
+      <div class="brand">
+        <div class="brand-icon">🔐</div>
+        <div class="brand-title">Malla Reddy Deemed to be University</div>
+        <div class="brand-sub">IDENTITY VERIFICATION</div>
+      </div>
+
+      <!-- Step indicator -->
+      <div class="steps">
+        <div class="step-dot done"></div>
+        <div class="step-line"></div>
+        <div class="step-dot active"></div>
+        <div class="step-line"></div>
+        <div class="step-dot"></div>
+      </div>
+
+      <h1 class="screen-title">Verify Your Email</h1>
+      <p class="screen-subtitle" id="subtitle-text">
+        A 6-digit OTP has been sent to your registered student email.
+      </p>
+
+      <!-- Masked email badge -->
+      <div class="info-badge" id="email-badge">
+        📧 Sent to: <strong id="masked-email">loading...</strong>
+      </div>
+
+      <!-- Alert -->
+      <div id="alert" class="alert">
+        <span class="alert-icon" id="alert-icon">⚠️</span>
+        <span id="alert-msg">Error message</span>
+      </div>
+
+      <!-- OTP Inputs -->
+      <div class="otp-inputs" id="otp-container">
+        <input type="text" class="otp-digit" maxlength="1" inputmode="numeric" pattern="[0-9]" id="d0" />
+        <input type="text" class="otp-digit" maxlength="1" inputmode="numeric" pattern="[0-9]" id="d1" />
+        <input type="text" class="otp-digit" maxlength="1" inputmode="numeric" pattern="[0-9]" id="d2" />
+        <input type="text" class="otp-digit" maxlength="1" inputmode="numeric" pattern="[0-9]" id="d3" />
+        <input type="text" class="otp-digit" maxlength="1" inputmode="numeric" pattern="[0-9]" id="d4" />
+        <input type="text" class="otp-digit" maxlength="1" inputmode="numeric" pattern="[0-9]" id="d5" />
+      </div>
+
+      <!-- Timer -->
+      <div class="timer-row">
+        <span style="font-size:12px;">OTP expires in:</span>
+        <span class="timer-count" id="timer">05:00</span>
+      </div>
+
+      <button class="btn-primary" id="verify-btn" style="margin-top: 20px;">Verify OTP</button>
+      <button class="btn-ghost" id="resend-btn" disabled>Resend OTP (wait 60s)</button>
+
+    </div>
+  </div>
+
+  <script>
+    // If not in first-login flow, redirect to login
+    const digits = Array.from(document.querySelectorAll('.otp-digit'));
+    const verifyBtn = document.getElementById('verify-btn');
+    const resendBtn = document.getElementById('resend-btn');
+    const timerEl = document.getElementById('timer');
+    const alertEl = document.getElementById('alert');
+    const alertMsg = document.getElementById('alert-msg');
+    const alertIcon = document.getElementById('alert-icon');
+    const maskedEmailEl = document.getElementById('masked-email');
+
+    let otpTimer, resendTimer;
+    let otpSeconds = 5 * 60; // 5 minutes
+    let resendSeconds = 60;
+    let isExpired = false;
+
+    // Show masked email
+    const maskedEmail = sessionStorage.getItem('maskedEmail');
+    if (maskedEmail) maskedEmailEl.textContent = maskedEmail;
+
+    // ── OTP Input Behaviour ─────────────────────────────────────────
+    digits.forEach((el, i) => {
+      el.addEventListener('input', (e) => {
+        const val = e.target.value.replace(/\D/g, '');
+        e.target.value = val;
+        if (val) {
+          el.classList.add('filled');
+          if (i < 5) digits[i + 1].focus();
+          else verifyBtn.focus();
+        } else {
+          el.classList.remove('filled');
+        }
+      });
+
+      el.addEventListener('keydown', (e) => {
+        if (e.key === 'Backspace' && !el.value && i > 0) {
+          digits[i - 1].focus();
+          digits[i - 1].value = '';
+          digits[i - 1].classList.remove('filled');
+        }
+        if (e.key === 'ArrowLeft' && i > 0) digits[i - 1].focus();
+        if (e.key === 'ArrowRight' && i < 5) digits[i + 1].focus();
+        if (e.key === 'Enter') verifyOtp();
+      });
+
+      // Handle paste
+      el.addEventListener('paste', (e) => {
+        e.preventDefault();
+        const pasted = (e.clipboardData || window.clipboardData).getData('text').replace(/\D/g, '');
+        if (!pasted) return;
+        pasted.split('').slice(0, 6).forEach((char, j) => {
+          if (digits[j]) { digits[j].value = char; digits[j].classList.add('filled'); }
+        });
+        const nextEmpty = digits.find(d => !d.value);
+        if (nextEmpty) nextEmpty.focus();
+        else digits[5].focus();
+      });
+    });
+
+    function getOTPValue() { return digits.map(d => d.value).join(''); }
+
+    function showAlert(msg, type = 'error') {
+      alertEl.className = `alert alert-${type} show`;
+      alertMsg.textContent = msg;
+      alertIcon.textContent = type === 'error' ? '⚠️' : type === 'success' ? '✅' : 'ℹ️';
+    }
+    function hideAlert() { alertEl.className = 'alert'; }
+
+    // ── OTP Expiry Timer ────────────────────────────────────────────
+    function startOtpTimer() {
+      clearInterval(otpTimer);
+      otpSeconds = 5 * 60;
+      isExpired = false;
+      timerEl.classList.remove('expired');
+
+      otpTimer = setInterval(() => {
+        otpSeconds--;
+        const m = Math.floor(otpSeconds / 60).toString().padStart(2, '0');
+        const s = (otpSeconds % 60).toString().padStart(2, '0');
+        timerEl.textContent = `${m}:${s}`;
+
+        if (otpSeconds <= 0) {
+          clearInterval(otpTimer);
+          timerEl.textContent = 'Expired';
+          timerEl.classList.add('expired');
+          isExpired = true;
+          showAlert('OTP has expired. Please request a new one below.');
+          verifyBtn.disabled = true;
+        }
+      }, 1000);
+    }
+
+    // ── Resend Cooldown Timer ───────────────────────────────────────
+    function startResendCooldown() {
+      resendBtn.disabled = true;
+      resendSeconds = 60;
+      resendTimer = setInterval(() => {
+        resendSeconds--;
+        resendBtn.textContent = `Resend OTP (${resendSeconds}s)`;
+        if (resendSeconds <= 0) {
+          clearInterval(resendTimer);
+          resendBtn.disabled = false;
+          resendBtn.textContent = 'Resend OTP';
+        }
+      }, 1000);
+    }
+
+    // ── Send OTP on page load ───────────────────────────────────────
+    async function sendOtp() {
+      try {
+        const res = await fetch('/api/auth/send-otp', {
+          method: 'POST',
+          credentials: 'include',
+        });
+        const data = await res.json();
+        if (!res.ok) {
+          if (res.status === 401) { window.location.replace('/'); return; }
+          showAlert(data.error || 'Failed to send OTP.');
+          return;
+        }
+        if (data.maskedEmail) {
+          maskedEmailEl.textContent = data.maskedEmail;
+          sessionStorage.setItem('maskedEmail', data.maskedEmail);
+        }
+        showAlert('OTP sent to your registered email!', 'success');
+        setTimeout(hideAlert, 3000);
+        startOtpTimer();
+        startResendCooldown();
+        digits[0].focus();
+      } catch {
+        showAlert('Network error. Please try again.');
+      }
+    }
+
+    // ── Verify OTP ──────────────────────────────────────────────────
+    async function verifyOtp() {
+      hideAlert();
+      const otp = getOTPValue();
+      if (otp.length < 6) { showAlert('Please enter the complete 6-digit OTP.'); return; }
+      if (isExpired) { showAlert('OTP expired. Please request a new one.'); return; }
+
+      verifyBtn.disabled = true;
+      verifyBtn.innerHTML = '<span class="spinner"></span> Verifying...';
+
+      try {
+        const res = await fetch('/api/auth/verify-otp', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ otp }),
+          credentials: 'include',
+        });
+        const data = await res.json();
+
+        if (!res.ok) {
+          if (res.status === 401) { window.location.replace('/'); return; }
+          let msg = data.error || 'Verification failed.';
+          if (data.attemptsLeft !== undefined) msg += ` (${data.attemptsLeft} attempt${data.attemptsLeft === 1 ? '' : 's'} left)`;
+          if (data.attemptsLeft === 0) {
+            msg = 'Maximum attempts reached. Please request a new OTP.';
+            resendBtn.disabled = false;
+            clearInterval(resendTimer);
+            resendBtn.textContent = 'Resend OTP';
+          }
+          showAlert(msg);
+          // Shake effect
+          digits.forEach(d => { d.value = ''; d.classList.remove('filled'); });
+          document.getElementById('otp-container').style.animation = 'none';
+          setTimeout(() => { digits[0].focus(); }, 100);
+          return;
+        }
+
+        showAlert('OTP verified! Redirecting...', 'success');
+        clearInterval(otpTimer);
+        setTimeout(() => { window.location.href = '/change-password.html'; }, 1000);
+      } catch {
+        showAlert('Network error. Please try again.');
+      } finally {
+        verifyBtn.disabled = false;
+        verifyBtn.textContent = 'Verify OTP';
+      }
+    }
+
+    verifyBtn.addEventListener('click', verifyOtp);
+
+    resendBtn.addEventListener('click', async () => {
+      hideAlert();
+      digits.forEach(d => { d.value = ''; d.classList.remove('filled'); });
+      verifyBtn.disabled = false;
+      await sendOtp();
+    });
+
+    // Auto-send OTP when page loads
+    sendOtp();
+  </script>
+</body>
+</html>

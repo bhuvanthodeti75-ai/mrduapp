@@ -1,0 +1,71 @@
+[
+  {
+    "id": "1773899703996",
+    "title": "Mastering Node.js",
+    "description": "A comprehensive guide to backend development.",
+    "price": 0,
+    "content": [
+      "https://example.com/lecture1",
+      "https://example.com/lecture2"
+    ],
+    "instructorRollNumber": "TEST001",
+    "createdAt": 1773899703996
+  },
+  {
+    "id": "1773902342630",
+    "title": "python",
+    "description": "it is very valible to learn ptyhon",
+    "price": 40,
+    "content": [
+      "https://www.youtube.com/watch?v=7wa4Ey_tCCE"
+    ],
+    "instructorRollNumber": "25EU08R0624",
+    "createdAt": 1773902342630
+  },
+  {
+    "id": "1773922584543",
+    "title": "wed dev",
+    "description": "dslfjdsfjdsofjdslfjdsf",
+    "price": 232,
+    "content": [
+      "https://www.youtube.com/watch?v=7wa4Ey_tCCE"
+    ],
+    "instructorRollNumber": "25EU08R0624",
+    "createdAt": 1773922584543
+  },
+  {
+    "id": "1773994037019",
+    "title": "vjghhfjbv",
+    "description": "mjhcxtdfghj",
+    "price": 23456,
+    "content": [
+      "http://localhost:3000/marketplace.html"
+    ],
+    "instructorRollNumber": "25EU08R0137",
+    "createdAt": 1773994037019
+  },
+  {
+    "id": "1774165508883",
+    "title": "mgfcljkhgfvcvcg",
+    "description": "jhjfbhjgjv",
+    "contact": "9876543210",
+    "price": 70,
+    "content": [
+      "https://www.youtube.com/shorts/qXpT7fMUMIk"
+    ],
+    "instructorRollNumber": "25EU08R0624",
+    "createdAt": 1774165508883
+  },
+  {
+    "id": "1774174648494",
+    "title": "aesrdthf",
+    "description": "asdfgtd",
+    "contact": "2345678943",
+    "price": 234,
+    "content": [
+      "https://claude.ai/api/a616d908-2955-404f-a1a2-b8b041f60e46/files/019d14de-6346-73bc-ae63-a1b8fb7d02eb/document_pdf"
+    ],
+    "instructorRollNumber": "25EU08R0624",
+    "createdAt": 1774174648494
+  }
+]

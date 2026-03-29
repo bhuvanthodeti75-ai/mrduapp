@@ -1,0 +1,37 @@
+[
+  {
+    "courseId": "1773899703996",
+    "studentRollNumber": "TEST002",
+    "enrolledAt": 1773899851467
+  },
+  {
+    "courseId": "1773902342630",
+    "studentRollNumber": "25EU08R0137",
+    "enrolledAt": 1773902467083
+  },
+  {
+    "courseId": "1773899703996",
+    "studentRollNumber": "25EU08R0624",
+    "enrolledAt": 1773902554582
+  },
+  {
+    "courseId": "1773994037019",
+    "studentRollNumber": "25EU08R0624",
+    "enrolledAt": 1773994073545
+  },
+  {
+    "courseId": "1774165508883",
+    "studentRollNumber": "25EU08R0137",
+    "enrolledAt": 1774166829304
+  },
+  {
+    "courseId": "1774174648494",
+    "studentRollNumber": "25EU08R0137",
+    "enrolledAt": 1774174745068
+  },
+  {
+    "courseId": "1773902342630",
+    "studentRollNumber": "25EU08R0701",
+    "enrolledAt": 1774279131623
+  }
+]

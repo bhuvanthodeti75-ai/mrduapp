@@ -1,0 +1,223 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Item Details — Student Marketplace</title>
+    <link rel="stylesheet" href="styles.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+</head>
+<body class="bg-animate">
+    <div class="glass-container auth-card" style="max-width: 600px;">
+        <div id="loadingDetail" class="loading-text">
+            <i class="fas fa-circle-notch fa-spin"></i> Loading details...
+        </div>
+
+        <div id="detailContent" style="display: none;">
+            <div style="display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 20px;">
+                <a href="/marketplace.html" class="btn-ghost" style="width: auto; margin: 0; padding: 8px 15px;"><i class="fas fa-arrow-left"></i> Back</a>
+                <div id="ownerControls" style="display: none; gap: 10px;">
+                    <button id="toggleSoldBtn" class="btn-ghost" style="margin: 0; width: auto; color: var(--warning); border-color: rgba(245, 158, 11, 0.3);">
+                        <i class="fas fa-toggle-on"></i> Mark as Sold
+                    </button>
+                    <a id="editBtn" class="btn-ghost" style="margin: 0; width: auto; color: var(--accent); border-color: rgba(242, 110, 81, 0.3); text-decoration: none; display: flex; align-items: center; justify-content: center;">
+                        <i class="fas fa-edit"></i> Edit
+                    </a>
+                    <button id="deleteBtn" class="btn-ghost" style="margin: 0; width: auto; color: var(--error); border-color: rgba(239, 68, 68, 0.3);">
+                        <i class="fas fa-trash"></i> Delete
+                    </button>
+                </div>
+            </div>
+
+            <div class="item-img-wrap" style="height: 300px; border-radius: 12px; margin-bottom: 24px;">
+                <img id="itemImage" src="" alt="" onerror="this.src='https://placehold.co/600x400/12121e/a78bfa?text=Item'">
+                <div id="soldOverlay" class="sold-tag" style="display: none;">
+                    <span class="sold-label">SOLD</span>
+                </div>
+            </div>
+
+            <div class="item-header">
+                <div>
+                    <span id="itemCat" class="item-cat">CATEGORY</span>
+                    <h1 id="itemTitle" class="welcome-name" style="margin: 5px 0;">Item Title</h1>
+                    <div id="itemType" class="item-badge" style="position: static; display: inline-block;">TYPE</div>
+                </div>
+                <div id="itemPrice" class="item-price" style="font-size: 28px;">₹0</div>
+            </div>
+
+            <div class="info-tile" style="margin: 20px 0;">
+                <div class="info-tile-label">Description</div>
+                <div id="itemDesc" class="info-tile-value" style="font-weight: 400; line-height: 1.6;">No description provided.</div>
+            </div>
+
+            <div class="info-grid">
+                <div class="info-tile">
+                    <div class="info-tile-label">Seller</div>
+                    <div id="sellerRoll" class="info-tile-value">Roll Number</div>
+                </div>
+                <div class="info-tile">
+                    <div class="info-tile-label">Posted On</div>
+                    <div id="createdAt" class="info-tile-value">Date</div>
+                </div>
+            </div>
+
+            <div style="margin-top: 30px;">
+                <div id="contactSection">
+                    <button id="requestContactBtn" class="btn-primary" style="width: 100%; justify-content: center; font-size: 16px; display: none;">
+                        <i class="fas fa-paper-plane"></i> Request Contact Details
+                    </button>
+                    <div id="requestPending" class="alert alert-info" style="display: none; width: 100%; margin: 0; justify-content: center;">
+                        <i class="fas fa-clock"></i> Contact Request Pending Approval
+                    </div>
+                    <div id="requestRejected" class="alert alert-error" style="display: none; width: 100%; margin: 0; justify-content: center;">
+                        <i class="fas fa-times-circle"></i> Contact Request Rejected
+                    </div>
+                    <a id="whatsappBtn" href="#" target="_blank" class="btn-wa" style="width: 100%; justify-content: center; font-size: 16px; display: none;">
+                        <i class="fab fa-whatsapp"></i> Contact Seller via WhatsApp
+                    </a>
+                </div>
+                <p style="text-align: center; color: var(--text-muted); font-size: 12px; margin-top: 15px;">
+                    Always meet in safe, public student areas on campus.
+                </p>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const urlParams = new URLSearchParams(window.location.search);
+        const itemId = urlParams.get('id');
+        let currentUser = null;
+
+        async function fetchDetails() {
+            if (!itemId) {
+                    window.location.href = '/marketplace.html';
+                    return;
+            }
+
+            try {
+                // Get current user
+                const meRes = await fetch('/api/auth/me');
+                if (!meRes.ok) throw new Error('Auth failed');
+                const meData = await meRes.json();
+                currentUser = meData.user;
+
+                // Get item details
+                const res = await fetch(`/api/marketplace/${itemId}`);
+                if (!res.ok) {
+                    throw new Error('Item not found');
+                }
+                const item = await res.json();
+
+                if (!item) {
+                    alert('Item not found');
+                    window.location.href = '/marketplace.html';
+                    return;
+                }
+
+                document.getElementById('loadingDetail').style.display = 'none';
+                document.getElementById('detailContent').style.display = 'block';
+
+                document.getElementById('itemTitle').textContent = item.title;
+                document.getElementById('itemCat').textContent = item.category;
+                document.getElementById('itemPrice').textContent = `₹${item.price}`;
+                document.getElementById('itemDesc').textContent = item.description || 'No description provided.';
+                document.getElementById('sellerRoll').textContent = item.sellerRollNumber;
+                document.getElementById('createdAt').textContent = new Date(item.createdAt).toLocaleDateString();
+                document.getElementById('itemImage').src = item.image || '';
+                
+                const typeBadge = document.getElementById('itemType');
+                typeBadge.textContent = item.type === 'sell' ? 'FOR SALE' : 'FOR RENT';
+                typeBadge.className = `item-badge badge-${item.type}`;
+
+                if (item.isAvailable === false) {
+                    document.getElementById('soldOverlay').style.display = 'flex';
+                    document.getElementById('toggleSoldBtn').innerHTML = '<i class="fas fa-toggle-off"></i> Mark as Available';
+                }
+
+                // Check Contact Request Status
+                if (item.sellerRollNumber === currentUser.rollNumber) {
+                    // Owner sees the contact directly if they want, but here we just show a label
+                    document.getElementById('whatsappBtn').style.display = 'flex';
+                    document.getElementById('whatsappBtn').innerHTML = '<i class="fas fa-user-shield"></i> This is your listing';
+                    document.getElementById('whatsappBtn').style.background = 'var(--accent)';
+                    document.getElementById('whatsappBtn').href = '#';
+                    
+                    document.getElementById('ownerControls').style.display = 'flex';
+                    document.getElementById('editBtn').href = `/edit-item.html?id=${item.id}`;
+                    document.getElementById('deleteBtn').onclick = () => deleteItem(item.id);
+                    document.getElementById('toggleSoldBtn').onclick = () => toggleAvailability(item.id);
+                } else {
+                    checkRequestStatus(item.id, item.title);
+                }
+
+            } catch (err) {
+                console.error(err);
+                window.location.href = '/';
+            }
+        }
+
+        async function checkRequestStatus(itemId, itemTitle) {
+            const res = await fetch(`/api/contact-request/status/${itemId}?targetType=marketplace`);
+            const data = await res.json();
+
+            const requestBtn = document.getElementById('requestContactBtn');
+            const pendingAlert = document.getElementById('requestPending');
+            const rejectedAlert = document.getElementById('requestRejected');
+            const whatsappBtn = document.getElementById('whatsappBtn');
+
+            if (data.status === 'none') {
+                requestBtn.style.display = 'flex';
+                requestBtn.onclick = () => sendRequest(itemId);
+            } else if (data.status === 'pending') {
+                pendingAlert.style.display = 'flex';
+            } else if (data.status === 'rejected') {
+                rejectedAlert.style.display = 'flex';
+            } else if (data.status === 'accepted') {
+                whatsappBtn.style.display = 'flex';
+                const waLink = `https://wa.me/91${data.contact.replace(/\D/g, '')}?text=Hi, I am interested in your item "${encodeURIComponent(itemTitle)}" on MRDU Marketplace.`;
+                whatsappBtn.href = waLink;
+            }
+        }
+
+        async function sendRequest(itemId) {
+            const btn = document.getElementById('requestContactBtn');
+            btn.disabled = true;
+            btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Sending...';
+
+            try {
+                const res = await fetch('/api/contact-request', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ targetId: itemId, targetType: 'marketplace' })
+                });
+
+                if (res.ok) {
+                    location.reload();
+                } else {
+                    const data = await res.json();
+                    alert(data.error || 'Failed to send request');
+                    btn.disabled = false;
+                    btn.innerHTML = '<i class="fas fa-paper-plane"></i> Request Contact Details';
+                }
+            } catch (err) {
+                alert('Connection error');
+                btn.disabled = false;
+            }
+        }
+
+        async function toggleAvailability(id) {
+            if (!confirm('Toggle availability status?')) return;
+            const res = await fetch(`/api/marketplace/${id}/toggle-availability`, { method: 'PATCH' });
+            if (res.ok) location.reload();
+        }
+
+        async function deleteItem(id) {
+            if (!confirm('Are you sure you want to permanently delete this listing?')) return;
+            const res = await fetch(`/api/marketplace/${id}`, { method: 'DELETE' });
+            if (res.ok) window.location.href = '/marketplace.html';
+        }
+
+        window.onload = fetchDetails;
+    </script>
+</body>
+</html>
