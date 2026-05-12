@@ -6,7 +6,4 @@
 {"rollNumber":"25EU05R0624","otp":"387624","expiresAt":1774033484126,"attempts":0,"_id":"rfXMkKao9lr5McjJ"}
 {"rollNumber":"25EU08R0626","otp":"160285","expiresAt":1774038377339,"attempts":0,"_id":"wcETufyvNuCfAB34"}
 {"$$indexCreated":{"fieldName":"rollNumber","unique":true,"sparse":false}}
-{"rollNumber":"25EU05R0031","otp":"455952","expiresAt":1774635640341,"attempts":0,"_id":"b3qSdmSrs6VjN8Zb"}
-{"$$deleted":true,"_id":"b3qSdmSrs6VjN8Zb"}
-{"rollNumber":"25EU05R0033","otp":"880218","expiresAt":1774635785786,"attempts":0,"_id":"1YTHatjfD3SYQlU6"}
-{"$$deleted":true,"_id":"1YTHatjfD3SYQlU6"}
+{"$$indexCreated":{"fieldName":"rollNumber","unique":true}}
