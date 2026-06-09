@@ -1,25 +1,13 @@
 const express = require('express');
-const fs = require('fs');
 const path = require('path');
 const { requireAuth } = require('./auth');
 const router = express.Router();
 const multer = require('multer');
-const { users } = require('../db/database');
+const { users, marketplace, uploadToSupabaseStorage } = require('../db/database');
 const { createNotification } = require('./notifications');
 
-// Configure Multer storage
-const storage = multer.diskStorage({
-  destination: (req, file, cb) => {
-    const uploadDir = path.join(__dirname, '..', 'uploads');
-    if (!fs.existsSync(uploadDir)) fs.mkdirSync(uploadDir);
-    cb(null, uploadDir);
-  },
-  filename: (req, file, cb) => {
-    const uniqueSuffix = Date.now() + '-' + Math.round(Math.random() * 1E9);
-    cb(null, uniqueSuffix + path.extname(file.originalname));
-  }
-});
-
+// Configure Multer memory storage
+const storage = multer.memoryStorage();
 const upload = multer({ 
   storage: storage,
   limits: { fileSize: 5 * 1024 * 1024 }, // 5MB limit
@@ -29,90 +17,76 @@ const upload = multer({
   }
 });
 
-
-const MARKETPLACE_FILE = path.join(__dirname, '..', 'marketplace.json');
-
-// Helper to read marketplace data
-function readMarketplace() {
-  try {
-    if (!fs.existsSync(MARKETPLACE_FILE)) return [];
-    const data = fs.readFileSync(MARKETPLACE_FILE, 'utf-8');
-    return JSON.parse(data);
-  } catch (err) {
-    console.error('Error reading marketplace.json:', err);
-    return [];
-  }
-}
-
-// Helper to write marketplace data
-function writeMarketplace(items) {
-  try {
-    fs.writeFileSync(MARKETPLACE_FILE, JSON.stringify(items, null, 2));
-  } catch (err) {
-    console.error('Error writing marketplace.json:', err);
-  }
-}
-
 // ════════════════════════════════════════════════════════════════════════════════
 // GET /api/marketplace - List all available items
 // ════════════════════════════════════════════════════════════════════════════════
-router.get('/', requireAuth, (req, res) => {
-  let items = readMarketplace();
-  
-  // Only show available items for the general feed
-  items = items.filter(item => item.isAvailable !== false);
+router.get('/', requireAuth, async (req, res) => {
+  try {
+    const { search, category, type } = req.query;
+    
+    // We fetch all available items first
+    let items = await marketplace.find({ isAvailable: true }).sort({ createdAt: -1 });
 
-  // Privacy: Remove contact info from general listing
-  items = items.map(item => {
-    const { contact, ...rest } = item;
-    return rest;
-  });
+    // Privacy: Remove contact info from general listing
+    items = items.map(item => {
+      const { contact, ...rest } = item;
+      return rest;
+    });
 
-  const { search, category, type } = req.query;
+    if (search) {
+      const q = search.toLowerCase();
+      items = items.filter(item => 
+        (item.title && item.title.toLowerCase().includes(q)) || 
+        (item.description && item.description.toLowerCase().includes(q))
+      );
+    }
 
-  if (search) {
-    const q = search.toLowerCase();
-    items = items.filter(item => item.title.toLowerCase().includes(q) || item.description.toLowerCase().includes(q));
+    if (category && category !== 'All') {
+      items = items.filter(item => item.category === category);
+    }
+
+    if (type && type !== 'All') {
+      items = items.filter(item => item.type === type);
+    }
+
+    res.json(items);
+  } catch (err) {
+    console.error('Error listing marketplace items:', err.message);
+    res.status(500).json({ error: 'Failed to retrieve marketplace items.' });
   }
-
-  if (category && category !== 'All') {
-    items = items.filter(item => item.category === category);
-  }
-
-  if (type && type !== 'All') {
-    items = items.filter(item => item.type === type);
-  }
-
-  // Sort by latest first
-  items.sort((a, b) => (b.createdAt || 0) - (a.createdAt || 0));
-
-  res.json(items);
-});
-
-// ════════════════════════════════════════════════════════════════════════════════
-// GET /api/marketplace/:id - Get single item
-// ════════════════════════════════════════════════════════════════════════════════
-router.get('/:id', requireAuth, (req, res) => {
-  const items = readMarketplace();
-  const item = items.find(i => i.id === req.params.id);
-  if (!item) return res.status(404).json({ error: 'Item not found.' });
-  res.json(item);
 });
 
 // ════════════════════════════════════════════════════════════════════════════════
 // GET /api/marketplace/my - List current user's items
 // ════════════════════════════════════════════════════════════════════════════════
-router.get('/my', requireAuth, (req, res) => {
-  const items = readMarketplace();
-  const myItems = items.filter(item => item.sellerRollNumber === req.user.rollNumber);
-  myItems.sort((a, b) => (b.createdAt || 0) - (a.createdAt || 0));
-  res.json(myItems);
+router.get('/my', requireAuth, async (req, res) => {
+  try {
+    const myItems = await marketplace.find({ sellerRollNumber: req.user.rollNumber }).sort({ createdAt: -1 });
+    res.json(myItems);
+  } catch (err) {
+    console.error('Error listing user marketplace items:', err.message);
+    res.status(500).json({ error: 'Failed to retrieve your marketplace items.' });
+  }
+});
+
+// ════════════════════════════════════════════════════════════════════════════════
+// GET /api/marketplace/:id - Get single item
+// ════════════════════════════════════════════════════════════════════════════════
+router.get('/:id', requireAuth, async (req, res) => {
+  try {
+    const item = await marketplace.findOne({ id: req.params.id });
+    if (!item) return res.status(404).json({ error: 'Item not found.' });
+    res.json(item);
+  } catch (err) {
+    console.error('Error fetching marketplace item:', err.message);
+    res.status(500).json({ error: 'Failed to retrieve marketplace item details.' });
+  }
 });
 
 // ════════════════════════════════════════════════════════════════════════════════
 // POST /api/marketplace - Add new item
 // ════════════════════════════════════════════════════════════════════════════════
-router.post('/', requireAuth, upload.single('image'), (req, res) => {
+router.post('/', requireAuth, upload.single('image'), async (req, res) => {
   const { title, category, price, type, description, contact } = req.body;
   const imageFile = req.file;
 
@@ -120,116 +94,144 @@ router.post('/', requireAuth, upload.single('image'), (req, res) => {
     return res.status(400).json({ error: 'Missing required fields.' });
   }
 
-  const items = readMarketplace();
-  const newItem = {
-    id: Date.now().toString(),
-    title,
-    category,
-    price: parseFloat(price),
-    type,
-    description,
-    image: imageFile ? `/uploads/${imageFile.filename}` : '',
-    sellerRollNumber: req.user.rollNumber,
-    contact,
-    isAvailable: true,
-    createdAt: Date.now()
-  };
+  try {
+    let imageUrl = '';
+    if (imageFile) {
+      const filename = `marketplace-${Date.now()}-${Math.round(Math.random() * 1E9)}${path.extname(imageFile.originalname)}`;
+      imageUrl = await uploadToSupabaseStorage(imageFile.buffer, filename, imageFile.mimetype);
+    }
 
-  items.push(newItem);
-  writeMarketplace(items);
+    const newItem = {
+      id: Date.now().toString(),
+      title,
+      category,
+      price: parseFloat(price),
+      type,
+      description: description || '',
+      image: imageUrl,
+      sellerRollNumber: req.user.rollNumber,
+      contact,
+      isAvailable: true,
+      createdAt: Date.now()
+    };
 
-  createNotification(
-    req.user.rollNumber,
-    'feed_post',
-    `You posted "${title}" in the Marketplace.`,
-    `/marketplace.html`
-  ).catch(err => console.error("Error creating personal notification:", err));
+    await marketplace.insert(newItem);
 
-  // Broadcast to all other users
-  users.find({}).then(allUsers => {
-    const broadcastPromises = allUsers
-      .filter(u => u.rollNumber !== req.user.rollNumber)
-      .map(u => createNotification(
-        u.rollNumber,
-        'feed_post',
-        `${req.user.rollNumber} listed a new item: ${title}`,
-        '/marketplace.html'
-      ));
-    
-    Promise.all(broadcastPromises).catch(err => console.error("Error in parallel broadcast:", err));
-  }).catch(err => console.error("Error broadcasting marketplace notification:", err));
+    createNotification(
+      req.user.rollNumber,
+      'feed_post',
+      `You posted "${title}" in the Marketplace.`,
+      `/marketplace.html`
+    ).catch(err => console.error("Error creating personal notification:", err));
 
-  res.status(201).json(newItem);
+    // Broadcast to all other users
+    users.find({}).then(allUsers => {
+      const broadcastPromises = allUsers
+        .filter(u => u.rollNumber !== req.user.rollNumber)
+        .map(u => createNotification(
+          u.rollNumber,
+          'feed_post',
+          `${req.user.rollNumber} listed a new item: ${title}`,
+          '/marketplace.html'
+        ));
+      
+      Promise.all(broadcastPromises).catch(err => console.error("Error in parallel broadcast:", err));
+    }).catch(err => console.error("Error broadcasting marketplace notification:", err));
+
+    res.status(201).json(newItem);
+  } catch (err) {
+    console.error('Error creating marketplace item:', err.message);
+    res.status(500).json({ error: 'Failed to create marketplace item.' });
+  }
 });
 
 // ════════════════════════════════════════════════════════════════════════════════
 // PATCH /api/marketplace/:id/toggle-availability
 // ════════════════════════════════════════════════════════════════════════════════
-router.patch('/:id/toggle-availability', requireAuth, (req, res) => {
-  const items = readMarketplace();
-  const index = items.findIndex(item => item.id === req.params.id);
+router.patch('/:id/toggle-availability', requireAuth, async (req, res) => {
+  try {
+    const item = await marketplace.findOne({ id: req.params.id });
 
-  if (index === -1) return res.status(404).json({ error: 'Item not found.' });
-  
-  // Ownership check
-  if (items[index].sellerRollNumber !== req.user.rollNumber) {
-    return res.status(403).json({ error: 'Unauthorized. Only the owner can change availability.' });
+    if (!item) return res.status(404).json({ error: 'Item not found.' });
+    
+    // Ownership check
+    if (item.sellerRollNumber !== req.user.rollNumber) {
+      return res.status(403).json({ error: 'Unauthorized. Only the owner can change availability.' });
+    }
+
+    const nextAvailable = !item.isAvailable;
+    await marketplace.update({ id: req.params.id }, { isAvailable: nextAvailable });
+
+    const updated = { ...item, isAvailable: nextAvailable };
+    res.json(updated);
+  } catch (err) {
+    console.error('Error toggling availability:', err.message);
+    res.status(500).json({ error: 'Failed to update item availability.' });
   }
-
-  items[index].isAvailable = !items[index].isAvailable;
-  writeMarketplace(items);
-
-  res.json(items[index]);
 });
 
 // ════════════════════════════════════════════════════════════════════════════════
 // DELETE /api/marketplace/:id
 // ════════════════════════════════════════════════════════════════════════════════
-router.delete('/:id', requireAuth, (req, res) => {
-  const items = readMarketplace();
-  const index = items.findIndex(item => item.id === req.params.id);
+router.delete('/:id', requireAuth, async (req, res) => {
+  try {
+    const item = await marketplace.findOne({ id: req.params.id });
 
-  if (index === -1) return res.status(404).json({ error: 'Item not found.' });
+    if (!item) return res.status(404).json({ error: 'Item not found.' });
 
-  // Ownership check
-  if (items[index].sellerRollNumber !== req.user.rollNumber) {
-    return res.status(403).json({ error: 'Unauthorized. Only the owner can delete this item.' });
+    // Ownership check
+    if (item.sellerRollNumber !== req.user.rollNumber) {
+      return res.status(403).json({ error: 'Unauthorized. Only the owner can delete this item.' });
+    }
+
+    await marketplace.remove({ id: req.params.id });
+    res.json({ message: 'Item deleted successfully.' });
+  } catch (err) {
+    console.error('Error deleting marketplace item:', err.message);
+    res.status(500).json({ error: 'Failed to delete marketplace item.' });
   }
-
-  items.splice(index, 1);
-  writeMarketplace(items);
-
-  res.json({ message: 'Item deleted successfully.' });
 });
 
 // ════════════════════════════════════════════════════════════════════════════════
 // PATCH /api/marketplace/:id - Update item details
 // ════════════════════════════════════════════════════════════════════════════════
-router.patch('/:id', requireAuth, upload.single('image'), (req, res) => {
+router.patch('/:id', requireAuth, upload.single('image'), async (req, res) => {
   const { title, category, price, type, description, contact } = req.body;
   const imageFile = req.file;
 
-  const items = readMarketplace();
-  const index = items.findIndex(item => item.id === req.params.id);
+  try {
+    const item = await marketplace.findOne({ id: req.params.id });
 
-  if (index === -1) return res.status(404).json({ error: 'Item not found.' });
+    if (!item) return res.status(404).json({ error: 'Item not found.' });
 
-  // Ownership check
-  if (items[index].sellerRollNumber !== req.user.rollNumber) {
-    return res.status(403).json({ error: 'Unauthorized.' });
+    // Ownership check
+    if (item.sellerRollNumber !== req.user.rollNumber) {
+      return res.status(403).json({ error: 'Unauthorized.' });
+    }
+
+    let imageUrl = item.image;
+    if (imageFile) {
+      const filename = `marketplace-${Date.now()}-${Math.round(Math.random() * 1E9)}${path.extname(imageFile.originalname)}`;
+      imageUrl = await uploadToSupabaseStorage(imageFile.buffer, filename, imageFile.mimetype);
+    }
+
+    const updates = {};
+    if (title) updates.title = title;
+    if (category) updates.category = category;
+    if (price) updates.price = parseFloat(price);
+    if (type) updates.type = type;
+    if (description !== undefined) updates.description = description;
+    if (contact) updates.contact = contact;
+    updates.image = imageUrl;
+
+    await marketplace.update({ id: req.params.id }, updates);
+
+    const updatedItem = { ...item, ...updates };
+    res.json(updatedItem);
+  } catch (err) {
+    console.error('Error updating marketplace item:', err.message);
+    res.status(500).json({ error: 'Failed to update marketplace item.' });
   }
-
-  // Update fields
-  if (title) items[index].title = title;
-  if (category) items[index].category = category;
-  if (price) items[index].price = parseFloat(price);
-  if (type) items[index].type = type;
-  if (description !== undefined) items[index].description = description;
-  if (contact) items[index].contact = contact;
-  if (imageFile) items[index].image = `/uploads/${imageFile.filename}`;
-
-  writeMarketplace(items);
-  res.json(items[index]);
 });
 
 module.exports = router;

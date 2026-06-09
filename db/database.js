@@ -406,6 +406,38 @@ const otpStore = new SupabaseCollection(supabase, 'otp_store');
 const messages = new SupabaseCollection(supabase, 'messages');
 const chatRequests = new SupabaseCollection(supabase, 'chat_requests');
 
+// New migrated Supabase-backed collections
+const marketplace = new SupabaseCollection(supabase, 'marketplace');
+const courses = new SupabaseCollection(supabase, 'courses');
+const enrollments = new SupabaseCollection(supabase, 'enrollments');
+const promotions = new SupabaseCollection(supabase, 'promotions');
+const services = new SupabaseCollection(supabase, 'services');
+const requests = new SupabaseCollection(supabase, 'requests');
+const contactRequests = new SupabaseCollection(supabase, 'contact_requests');
+
+// Supabase Storage file upload helper
+async function uploadToSupabaseStorage(buffer, filename, mimetype) {
+  try {
+    const { data, error } = await supabase.storage
+      .from('mrdu-media')
+      .upload(filename, buffer, {
+        contentType: mimetype,
+        upsert: true
+      });
+
+    if (error) throw error;
+
+    const { data: publicUrlData } = supabase.storage
+      .from('mrdu-media')
+      .getPublicUrl(filename);
+
+    return publicUrlData.publicUrl;
+  } catch (err) {
+    console.error('Failed to upload file to Supabase Storage:', err.message);
+    throw err;
+  }
+}
+
 // Initialize Firebase Admin SDK
 let firebaseDb = null;
 try {
@@ -456,4 +488,18 @@ if (firebaseDb) {
   console.log('Database initialized: Supabase for users/OTP/chat, NeDB (local) for notifications.');
 }
 
-module.exports = { users, otpStore, messages, chatRequests, notifications };
+module.exports = { 
+  users, 
+  otpStore, 
+  messages, 
+  chatRequests, 
+  notifications,
+  marketplace,
+  courses,
+  enrollments,
+  promotions,
+  services,
+  requests,
+  contactRequests,
+  uploadToSupabaseStorage
+};
