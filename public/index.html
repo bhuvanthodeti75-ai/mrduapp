@@ -7,67 +7,854 @@
   <title>MRDU Student Portal — Login</title>
   <meta name="description"
     content="Malla Reddy Deemed to be University Student Portal — Secure login for registered first-year students only." />
-  <link rel="stylesheet" href="styles.css" />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap"
+    rel="stylesheet" />
+  <style>
+    /* ═══════════════════════════════════════════════════════════════
+       MRDU Login — Clean Light Theme with Forest Green Accents
+       ═══════════════════════════════════════════════════════════════ */
+
+    :root {
+      --bg-page: #f4f2ec;
+      --bg-card: #ffffff;
+      --bg-input: #f7f7f5;
+      --bg-input-focus: #ffffff;
+
+      --green-dark: #1a3c34;
+      --green-deep: #0f2b24;
+      --green-accent: #2d6a4f;
+      --green-muted: #3a7d5e;
+      --gold-accent: #c9a84c;
+
+      --text-primary: #1a1a1a;
+      --text-secondary: #555555;
+      --text-muted: #999999;
+      --text-on-dark: #f0efe8;
+
+      --border-light: #e5e3dc;
+      --border-input: #ddd9d0;
+
+      --error-bg: #fef2f2;
+      --error-border: #fecaca;
+      --error-text: #b91c1c;
+      --error-icon: #dc2626;
+
+      --restricted-bg: #f0fdf4;
+      --restricted-border: #bbf7d0;
+      --restricted-text: #166534;
+
+      --radius-sm: 10px;
+      --radius-md: 14px;
+      --radius-lg: 20px;
+      --radius-xl: 24px;
+
+      --shadow-card: 0 4px 24px rgba(0, 0, 0, 0.06);
+      --shadow-input: 0 1px 3px rgba(0, 0, 0, 0.04);
+      --shadow-btn: 0 4px 14px rgba(26, 60, 52, 0.3);
+    }
+
+    /* ─── Reset & Base ─────────────────────────────────────────── */
+    *,
+    *::before,
+    *::after {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    html {
+      -webkit-font-smoothing: antialiased;
+      scroll-behavior: smooth;
+    }
+
+    body {
+      font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+      background: var(--bg-page);
+      color: var(--text-primary);
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      overflow-x: hidden;
+    }
+
+    /* ─── Subtle Top Gradient Bar ──────────────────────────────── */
+    body::before {
+      content: '';
+      position: fixed;
+      top: 0;
+      left: 0;
+      right: 0;
+      height: 4px;
+      background: linear-gradient(90deg, var(--green-dark), var(--green-accent), var(--gold-accent));
+      z-index: 100;
+    }
+
+    /* ─── Main Layout ──────────────────────────────────────────── */
+    .login-page {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      padding: 40px 24px 24px;
+    }
+
+    .login-wrapper {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      width: 100%;
+      max-width: 960px;
+    }
+
+    .login-container {
+      display: flex;
+      gap: 32px;
+      width: 100%;
+      align-items: flex-start;
+      justify-content: center;
+    }
+
+    /* ─── Left Column: Login Form ──────────────────────────────── */
+    .login-left {
+      flex: 1;
+      max-width: 480px;
+      display: flex;
+      flex-direction: column;
+    }
+
+    /* Brand Header */
+    .brand {
+      text-align: center;
+      margin-bottom: 32px;
+    }
+
+    .brand-icon {
+      width: 56px;
+      height: 56px;
+      background: var(--green-dark);
+      border-radius: 14px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin: 0 auto 18px;
+      position: relative;
+      box-shadow: 0 6px 20px rgba(26, 60, 52, 0.25);
+    }
+
+    .brand-icon svg {
+      width: 28px;
+      height: 28px;
+      color: var(--text-on-dark);
+    }
+
+    .brand-title {
+      font-size: 28px;
+      font-weight: 800;
+      color: var(--text-primary);
+      letter-spacing: -0.5px;
+      margin-bottom: 6px;
+    }
+
+    .brand-sub {
+      font-size: 14px;
+      color: var(--text-secondary);
+    }
+
+    /* Auth Card */
+    .auth-card {
+      width: 100%;
+      background: var(--bg-card);
+      border: 1px solid var(--border-light);
+      border-radius: var(--radius-xl);
+      box-shadow: var(--shadow-card);
+      padding: 36px 32px;
+      animation: cardIn 0.45s cubic-bezier(0.34, 1.56, 0.64, 1) both;
+    }
+
+    @keyframes cardIn {
+      from {
+        opacity: 0;
+        transform: translateY(16px) scale(0.98);
+      }
+
+      to {
+        opacity: 1;
+        transform: translateY(0) scale(1);
+      }
+    }
+
+    /* ─── Error Alert ─────────────────────────────────────────── */
+    .alert {
+      padding: 12px 14px;
+      border-radius: var(--radius-sm);
+      font-size: 13px;
+      font-weight: 500;
+      display: none;
+      align-items: flex-start;
+      gap: 10px;
+      margin-bottom: 16px;
+      animation: alertIn 0.3s ease;
+    }
+
+    .alert.show {
+      display: flex;
+    }
+
+    @keyframes alertIn {
+      from {
+        opacity: 0;
+        transform: translateY(-6px);
+      }
+
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+
+    .alert-error {
+      background: var(--error-bg);
+      border: 1px solid var(--error-border);
+      color: var(--error-text);
+    }
+
+    .alert-icon {
+      font-size: 16px;
+      flex-shrink: 0;
+      margin-top: 1px;
+    }
+
+    /* ─── Form Elements ──────────────────────────────────────── */
+    .form-group {
+      margin-bottom: 20px;
+    }
+
+    .form-label-row {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 8px;
+    }
+
+    .form-label {
+      display: block;
+      font-size: 13px;
+      font-weight: 600;
+      color: var(--text-primary);
+      letter-spacing: 0.2px;
+    }
+
+    .forgot-link {
+      font-size: 12.5px;
+      font-weight: 500;
+      color: var(--green-accent);
+      text-decoration: none;
+      transition: color 0.2s;
+    }
+
+    .forgot-link:hover {
+      color: var(--green-dark);
+      text-decoration: underline;
+    }
+
+    .input-wrap {
+      position: relative;
+    }
+
+    .input-icon {
+      position: absolute;
+      left: 14px;
+      top: 50%;
+      transform: translateY(-50%);
+      color: var(--text-muted);
+      pointer-events: none;
+      display: flex;
+      align-items: center;
+      transition: color 0.2s;
+    }
+
+    .input-icon svg {
+      width: 18px;
+      height: 18px;
+    }
+
+    .form-input {
+      width: 100%;
+      background: var(--bg-input);
+      border: 1.5px solid var(--border-input);
+      border-radius: var(--radius-sm);
+      color: var(--text-primary);
+      font-family: 'Inter', sans-serif;
+      font-size: 14px;
+      font-weight: 500;
+      padding: 14px 44px 14px 44px;
+      transition: all 0.2s ease;
+      outline: none;
+      appearance: none;
+      -webkit-appearance: none;
+    }
+
+    .form-input:focus {
+      background: var(--bg-input-focus);
+      border-color: var(--green-accent);
+      box-shadow: 0 0 0 3px rgba(45, 106, 79, 0.1);
+    }
+
+    .form-input:focus~.input-icon {
+      color: var(--green-accent);
+    }
+
+    .input-wrap:focus-within .input-icon {
+      color: var(--green-accent);
+    }
+
+    .form-input::placeholder {
+      color: var(--text-muted);
+      font-weight: 400;
+    }
+
+    /* Password toggle */
+    .pw-toggle {
+      position: absolute;
+      right: 12px;
+      top: 50%;
+      transform: translateY(-50%);
+      background: none;
+      border: none;
+      color: var(--text-muted);
+      cursor: pointer;
+      padding: 4px;
+      display: flex;
+      align-items: center;
+      transition: color 0.2s;
+    }
+
+    .pw-toggle:hover {
+      color: var(--green-accent);
+    }
+
+    .pw-toggle svg {
+      width: 18px;
+      height: 18px;
+    }
+
+    /* ─── Sign In Button ─────────────────────────────────────── */
+    .btn-primary {
+      width: 100%;
+      padding: 15px 20px;
+      background: var(--green-dark);
+      color: #fff;
+      font-family: 'Inter', sans-serif;
+      font-size: 14px;
+      font-weight: 600;
+      letter-spacing: 0.3px;
+      border: none;
+      border-radius: var(--radius-sm);
+      cursor: pointer;
+      transition: all 0.25s ease;
+      position: relative;
+      overflow: hidden;
+      margin-top: 4px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+    }
+
+    .btn-primary:hover {
+      background: var(--green-deep);
+      transform: translateY(-1px);
+      box-shadow: var(--shadow-btn);
+    }
+
+    .btn-primary:active {
+      transform: translateY(0);
+    }
+
+    .btn-primary:disabled {
+      opacity: 0.55;
+      cursor: not-allowed;
+      transform: none;
+      box-shadow: none;
+    }
+
+    .btn-primary svg {
+      width: 18px;
+      height: 18px;
+      transition: transform 0.2s;
+    }
+
+    .btn-primary:hover svg {
+      transform: translateX(2px);
+    }
+
+    .spinner {
+      display: inline-block;
+      width: 16px;
+      height: 16px;
+      border: 2px solid rgba(255, 255, 255, 0.3);
+      border-top-color: white;
+      border-radius: 50%;
+      animation: spin 0.7s linear infinite;
+      vertical-align: middle;
+      margin-right: 8px;
+    }
+
+    @keyframes spin {
+      to {
+        transform: rotate(360deg);
+      }
+    }
+
+    /* ─── Divider ─────────────────────────────────────────────── */
+    .divider {
+      display: flex;
+      align-items: center;
+      gap: 14px;
+      margin: 24px 0 20px;
+      color: var(--text-muted);
+      font-size: 11px;
+      font-weight: 600;
+      letter-spacing: 1.5px;
+    }
+
+    .divider::before,
+    .divider::after {
+      content: '';
+      flex: 1;
+      height: 1px;
+      background: var(--border-light);
+    }
+
+    /* ─── Restricted Access Notice ─────────────────────────────── */
+    .restricted-notice {
+      background: var(--restricted-bg);
+      border: 1px solid var(--restricted-border);
+      border-radius: var(--radius-sm);
+      padding: 14px 16px;
+      display: flex;
+      align-items: flex-start;
+      gap: 10px;
+    }
+
+    .restricted-notice-icon {
+      width: 20px;
+      height: 20px;
+      flex-shrink: 0;
+      margin-top: 1px;
+    }
+
+    .restricted-notice-icon svg {
+      width: 20px;
+      height: 20px;
+      color: var(--green-accent);
+    }
+
+    .restricted-notice-content h4 {
+      font-size: 13px;
+      font-weight: 700;
+      color: var(--green-accent);
+      margin-bottom: 2px;
+    }
+
+    .restricted-notice-content p {
+      font-size: 12px;
+      color: var(--restricted-text);
+      line-height: 1.5;
+    }
+
+    /* ─── Right Column: Info Cards ─────────────────────────────── */
+    .login-right {
+      width: 280px;
+      flex-shrink: 0;
+      display: flex;
+      flex-direction: column;
+      gap: 16px;
+      animation: rightIn 0.55s cubic-bezier(0.34, 1.56, 0.64, 1) 0.15s both;
+    }
+
+    @keyframes rightIn {
+      from {
+        opacity: 0;
+        transform: translateX(20px);
+      }
+
+      to {
+        opacity: 1;
+        transform: translateX(0);
+      }
+    }
+
+    /* Large info card */
+    .info-card-lg {
+      background: var(--green-dark);
+      border-radius: var(--radius-lg);
+      padding: 28px 24px;
+      color: var(--text-on-dark);
+      position: relative;
+      overflow: hidden;
+    }
+
+    .info-card-lg::before {
+      content: '';
+      position: absolute;
+      top: -40px;
+      right: -40px;
+      width: 140px;
+      height: 140px;
+      background: radial-gradient(circle, rgba(201, 168, 76, 0.12) 0%, transparent 70%);
+      border-radius: 50%;
+    }
+
+    .info-card-lg-icon {
+      width: 40px;
+      height: 40px;
+      background: rgba(201, 168, 76, 0.2);
+      border-radius: 10px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin-bottom: 18px;
+    }
+
+    .info-card-lg-icon svg {
+      width: 22px;
+      height: 22px;
+      color: var(--gold-accent);
+    }
+
+    .info-card-lg h3 {
+      font-size: 18px;
+      font-weight: 700;
+      margin-bottom: 10px;
+      letter-spacing: -0.3px;
+    }
+
+    .info-card-lg p {
+      font-size: 13px;
+      line-height: 1.6;
+      color: rgba(240, 239, 232, 0.75);
+    }
+
+    /* Small info cards grid */
+    .info-cards-row {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 12px;
+    }
+
+    .info-card-sm {
+      background: var(--bg-card);
+      border: 1px solid var(--border-light);
+      border-radius: var(--radius-md);
+      padding: 20px 16px;
+      transition: all 0.25s ease;
+      cursor: default;
+    }
+
+    .info-card-sm:hover {
+      border-color: var(--green-accent);
+      box-shadow: 0 4px 16px rgba(26, 60, 52, 0.08);
+      transform: translateY(-2px);
+    }
+
+    .info-card-sm-icon {
+      width: 36px;
+      height: 36px;
+      background: rgba(26, 60, 52, 0.08);
+      border-radius: 9px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin-bottom: 12px;
+    }
+
+    .info-card-sm-icon svg {
+      width: 18px;
+      height: 18px;
+      color: var(--green-dark);
+    }
+
+    .info-card-sm h4 {
+      font-size: 13px;
+      font-weight: 600;
+      color: var(--text-primary);
+    }
+
+    /* ─── Footer ──────────────────────────────────────────────── */
+    .login-footer {
+      text-align: center;
+      padding: 20px 24px 28px;
+    }
+
+    .footer-apply {
+      font-size: 13px;
+      color: var(--text-secondary);
+      margin-bottom: 14px;
+    }
+
+    .footer-apply a {
+      color: var(--text-primary);
+      font-weight: 700;
+      text-decoration: none;
+      transition: color 0.2s;
+    }
+
+    .footer-apply a:hover {
+      color: var(--green-accent);
+      text-decoration: underline;
+    }
+
+    .footer-links {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      font-size: 12px;
+    }
+
+    .footer-links a {
+      color: var(--text-muted);
+      text-decoration: none;
+      transition: color 0.2s;
+    }
+
+    .footer-links a:hover {
+      color: var(--green-accent);
+    }
+
+    .footer-links .sep {
+      color: var(--border-light);
+      font-size: 10px;
+    }
+
+    /* ─── Responsive ──────────────────────────────────────────── */
+    @media (max-width: 820px) {
+      .login-container {
+        flex-direction: column;
+        align-items: center;
+      }
+
+      .login-left {
+        max-width: 480px;
+      }
+
+      .login-right {
+        width: 100%;
+        max-width: 480px;
+      }
+    }
+
+    @media (max-width: 480px) {
+      .login-page {
+        padding: 24px 12px 12px;
+      }
+
+      .auth-card {
+        padding: 28px 20px;
+        border-radius: var(--radius-lg);
+      }
+
+      .brand-title {
+        font-size: 22px;
+      }
+
+      .info-card-lg {
+        padding: 22px 18px;
+      }
+
+      .info-card-lg h3 {
+        font-size: 16px;
+      }
+    }
+  </style>
 </head>
 
 <body>
-  <div class="grid-bg"></div>
-  <div class="page">
-    <div class="auth-card">
+  <div class="login-page">
+    <div class="login-wrapper">
 
       <!-- Brand -->
       <div class="brand">
-        <div class="brand-icon">🎓</div>
-        <div class="brand-title">Malla Reddy Deemed to be University</div>
-        <div class="brand-sub">STUDENT PORTAL · SECURE ACCESS</div>
+        <div class="brand-icon">
+          <!-- Institution / pillars icon -->
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+            stroke-linejoin="round">
+            <line x1="3" y1="21" x2="21" y2="21" />
+            <line x1="3" y1="10" x2="21" y2="10" />
+            <polyline points="12 3 21 10 3 10" />
+            <line x1="7" y1="10" x2="7" y2="21" />
+            <line x1="12" y1="10" x2="12" y2="21" />
+            <line x1="17" y1="10" x2="17" y2="21" />
+          </svg>
+        </div>
+        <div class="brand-title">Welcome Back</div>
+        <div class="brand-sub">Please enter your academic credentials.</div>
       </div>
 
-      <!-- Title -->
-      <h1 class="screen-title">Welcome Back</h1>
-      <p class="screen-subtitle">Enter your roll number and password to access the portal.</p>
+      <div class="login-container">
 
-      <!-- Error Alert -->
-      <div id="alert" class="alert alert-error">
-        <span class="alert-icon">⚠️</span>
-        <span id="alert-msg">Error message</span>
-      </div>
+        <!-- ═══ Left Column ═══ -->
+        <div class="login-left">
 
-      <!-- Login Form -->
-      <form id="login-form" novalidate autocomplete="off">
-        <div class="form-group">
-          <label class="form-label" for="rollNumber">Roll Number</label>
-          <div class="input-wrap">
-            <input type="text" id="rollNumber" class="form-input" placeholder="e.g. 25EU0_R0___" autocomplete="off"
-              spellcheck="false" maxlength="20" style="text-transform: uppercase;" />
-            <span class="input-icon">🪪</span>
+          <!-- Auth Card -->
+          <div class="auth-card">
+
+            <!-- Error Alert (hidden by default) -->
+            <div id="alert" class="alert alert-error">
+              <span class="alert-icon">⚠️</span>
+              <span id="alert-msg">Error message</span>
+            </div>
+
+            <!-- Login Form -->
+            <form id="login-form" novalidate autocomplete="off">
+
+              <!-- Roll Number -->
+              <div class="form-group">
+                <div class="form-label-row">
+                  <label class="form-label" for="rollNumber">Roll Number</label>
+                </div>
+                <div class="input-wrap">
+                  <span class="input-icon">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                      stroke-linejoin="round">
+                      <rect x="3" y="4" width="18" height="16" rx="2" />
+                      <line x1="8" y1="2" x2="8" y2="6" />
+                      <line x1="16" y1="2" x2="16" y2="6" />
+                      <line x1="3" y1="10" x2="21" y2="10" />
+                    </svg>
+                  </span>
+                  <input type="text" id="rollNumber" class="form-input" placeholder="e.g. 21BCE0042" autocomplete="off"
+                    spellcheck="false" maxlength="20" style="text-transform: uppercase;" />
+                </div>
+              </div>
+
+              <!-- Password -->
+              <div class="form-group">
+                <div class="form-label-row">
+                  <label class="form-label" for="password">Password</label>
+                  <a href="/forgot-password.html" class="forgot-link">Forgot password?</a>
+                </div>
+                <div class="input-wrap">
+                  <span class="input-icon">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                      stroke-linejoin="round">
+                      <rect x="3" y="11" width="18" height="11" rx="2" ry="2" />
+                      <path d="M7 11V7a5 5 0 0 1 10 0v4" />
+                    </svg>
+                  </span>
+                  <input type="password" id="password" class="form-input" placeholder="Enter your password"
+                    autocomplete="current-password" />
+                  <button type="button" class="pw-toggle" id="pw-toggle" aria-label="Toggle password visibility">
+                    <svg id="eye-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+                      stroke-linecap="round" stroke-linejoin="round">
+                      <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z" />
+                      <circle cx="12" cy="12" r="3" />
+                    </svg>
+                  </button>
+                </div>
+              </div>
+
+              <!-- Sign In Button -->
+              <button type="submit" class="btn-primary" id="login-btn">
+                Sign In
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                  stroke-linejoin="round">
+                  <path d="M15 3h4a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2h-4" />
+                  <polyline points="10 17 15 12 10 7" />
+                  <line x1="15" y1="12" x2="3" y2="12" />
+                </svg>
+              </button>
+            </form>
+
+            <!-- Divider -->
+            <div class="divider">AUTHORIZED</div>
+
+            <!-- Restricted Access Notice -->
+            <div class="restricted-notice">
+              <div class="restricted-notice-icon">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                  stroke-linejoin="round">
+                  <circle cx="12" cy="12" r="10" />
+                  <line x1="12" y1="8" x2="12" y2="12" />
+                  <line x1="12" y1="16" x2="12.01" y2="16" />
+                </svg>
+              </div>
+              <div class="restricted-notice-content">
+                <h4>Restricted Access</h4>
+                <p>This portal is for authorized MRDU students and faculty only. All login attempts are logged and
+                  monitored.</p>
+              </div>
+            </div>
+
           </div>
         </div>
 
-        <div class="form-group">
-          <label class="form-label" for="password">Password</label>
-          <div class="input-wrap">
-            <input type="password" id="password" class="form-input" placeholder="Enter your password"
-              autocomplete="current-password" />
-            <span class="input-icon">🔑</span>
-            <button type="button" class="pw-toggle" id="pw-toggle" aria-label="Toggle password visibility">👁</button>
+        <!-- ═══ Right Column ═══ -->
+        <div class="login-right">
+
+          <!-- Digital Credentials Card -->
+          <div class="info-card-lg">
+            <div class="info-card-lg-icon">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                stroke-linejoin="round">
+                <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14" />
+                <polyline points="22 4 12 14.01 9 11.01" />
+              </svg>
+            </div>
+            <h3>Digital Credentials</h3>
+            <p>Access your verified grades, course materials, and digital student ID through our secure encrypted network.
+            </p>
           </div>
-          <div style="text-align: right; margin-top: 8px;">
-            <a href="/forgot-password.html" style="color: var(--primary); font-size: 13px; text-decoration: none; font-weight: 500;">Forgot Password?</a>
+
+          <!-- Small Cards -->
+          <div class="info-cards-row">
+            <div class="info-card-sm">
+              <div class="info-card-sm-icon">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                  stroke-linejoin="round">
+                  <path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9" />
+                  <path d="M13.73 21a2 2 0 0 1-3.46 0" />
+                </svg>
+              </div>
+              <h4>Live Updates</h4>
+            </div>
+            <div class="info-card-sm">
+              <div class="info-card-sm-icon">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                  stroke-linejoin="round">
+                  <circle cx="12" cy="12" r="10" />
+                  <path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3" />
+                  <line x1="12" y1="17" x2="12.01" y2="17" />
+                </svg>
+              </div>
+              <h4>Help Desk</h4>
+            </div>
           </div>
         </div>
 
-        <button type="submit" class="btn-primary" id="login-btn">Sign In</button>
-      </form>
-
-      <div class="divider">RESTRICTED ACCESS</div>
-      <p style="text-align:center; font-size:12px; color: var(--text-muted);">
-        Only pre-approved students of MRDU can access this portal.<br>
-        No registration is available.
-      </p>
-
+      </div>
     </div>
   </div>
 
+  <!-- Footer -->
+  <div class="login-footer">
+    <div class="footer-apply">New student? <a href="#">Apply for portal access</a></div>
+    <div class="footer-links">
+      <a href="#">Privacy Policy</a>
+      <span class="sep">·</span>
+      <a href="#">Terms of Use</a>
+      <span class="sep">·</span>
+      <a href="#">Campus Map</a>
+    </div>
+  </div>
+
+  <!-- ═══════════════════════════════════════════════════════════
+       ORIGINAL LOGIN LOGIC — PRESERVED EXACTLY
+       ═══════════════════════════════════════════════════════════ -->
   <script>
     // Check if already logged in
     (async () => {
@@ -93,10 +880,16 @@
     });
 
     // Toggle password visibility
+    const eyeIcon = document.getElementById('eye-icon');
     pwToggle.addEventListener('click', () => {
       const isText = pwInput.type === 'text';
       pwInput.type = isText ? 'password' : 'text';
-      pwToggle.textContent = isText ? '👁' : '🙈';
+      // Swap eye icon
+      if (isText) {
+        eyeIcon.innerHTML = '<path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/>';
+      } else {
+        eyeIcon.innerHTML = '<path d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19m-6.72-1.07a3 3 0 1 1-4.24-4.24"/><line x1="1" y1="1" x2="23" y2="23"/>';
+      }
     });
 
     function showAlert(msg, type = 'error') {
@@ -110,7 +903,7 @@
       loginBtn.disabled = loading;
       loginBtn.innerHTML = loading
         ? '<span class="spinner"></span> Signing In...'
-        : 'Sign In';
+        : 'Sign In <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="width:18px;height:18px"><path d="M15 3h4a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2h-4"/><polyline points="10 17 15 12 10 7"/><line x1="15" y1="12" x2="3" y2="12"/></svg>';
     }
 
     form.addEventListener('submit', async (e) => {

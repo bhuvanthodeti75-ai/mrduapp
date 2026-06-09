@@ -1,9 +1,15 @@
 {"rollNumber":"25EU06R0674","otp":"513409","expiresAt":1774226117083,"attempts":0,"_id":"AHzhEbVhDRc20HCK"}
 {"rollNumber":"25EU06R0001","otp":"925528","expiresAt":1773847992541,"attempts":1,"_id":"KEfO5PqCVoSH52c8"}
+{"rollNumber":"25EU08R0540","otp":"424874","expiresAt":1780129672384,"attempts":0,"_id":"Vr9l704eXn1dqbUx"}
 {"rollNumber":"25EU08R0138","otp":"214988","expiresAt":1774032042446,"attempts":0,"_id":"elX3K4IQMxxXeubR"}
 {"rollNumber":"25EU06R0638","otp":"107041","expiresAt":1774033750932,"attempts":0,"_id":"hzJDxHuPzqIGounq"}
 {"rollNumber":"25EU08R0364","otp":"568787","expiresAt":1773922744439,"attempts":0,"_id":"mypg15ik7rKn3dap"}
 {"rollNumber":"25EU05R0624","otp":"387624","expiresAt":1774033484126,"attempts":0,"_id":"rfXMkKao9lr5McjJ"}
+{"rollNumber":"25EU08R0616","otp":"859697","expiresAt":1780129075891,"attempts":0,"_id":"v5T1gO8Q3AJyGKt8"}
 {"rollNumber":"25EU08R0626","otp":"160285","expiresAt":1774038377339,"attempts":0,"_id":"wcETufyvNuCfAB34"}
 {"$$indexCreated":{"fieldName":"rollNumber","unique":true,"sparse":false}}
-{"$$indexCreated":{"fieldName":"rollNumber","unique":true}}
+{"rollNumber":"25EU08R0540","otp":"211682","expiresAt":1780497405921,"attempts":0,"_id":"Vr9l704eXn1dqbUx"}
+{"$$deleted":true,"_id":"Vr9l704eXn1dqbUx"}
+{"rollNumber":"25EU08R0475","otp":"396858","expiresAt":1780497486208,"attempts":0,"_id":"NCmsioyk0HXZRnUU"}
+{"rollNumber":"25EU08R0475","otp":"683151","expiresAt":1780497607179,"attempts":0,"_id":"NCmsioyk0HXZRnUU"}
+{"rollNumber":"25EU08R0540","otp":"123456","expiresAt":1780497747993,"attempts":0,"_id":"2dHM4tGfaR8XPYwA"}

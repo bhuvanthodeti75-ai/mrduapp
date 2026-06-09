@@ -10,3 +10,4 @@ db/*.db
 db/*.db-journal
 db/*.db-shm
 db/*.db-wal
+firebase-service-account.json*

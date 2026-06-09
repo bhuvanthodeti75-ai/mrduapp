@@ -5,69 +5,471 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>MRDU Student Portal — OTP Verification</title>
   <meta name="description" content="Verify your identity with a one-time password sent to your registered email." />
-  <link rel="stylesheet" href="styles.css" />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet" />
+  <style>
+    /* ═══════════════════════════════════════════════════════════════
+       MRDU OTP — Clean Light Theme with Forest Green Accents
+       ═══════════════════════════════════════════════════════════════ */
+
+    :root {
+      --bg-page: radial-gradient(circle, #fcfbfa 0%, #f4f2ec 100%);
+      --bg-card: #ffffff;
+      --bg-input: #f7f7f5;
+      --bg-input-focus: #ffffff;
+
+      --green-dark: #1a3c34;
+      --green-deep: #0f2b24;
+      --green-accent: #2d6a4f;
+      --green-muted: #3a7d5e;
+      --gold-accent: #c9a84c;
+
+      --text-primary: #1a1a1a;
+      --text-secondary: #555555;
+      --text-muted: #999999;
+      --text-on-dark: #f0efe8;
+
+      --border-light: #e5e3dc;
+      --border-input: #ddd9d0;
+
+      --error-bg: #fef2f2;
+      --error-border: #fecaca;
+      --error-text: #b91c1c;
+
+      --success: #2d6a4f;
+      --warning: #c9a84c;
+
+      --radius-sm: 10px;
+      --radius-md: 14px;
+      --radius-lg: 20px;
+      --radius-xl: 24px;
+
+      --shadow-card: 0 4px 24px rgba(0, 0, 0, 0.06);
+      --shadow-input: 0 1px 3px rgba(0, 0, 0, 0.04);
+      --shadow-btn: 0 4px 14px rgba(26, 60, 52, 0.3);
+    }
+
+    /* ─── Reset & Base ─────────────────────────────────────────── */
+    *, *::before, *::after {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    html {
+      -webkit-font-smoothing: antialiased;
+      scroll-behavior: smooth;
+    }
+
+    body {
+      font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+      background: var(--bg-page);
+      color: var(--text-primary);
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      padding: 40px 24px 24px;
+      position: relative;
+    }
+
+    body::before {
+      content: '';
+      position: fixed;
+      top: 0;
+      left: 0;
+      right: 0;
+      height: 4px;
+      background: linear-gradient(90deg, var(--green-dark), var(--green-accent), var(--gold-accent));
+      z-index: 100;
+    }
+
+    /* ─── Auth Card ─────────────────────────────────────────────────── */
+    .auth-card {
+      width: 100%;
+      max-width: 440px;
+      background: var(--bg-card);
+      border: 1px solid var(--border-light);
+      border-radius: var(--radius-xl);
+      box-shadow: var(--shadow-card);
+      padding: 40px 36px;
+      animation: cardIn 0.45s cubic-bezier(0.34, 1.56, 0.64, 1) both;
+      position: relative;
+    }
+
+    @keyframes cardIn {
+      from { opacity: 0; transform: translateY(16px) scale(0.98); }
+      to   { opacity: 1; transform: translateY(0) scale(1); }
+    }
+
+    /* ─── Logo / Brand ──────────────────────────────────────────────── */
+    .brand {
+      text-align: center;
+      margin-bottom: 24px;
+    }
+
+    .brand-icon {
+      width: 56px;
+      height: 56px;
+      background: var(--green-dark);
+      border-radius: 14px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin: 0 auto 18px;
+      position: relative;
+      box-shadow: 0 6px 20px rgba(26, 60, 52, 0.25);
+    }
+
+    .brand-icon svg {
+      width: 28px;
+      height: 28px;
+      color: var(--text-on-dark);
+    }
+
+    .brand-sub {
+      font-size: 11px;
+      font-weight: 700;
+      letter-spacing: 2px;
+      text-transform: uppercase;
+      color: var(--text-secondary);
+      margin-bottom: 6px;
+    }
+
+    .brand-title {
+      font-size: 22px;
+      font-weight: 800;
+      color: var(--green-dark);
+      letter-spacing: -0.5px;
+    }
+
+    /* ─── Step Indicator ────────────────────────────────────────────── */
+    .steps {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 6px;
+      margin-bottom: 32px;
+    }
+
+    .step-dot {
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+      background: #e5e3dc;
+      transition: all 0.3s;
+    }
+
+    .step-dot.active {
+      background: var(--green-dark);
+      width: 24px;
+      border-radius: 4px;
+    }
+
+    .step-dot.done {
+      background: var(--success);
+    }
+
+    .step-line {
+      width: 24px;
+      height: 2px;
+      background: #e5e3dc;
+    }
+
+    .step-line.done {
+      background: var(--success);
+    }
+
+    /* ─── Screen Titles ─────────────────────────────────────────────── */
+    .screen-title {
+      font-size: 24px;
+      font-weight: 800;
+      color: var(--text-primary);
+      margin-bottom: 8px;
+      letter-spacing: -0.5px;
+    }
+
+    .screen-subtitle {
+      font-size: 13.5px;
+      color: var(--text-secondary);
+      margin-bottom: 24px;
+      line-height: 1.5;
+    }
+
+    /* ─── Info Badge ────────────────────────────────────────────────── */
+    .info-badge {
+      background: var(--bg-input);
+      border: 1px solid var(--border-light);
+      border-radius: var(--radius-sm);
+      padding: 14px;
+      margin-bottom: 24px;
+      font-size: 13px;
+      color: var(--text-secondary);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+    }
+
+    .info-badge strong {
+      color: var(--green-dark);
+      font-family: 'JetBrains Mono', monospace;
+      font-weight: 600;
+    }
+
+    /* ─── Alerts ────────────────────────────────────────────────────── */
+    .alert {
+      padding: 12px 14px;
+      border-radius: var(--radius-sm);
+      font-size: 13px;
+      font-weight: 500;
+      display: none;
+      align-items: flex-start;
+      gap: 10px;
+      margin-bottom: 20px;
+      animation: alertIn 0.3s ease;
+    }
+
+    .alert.show { display: flex; }
+
+    @keyframes alertIn {
+      from { opacity: 0; transform: translateY(-6px); }
+      to   { opacity: 1; transform: translateY(0); }
+    }
+
+    .alert-error {
+      background: var(--error-bg);
+      border: 1px solid var(--error-border);
+      color: var(--error-text);
+    }
+
+    .alert-success {
+      background: #f0fdf4;
+      border: 1px solid #bbf7d0;
+      color: #166534;
+    }
+
+    .alert-icon { font-size: 16px; flex-shrink: 0; margin-top: 1px; }
+
+    /* ─── OTP Input ─────────────────────────────────────────────────── */
+    .otp-inputs {
+      display: flex;
+      gap: 8px;
+      justify-content: center;
+      margin: 24px 0;
+    }
+
+    .otp-digit {
+      width: 48px;
+      height: 56px;
+      text-align: center;
+      font-size: 22px;
+      font-weight: 700;
+      font-family: 'JetBrains Mono', monospace;
+      background: var(--bg-input);
+      border: 1.5px solid var(--border-input);
+      border-radius: var(--radius-sm);
+      color: var(--text-primary);
+      transition: all 0.2s;
+      outline: none;
+    }
+
+    .otp-digit:focus {
+      border-color: var(--green-accent);
+      background: var(--bg-input-focus);
+      box-shadow: 0 0 0 3px rgba(45, 106, 79, 0.1);
+      transform: scale(1.05);
+    }
+
+    .otp-digit.filled {
+      border-color: var(--green-accent);
+      color: var(--green-dark);
+    }
+
+    /* ─── Timer ─────────────────────────────────────────────────────── */
+    .timer-row {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 24px;
+      font-size: 13px;
+      color: var(--text-secondary);
+    }
+
+    .timer-count {
+      font-weight: 700;
+      color: var(--gold-accent);
+      font-family: 'JetBrains Mono', monospace;
+    }
+
+    .timer-count.expired {
+      color: var(--error-text);
+    }
+
+    /* ─── Buttons ───────────────────────────────────────────────────── */
+    .btn-primary {
+      width: 100%;
+      padding: 15px 20px;
+      background: var(--green-dark);
+      color: #fff;
+      font-family: 'Inter', sans-serif;
+      font-size: 14px;
+      font-weight: 600;
+      letter-spacing: 0.5px;
+      border: none;
+      border-radius: var(--radius-sm);
+      cursor: pointer;
+      transition: all 0.25s ease;
+      text-transform: uppercase;
+      box-shadow: var(--shadow-btn);
+    }
+
+    .btn-primary:hover {
+      background: var(--green-deep);
+      transform: translateY(-1px);
+    }
+
+    .btn-primary:active {
+      transform: translateY(0);
+    }
+
+    .btn-primary:disabled {
+      opacity: 0.55;
+      cursor: not-allowed;
+      transform: none;
+      box-shadow: none;
+    }
+
+    .btn-ghost {
+      background: #ffffff;
+      border: 1.5px solid var(--border-input);
+      color: var(--green-dark);
+      font-family: 'Inter', sans-serif;
+      font-size: 13px;
+      font-weight: 600;
+      padding: 12px 16px;
+      border-radius: var(--radius-sm);
+      cursor: pointer;
+      transition: all 0.2s;
+      width: 100%;
+      margin-top: 12px;
+      text-transform: uppercase;
+    }
+
+    .btn-ghost:hover:not(:disabled) {
+      border-color: var(--green-accent);
+      background: var(--bg-input);
+    }
+
+    .btn-ghost:disabled {
+      opacity: 0.55;
+      cursor: not-allowed;
+    }
+
+    .spinner {
+      display: inline-block;
+      width: 16px;
+      height: 16px;
+      border: 2px solid rgba(255, 255, 255, 0.3);
+      border-top-color: white;
+      border-radius: 50%;
+      animation: spin 0.7s linear infinite;
+      vertical-align: middle;
+      margin-right: 8px;
+    }
+
+    @keyframes spin { to { transform: rotate(360deg); } }
+
+    /* ─── Footer ────────────────────────────────────────────────────── */
+    .footer {
+      text-align: center;
+      margin-top: 32px;
+      font-size: 11px;
+      font-weight: 600;
+      letter-spacing: 1.5px;
+      color: var(--text-muted);
+      text-transform: uppercase;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 6px;
+    }
+
+    /* ─── Responsive ────────────────────────────────────────────────── */
+    @media (max-width: 480px) {
+      .auth-card { padding: 32px 24px; border-radius: var(--radius-lg); }
+      .otp-digit { width: 40px; height: 50px; font-size: 18px; }
+    }
+  </style>
 </head>
 <body>
-  <div class="grid-bg"></div>
-  <div class="page">
-    <div class="auth-card">
+  <div class="auth-card">
 
-      <!-- Brand -->
-      <div class="brand">
-        <div class="brand-icon">🔐</div>
-        <div class="brand-title">Malla Reddy Deemed to be University</div>
-        <div class="brand-sub">IDENTITY VERIFICATION</div>
+    <!-- Brand -->
+    <div class="brand">
+      <div class="brand-icon">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/>
+        </svg>
       </div>
-
-      <!-- Step indicator -->
-      <div class="steps">
-        <div class="step-dot done"></div>
-        <div class="step-line"></div>
-        <div class="step-dot active"></div>
-        <div class="step-line"></div>
-        <div class="step-dot"></div>
-      </div>
-
-      <h1 class="screen-title">Verify Your Email</h1>
-      <p class="screen-subtitle" id="subtitle-text">
-        A 6-digit OTP has been sent to your registered student email.
-      </p>
-
-      <!-- Masked email badge -->
-      <div class="info-badge" id="email-badge">
-        📧 Sent to: <strong id="masked-email">loading...</strong>
-      </div>
-
-      <!-- Alert -->
-      <div id="alert" class="alert">
-        <span class="alert-icon" id="alert-icon">⚠️</span>
-        <span id="alert-msg">Error message</span>
-      </div>
-
-      <!-- OTP Inputs -->
-      <div class="otp-inputs" id="otp-container">
-        <input type="text" class="otp-digit" maxlength="1" inputmode="numeric" pattern="[0-9]" id="d0" />
-        <input type="text" class="otp-digit" maxlength="1" inputmode="numeric" pattern="[0-9]" id="d1" />
-        <input type="text" class="otp-digit" maxlength="1" inputmode="numeric" pattern="[0-9]" id="d2" />
-        <input type="text" class="otp-digit" maxlength="1" inputmode="numeric" pattern="[0-9]" id="d3" />
-        <input type="text" class="otp-digit" maxlength="1" inputmode="numeric" pattern="[0-9]" id="d4" />
-        <input type="text" class="otp-digit" maxlength="1" inputmode="numeric" pattern="[0-9]" id="d5" />
-      </div>
-
-      <!-- Timer -->
-      <div class="timer-row">
-        <span style="font-size:12px;">OTP expires in:</span>
-        <span class="timer-count" id="timer">05:00</span>
-      </div>
-
-      <button class="btn-primary" id="verify-btn" style="margin-top: 20px;">Verify OTP</button>
-      <button class="btn-ghost" id="resend-btn" disabled>Resend OTP (wait 60s)</button>
-
+      <div class="brand-sub">IDENTITY VERIFICATION</div>
+      <div class="brand-title">MRDU Student Portal</div>
     </div>
+
+    <!-- Step indicator -->
+    <div class="steps">
+      <div class="step-dot done"></div>
+      <div class="step-line done"></div>
+      <div class="step-dot active"></div>
+      <div class="step-line"></div>
+      <div class="step-dot"></div>
+    </div>
+
+    <h1 class="screen-title">Verify Your Email</h1>
+    <p class="screen-subtitle" id="subtitle-text">
+      A 6-digit OTP has been sent to your registered student email address.
+    </p>
+
+    <!-- Masked email badge -->
+    <div class="info-badge" id="email-badge">
+      <span style="font-size: 16px; margin-right: 4px;">✉</span> Sent to: <strong id="masked-email">loading...</strong>
+    </div>
+
+    <!-- Alert -->
+    <div id="alert" class="alert">
+      <span class="alert-icon" id="alert-icon">⚠️</span>
+      <span id="alert-msg">Error message</span>
+    </div>
+
+    <!-- OTP Inputs -->
+    <div class="otp-inputs" id="otp-container">
+      <input type="text" class="otp-digit" maxlength="1" inputmode="numeric" pattern="[0-9]" id="d0" />
+      <input type="text" class="otp-digit" maxlength="1" inputmode="numeric" pattern="[0-9]" id="d1" />
+      <input type="text" class="otp-digit" maxlength="1" inputmode="numeric" pattern="[0-9]" id="d2" />
+      <input type="text" class="otp-digit" maxlength="1" inputmode="numeric" pattern="[0-9]" id="d3" />
+      <input type="text" class="otp-digit" maxlength="1" inputmode="numeric" pattern="[0-9]" id="d4" />
+      <input type="text" class="otp-digit" maxlength="1" inputmode="numeric" pattern="[0-9]" id="d5" />
+    </div>
+
+    <!-- Timer -->
+    <div class="timer-row">
+      <span>OTP expires in:</span>
+      <span class="timer-count" id="timer">05:00</span>
+    </div>
+
+    <button class="btn-primary" id="verify-btn">Verify OTP</button>
+    <button class="btn-ghost" id="resend-btn" disabled>Resend OTP (wait 60s)</button>
+
+    <!-- Secure Footer -->
+    <div class="footer">
+      <span>🔒 Secure End-to-End Encryption</span>
+    </div>
+
   </div>
 
   <script>
-    // If not in first-login flow, redirect to login
     const digits = Array.from(document.querySelectorAll('.otp-digit'));
     const verifyBtn = document.getElementById('verify-btn');
     const resendBtn = document.getElementById('resend-btn');

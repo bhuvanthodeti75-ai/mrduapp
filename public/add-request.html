@@ -8,81 +8,357 @@
     <link rel="stylesheet" href="styles.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
-        .form-group {
-            margin-bottom: 20px;
+        body {
+            background: #f3f2eb !important;
+            color: #0e291e !important;
+            font-family: 'Inter', sans-serif !important;
+            min-height: 100vh;
+            display: block !important;
+            padding: 0 !important;
+            margin: 0 !important;
         }
+        body::before, body::after, .grid-bg { display: none !important; }
+
+        /* Navbar */
+        .edu-navbar {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            background: #f3f2eb;
+            border-bottom: 1px solid rgba(14,41,30,0.08);
+            padding: 16px 8%;
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+        .nav-brand {
+            font-size: 22px; font-weight: 800; color: #07442d;
+            cursor: pointer; display: flex; align-items: center; gap: 8px;
+        }
+        .nav-links { display: flex; gap: 32px; }
+        .nav-links a { color: #4a5a51; text-decoration: none; font-weight: 500; font-size: 14px; transition: color 0.2s; }
+        .nav-links a:hover { color: #07442d; }
+        .nav-actions { display: flex; align-items: center; gap: 20px; }
+        .nav-avatar { width: 32px; height: 32px; border-radius: 50%; cursor: pointer; border: 1px solid rgba(14,41,30,0.15); object-fit: cover; }
+
+        /* Page layout */
+        .page-content {
+            max-width: 1100px;
+            margin: 0 auto;
+            padding: 32px 8%;
+        }
+
+        .back-link {
+            display: inline-flex; align-items: center; gap: 6px;
+            color: #0e291e; text-decoration: none; font-size: 14px; font-weight: 500;
+            margin-bottom: 36px; transition: color 0.2s;
+        }
+        .back-link:hover { color: #07442d; }
+
+        /* Two-column layout */
+        .form-layout {
+            display: grid;
+            grid-template-columns: 1fr 1.2fr;
+            gap: 64px;
+            align-items: start;
+        }
+
+        /* Left side info panel */
+        .info-panel {}
+
+        .new-request-badge {
+            display: inline-flex; align-items: center; gap: 8px;
+            font-size: 12px; font-weight: 700; color: #07442d;
+            text-transform: uppercase; letter-spacing: 1.5px;
+            margin-bottom: 16px;
+        }
+        .new-request-badge .badge-icon {
+            width: 36px; height: 36px; border-radius: 8px;
+            background: #07442d; display: flex; align-items: center; justify-content: center;
+            color: #f3f2eb; font-size: 16px;
+        }
+
+        .info-title {
+            font-size: 36px; font-weight: 850; color: #0e291e;
+            letter-spacing: -1px; line-height: 1.15; margin-bottom: 16px;
+        }
+        .info-title i { color: #07442d; font-size: 28px; margin-right: 4px; vertical-align: middle; }
+
+        .info-desc {
+            font-size: 15px; color: #4a5a51; line-height: 1.7; margin-bottom: 36px;
+        }
+
+        .info-features {
+            display: flex; flex-direction: column; gap: 20px;
+        }
+        .info-feature {
+            display: flex; align-items: flex-start; gap: 14px;
+        }
+        .info-feature-icon {
+            width: 40px; height: 40px; border-radius: 10px;
+            background: rgba(7,68,45,0.06); display: flex; align-items: center; justify-content: center;
+            color: #07442d; font-size: 16px; flex-shrink: 0;
+        }
+        .info-feature-title { font-size: 14px; font-weight: 700; color: #0e291e; margin-bottom: 2px; }
+        .info-feature-desc { font-size: 13px; color: #4a5a51; line-height: 1.5; }
+
+        /* Right side form panel */
+        .form-panel {}
+
+        .form-group { margin-bottom: 24px; }
+
         .form-label {
-            display: block;
-            margin-bottom: 8px;
-            font-size: 13px;
-            font-weight: 600;
-            color: var(--text-muted);
+            display: block; margin-bottom: 8px;
+            font-size: 12px; font-weight: 700; color: #0e291e;
+            text-transform: uppercase; letter-spacing: 0.8px;
         }
-        .form-input, .form-textarea, .form-select {
+        .form-label .req { color: #b91c1c; }
+
+        .form-input, .form-textarea {
             width: 100%;
-            padding: 12px 16px;
-            background: rgba(255,255,255,0.03);
-            border: 1px solid var(--border);
-            border-radius: 12px;
-            color: white;
+            padding: 14px 16px;
+            background: #f3f2eb;
+            border: 1px solid rgba(14,41,30,0.15);
+            border-radius: 10px;
+            color: #0e291e;
+            font-family: 'Inter', sans-serif;
+            font-size: 14px;
             outline: none;
-            transition: 0.2s;
+            transition: all 0.2s;
         }
-        .form-input:focus, .form-textarea:focus, .form-select:focus {
-            border-color: var(--accent);
-            background: rgba(255,255,255,0.05);
+        .form-input:focus, .form-textarea:focus {
+            border-color: #07442d;
+            box-shadow: 0 0 0 3px rgba(7,68,45,0.08);
         }
-        .form-textarea {
-            height: 120px;
-            resize: vertical;
+        .form-input::placeholder, .form-textarea::placeholder { color: #8b9a91; }
+        .form-textarea { height: 130px; resize: vertical; }
+
+        .form-hint {
+            font-size: 12px; color: #8b9a91; margin-top: 6px; font-style: italic;
+        }
+
+        .phone-input-wrap {
+            display: flex; align-items: center;
+            background: #f3f2eb;
+            border: 1px solid rgba(14,41,30,0.15);
+            border-radius: 10px;
+            overflow: hidden;
+            transition: all 0.2s;
+        }
+        .phone-input-wrap:focus-within {
+            border-color: #07442d;
+            box-shadow: 0 0 0 3px rgba(7,68,45,0.08);
+        }
+        .phone-prefix {
+            padding: 14px 12px 14px 16px;
+            font-size: 14px; font-weight: 600; color: #07442d;
+            border-right: 1px solid rgba(14,41,30,0.08);
+            white-space: nowrap;
+        }
+        .phone-input-wrap input {
+            flex: 1; border: none; background: transparent; outline: none;
+            padding: 14px 16px; font-size: 14px; color: #0e291e;
+            font-family: 'Inter', sans-serif;
+        }
+        .phone-input-wrap input::placeholder { color: #8b9a91; }
+
+        /* Privacy checkbox */
+        .privacy-box {
+            background: #f3f2eb;
+            border: 1px solid rgba(14,41,30,0.15);
+            border-radius: 10px;
+            padding: 18px;
+        }
+        .privacy-label {
+            display: flex; align-items: flex-start; gap: 14px; cursor: pointer;
+        }
+        .privacy-label input[type="checkbox"] {
+            width: 20px; height: 20px; accent-color: #07442d;
+            margin-top: 2px; flex-shrink: 0;
+        }
+        .privacy-title { font-size: 14px; font-weight: 700; color: #0e291e; margin-bottom: 4px; }
+        .privacy-desc { font-size: 12px; color: #4a5a51; line-height: 1.5; }
+
+        /* Submit button */
+        .submit-btn {
+            width: 100%; padding: 16px; border: none; border-radius: 10px;
+            background: #07442d; color: #f3f2eb;
+            font-family: 'Inter', sans-serif; font-size: 15px; font-weight: 700;
+            cursor: pointer; transition: all 0.2s;
+            display: flex; align-items: center; justify-content: center; gap: 10px;
+            margin-top: 8px;
+        }
+        .submit-btn:hover { background: #0a5a3d; transform: translateY(-1px); }
+        .submit-btn:disabled { opacity: 0.5; cursor: not-allowed; transform: none; }
+
+        .terms-note {
+            text-align: center; font-size: 12px; color: #8b9a91; margin-top: 16px;
+        }
+        .terms-note a { color: #07442d; text-decoration: underline; }
+
+        /* Feature cards */
+        .features-row {
+            display: grid; grid-template-columns: repeat(3, 1fr); gap: 20px;
+            margin-top: 56px; padding-top: 48px; border-top: 1px solid rgba(14,41,30,0.06);
+        }
+        .feature-card {
+            background: #f3f2eb; border: 1px solid rgba(14,41,30,0.08);
+            border-radius: 12px; overflow: hidden; transition: all 0.2s;
+        }
+        .feature-card:hover { border-color: rgba(7,68,45,0.15); }
+        .feature-img {
+            width: 100%; height: 160px; object-fit: cover;
+            background: #e9e8e0;
+            display: flex; align-items: center; justify-content: center;
+            font-size: 48px; color: #8b9a91;
+        }
+        .feature-body { padding: 20px; }
+        .feature-title { font-size: 15px; font-weight: 700; color: #0e291e; margin-bottom: 6px; }
+        .feature-desc { font-size: 13px; color: #4a5a51; line-height: 1.5; }
+
+        /* Footer */
+        .edu-footer {
+            margin-top: 60px; padding: 24px 8%;
+            border-top: 1px solid rgba(14,41,30,0.06);
+            display: flex; justify-content: space-between; align-items: center;
+            font-size: 13px; color: #8b9a91;
+        }
+        .edu-footer a { color: #4a5a51; text-decoration: none; margin-left: 24px; transition: color 0.2s; }
+        .edu-footer a:hover { color: #07442d; }
+
+        @media (max-width: 768px) {
+            .form-layout { grid-template-columns: 1fr; gap: 32px; }
+            .info-title { font-size: 28px; }
+            .features-row { grid-template-columns: 1fr; }
+            .nav-links { display: none; }
+            .edu-footer { flex-direction: column; gap: 12px; text-align: center; }
         }
     </style>
 </head>
 
-<body class="bg-animate">
-    <div class="glass-container dashboard-card" style="max-width: 600px;">
-        <div style="display: flex; gap: 8px; margin-bottom: 24px;">
-            <a href="/requests.html" class="btn-ghost" style="width: auto; margin: 0; padding: 6px 12px; font-size: 12px;">
-              <i class="fas fa-arrow-left"></i> Back to Requests
-            </a>
+<body>
+    <nav class="edu-navbar">
+        <div class="nav-brand" onclick="location.href='/dashboard.html'">
+            <i class="fas fa-graduation-cap"></i> EduMarket
         </div>
-        
-        <h1 style="font-size: 24px; margin-bottom: 8px;"><i class="fas fa-bullhorn" style="color:var(--accent);"></i> Post Item Request</h1>
-        <p style="color: var(--text-muted); font-size: 14px; margin-bottom: 32px;">Need something? Let the university community know.</p>
+        <div class="nav-links">
+            <a href="/marketplace.html">Explore</a>
+            <a href="/requests.html" style="color: #07442d; font-weight: 600;">Requests</a>
+        </div>
+        <div class="nav-actions">
+            <img src="/avatar.png" alt="Profile" class="nav-avatar" onclick="location.href='/profile.html'">
+        </div>
+    </nav>
 
-        <form id="requestForm">
-            <div class="form-group">
-                <label class="form-label">Item Title <span style="color:red">*</span></label>
-                <input type="text" id="title" class="form-input" placeholder="e.g. Engineering Drawing Kit, First Year Textbooks..." required>
-            </div>
+    <div class="page-content">
+        <a href="/requests.html" class="back-link"><i class="fas fa-arrow-left"></i> Back to Requests</a>
 
-            <div class="form-group">
-                <label class="form-label">Description <span style="color:red">*</span></label>
-                <textarea id="description" class="form-textarea" placeholder="Detail exactly what you are looking for..." required></textarea>
-            </div>
+        <div class="form-layout">
+            <!-- Left: Info Panel -->
+            <div class="info-panel">
+                <div class="new-request-badge">
+                    <div class="badge-icon"><i class="fas fa-clipboard-list"></i></div>
+                    NEW REQUEST
+                </div>
+                <h1 class="info-title"><i class="fas fa-file-alt"></i> Post Item Request</h1>
+                <p class="info-desc">Need something? Let the university community know. Describe exactly what you're looking for, and we'll help you find a student who can help.</p>
 
-            <div class="form-group">
-                <label class="form-label">Contact / WhatsApp Number <span style="color:red">*</span></label>
-                <input type="tel" id="contact" class="form-input" placeholder="10-digit mobile number" pattern="[0-9]{10}" required>
-                <p style="font-size: 11px; color: var(--text-muted); margin-top: 6px;">Must be exactly 10 digits.</p>
-            </div>
-
-            <div class="form-group">
-                <label class="form-label">Contact Privacy <span style="color:red">*</span></label>
-                <div style="background: rgba(255,255,255,0.02); border: 1px solid var(--border); padding: 16px; border-radius: 12px;">
-                    <label style="display: flex; align-items: center; gap: 12px; cursor: pointer;">
-                        <input type="checkbox" id="requireApproval" style="width: 20px; height: 20px; accent-color: var(--accent);">
+                <div class="info-features">
+                    <div class="info-feature">
+                        <div class="info-feature-icon"><i class="fas fa-shield-alt"></i></div>
                         <div>
-                            <div style="font-weight: 600; font-size: 14px;">Require Contact Approval</div>
-                            <div style="font-size: 11px; color: var(--text-muted); margin-top: 4px;">If checked, students must send a request and wait for you to accept before seeing your WhatsApp number.</div>
+                            <div class="info-feature-title">Secure Platform</div>
+                            <div class="info-feature-desc">Your privacy is prioritized with optional approval cycles.</div>
                         </div>
-                    </label>
+                    </div>
+                    <div class="info-feature">
+                        <div class="info-feature-icon"><i class="fas fa-users"></i></div>
+                        <div>
+                            <div class="info-feature-title">Community Driven</div>
+                            <div class="info-feature-desc">Reaching over 15,000 active students daily.</div>
+                        </div>
+                    </div>
                 </div>
             </div>
 
-            <button type="submit" id="submitBtn" class="btn-primary" style="margin-top: 16px;">Publish Request</button>
-        </form>
+            <!-- Right: Form Panel -->
+            <div class="form-panel">
+                <form id="requestForm">
+                    <div class="form-group">
+                        <label class="form-label">Item Title <span class="req">*</span></label>
+                        <input type="text" id="title" class="form-input" placeholder="e.g. Engineering Drawing Kit, First Year Textbooks..." required>
+                    </div>
+
+                    <div class="form-group">
+                        <label class="form-label">Description <span class="req">*</span></label>
+                        <textarea id="description" class="form-textarea" placeholder="Detail exactly what you are looking for..." required></textarea>
+                    </div>
+
+                    <div class="form-group">
+                        <label class="form-label">Contact / WhatsApp Number <span class="req">*</span></label>
+                        <div class="phone-input-wrap">
+                            <span class="phone-prefix">+234</span>
+                            <input type="tel" id="contact" placeholder="10-digit mobile number" pattern="[0-9]{10}" required>
+                        </div>
+                        <p class="form-hint">Must be exactly 10 digits.</p>
+                    </div>
+
+                    <div class="form-group">
+                        <label class="form-label">Contact Privacy <span class="req">*</span></label>
+                        <div class="privacy-box">
+                            <label class="privacy-label">
+                                <input type="checkbox" id="requireApproval">
+                                <div>
+                                    <div class="privacy-title">Require Contact Approval</div>
+                                    <div class="privacy-desc">If checked, students must send a request and wait for you to accept before seeing your WhatsApp number.</div>
+                                </div>
+                            </label>
+                        </div>
+                    </div>
+
+                    <button type="submit" id="submitBtn" class="submit-btn">
+                        Publish Request <i class="fas fa-paper-plane"></i>
+                    </button>
+                    <p class="terms-note">By publishing, you agree to our <a href="#">Terms of Service</a>.</p>
+                </form>
+            </div>
+        </div>
+
+        <!-- Feature cards -->
+        <div class="features-row">
+            <div class="feature-card">
+                <div class="feature-img"><i class="fas fa-search"></i></div>
+                <div class="feature-body">
+                    <div class="feature-title">Find what you need</div>
+                    <div class="feature-desc">From textbooks to lab equipment, reach the right people instantly.</div>
+                </div>
+            </div>
+            <div class="feature-card">
+                <div class="feature-img"><i class="fas fa-lock"></i></div>
+                <div class="feature-body">
+                    <div class="feature-title">Safe Transactions</div>
+                    <div class="feature-desc">Built-in privacy features ensure you're always in control of your data.</div>
+                </div>
+            </div>
+            <div class="feature-card">
+                <div class="feature-img"><i class="fas fa-bolt"></i></div>
+                <div class="feature-body">
+                    <div class="feature-title">Fast Responses</div>
+                    <div class="feature-desc">Our notification engine ensures your request gets seen by students immediately.</div>
+                </div>
+            </div>
+        </div>
     </div>
+
+    <!-- Footer -->
+    <footer class="edu-footer">
+        <div><i class="fas fa-graduation-cap"></i> EduMarket © 2024</div>
+        <div>
+            <a href="#">Privacy</a>
+            <a href="#">Terms</a>
+            <a href="#">Support</a>
+        </div>
+    </footer>
 
     <script>
         document.getElementById('requestForm').addEventListener('submit', async (e) => {
@@ -112,15 +388,14 @@
                     const data = await res.json();
                     alert(data.error || 'Failed to post request.');
                     btn.disabled = false;
-                    btn.textContent = 'Publish Request';
+                    btn.innerHTML = 'Publish Request <i class="fas fa-paper-plane"></i>';
                 }
             } catch (err) {
                 alert('Network error. Please try again.');
                 btn.disabled = false;
-                btn.textContent = 'Publish Request';
+                btn.innerHTML = 'Publish Request <i class="fas fa-paper-plane"></i>';
             }
         });
     </script>
 </body>
-
 </html>

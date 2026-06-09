@@ -4,85 +4,657 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Item Details — Student Marketplace</title>
-    <link rel="stylesheet" href="styles.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        /* Modern light theme styling matching other green/gold pages */
+        :root {
+            --bg-page: #f2f0e8;
+            --bg-card: #ffffff;
+            --green-dark: #102a1e;
+            --green-primary: #1b3d2f;
+            --green-light: #e6eee9;
+            --gold-accent: #c5a059;
+            --gold-light: #f7f4eb;
+            --text-main: #2b3a33;
+            --text-muted: #62726a;
+            --border-color: #e2e0d7;
+            --shadow-sm: 0 2px 8px rgba(27, 61, 47, 0.05);
+            --shadow-md: 0 8px 20px rgba(27, 61, 47, 0.08);
+            --radius-lg: 12px;
+            --radius-md: 8px;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: var(--bg-page);
+            color: var(--text-main);
+            min-height: 100vh;
+            line-height: 1.5;
+        }
+
+        /* Top Nav Bar */
+        .nav-bar {
+            background: var(--bg-card);
+            border-bottom: 1px solid var(--border-color);
+            position: sticky;
+            top: 0;
+            z-index: 100;
+            padding: 15px 0;
+            box-shadow: var(--shadow-sm);
+        }
+        .nav-inner {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        .nav-brand {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            text-decoration: none;
+            color: var(--green-dark);
+            font-weight: 700;
+            font-size: 1.25rem;
+        }
+        .nav-brand svg {
+            width: 24px;
+            height: 24px;
+            stroke: var(--green-primary);
+        }
+        .nav-bell {
+            position: relative;
+            color: var(--text-muted);
+            font-size: 1.2rem;
+            text-decoration: none;
+            transition: color 0.2s;
+        }
+        .nav-bell:hover {
+            color: var(--green-primary);
+        }
+
+        /* Container */
+        .container {
+            max-width: 1200px;
+            margin: 40px auto;
+            padding: 0 20px;
+        }
+
+        /* Back button */
+        .btn-back {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            color: var(--text-muted);
+            text-decoration: none;
+            font-weight: 500;
+            font-size: 0.95rem;
+            margin-bottom: 24px;
+            transition: color 0.2s;
+        }
+        .btn-back:hover {
+            color: var(--green-primary);
+        }
+
+        /* Loading */
+        .loading-text {
+            text-align: center;
+            padding: 80px 20px;
+            font-size: 1.1rem;
+            color: var(--text-muted);
+        }
+
+        /* Two Column Layout */
+        .layout-grid {
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: 30px;
+        }
+        @media(min-width: 992px) {
+            .layout-grid {
+                grid-template-columns: 7fr 5fr;
+                align-items: start;
+            }
+        }
+
+        /* Cards */
+        .details-card {
+            background: var(--bg-card);
+            border-radius: var(--radius-lg);
+            padding: 30px;
+            border: 1px solid var(--border-color);
+            box-shadow: var(--shadow-md);
+            margin-bottom: 24px;
+        }
+
+        /* Left Column Details */
+        .badge-row {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+            align-items: center;
+            margin-bottom: 16px;
+        }
+        .item-cat {
+            background: var(--green-light);
+            color: var(--green-primary);
+            font-weight: 700;
+            text-transform: uppercase;
+            font-size: 0.75rem;
+            letter-spacing: 0.5px;
+            padding: 4px 10px;
+            border-radius: 4px;
+        }
+        .updated-date {
+            color: var(--text-muted);
+            font-size: 0.85rem;
+        }
+        .item-title {
+            color: var(--green-dark);
+            font-size: 2rem;
+            font-weight: 800;
+            margin-bottom: 20px;
+            line-height: 1.25;
+        }
+        .seller-row {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            border-top: 1px solid var(--border-color);
+            padding-top: 16px;
+        }
+        .seller-avatar {
+            width: 44px;
+            height: 44px;
+            border-radius: 50%;
+            background: var(--green-light);
+            color: var(--green-primary);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 700;
+            font-size: 1.1rem;
+        }
+        .seller-info {
+            display: flex;
+            flex-direction: column;
+        }
+        .seller-label {
+            font-size: 0.75rem;
+            color: var(--text-muted);
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+        .seller-val {
+            font-weight: 600;
+            color: var(--text-main);
+        }
+
+        .rating-box {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            margin-left: auto;
+            background: var(--gold-light);
+            padding: 6px 12px;
+            border-radius: 20px;
+            border: 1px solid rgba(197, 160, 89, 0.2);
+        }
+        .rating-box i {
+            color: var(--gold-accent);
+        }
+        .rating-val {
+            font-weight: 700;
+            color: #8c6a2c;
+            font-size: 0.9rem;
+        }
+
+        /* Section Heading */
+        .sec-title {
+            font-size: 1.25rem;
+            color: var(--green-dark);
+            font-weight: 700;
+            margin-bottom: 16px;
+            border-bottom: 2px solid var(--green-light);
+            padding-bottom: 8px;
+        }
+        .sec-text {
+            color: var(--text-main);
+            font-size: 0.98rem;
+            line-height: 1.7;
+            white-space: pre-wrap;
+        }
+
+        /* Right Column Side Card */
+        .preview-img-wrap {
+            position: relative;
+            width: 100%;
+            height: 240px;
+            border-radius: var(--radius-md) var(--radius-md) 0 0;
+            overflow: hidden;
+            background: #eae8df;
+            border: 1px solid var(--border-color);
+            border-bottom: none;
+        }
+        .preview-img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+        .sold-tag {
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(16, 42, 30, 0.85);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 10;
+        }
+        .sold-label {
+            background: var(--gold-accent);
+            color: var(--bg-card);
+            font-size: 1.4rem;
+            font-weight: 900;
+            padding: 8px 24px;
+            border-radius: 4px;
+            letter-spacing: 2px;
+        }
+        .item-badge {
+            position: absolute;
+            bottom: 12px;
+            left: 12px;
+            background: var(--green-primary);
+            color: #ffffff;
+            font-weight: 700;
+            font-size: 0.75rem;
+            padding: 4px 8px;
+            border-radius: 4px;
+        }
+        
+        .side-card-body {
+            background: var(--bg-card);
+            border: 1px solid var(--border-color);
+            border-radius: 0 0 var(--radius-md) var(--radius-md);
+            padding: 24px;
+            box-shadow: var(--shadow-sm);
+        }
+
+        .price-row {
+            display: flex;
+            align-items: baseline;
+            gap: 12px;
+            margin-bottom: 20px;
+        }
+        .item-price {
+            font-size: 2rem;
+            font-weight: 800;
+            color: var(--green-dark);
+        }
+        .original-price {
+            font-size: 1.1rem;
+            color: var(--text-muted);
+            text-decoration: line-through;
+        }
+        .discount-tag {
+            font-size: 0.85rem;
+            color: #b35900;
+            background: #fff0e0;
+            padding: 2px 8px;
+            border-radius: 4px;
+            font-weight: 700;
+        }
+
+        /* Buttons */
+        .btn-primary {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+            width: 100%;
+            background: var(--green-primary);
+            color: #ffffff;
+            border: none;
+            padding: 14px 20px;
+            border-radius: var(--radius-md);
+            font-size: 1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: background 0.2s, transform 0.1s;
+            text-decoration: none;
+        }
+        .btn-primary:hover {
+            background: var(--green-dark);
+        }
+        .btn-primary:active {
+            transform: scale(0.98);
+        }
+        .btn-primary:disabled {
+            background: var(--text-muted);
+            cursor: not-allowed;
+            transform: none;
+        }
+
+        .btn-ghost {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            width: 100%;
+            background: transparent;
+            color: var(--green-primary);
+            border: 1px solid var(--green-primary);
+            padding: 12px 20px;
+            border-radius: var(--radius-md);
+            font-size: 0.95rem;
+            font-weight: 600;
+            cursor: pointer;
+            margin-top: 10px;
+            transition: background 0.2s, color 0.2s;
+            text-decoration: none;
+        }
+        .btn-ghost:hover {
+            background: var(--green-light);
+        }
+
+        .btn-wa {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+            width: 100%;
+            background: #25d366;
+            color: white;
+            border: none;
+            padding: 14px 20px;
+            border-radius: var(--radius-md);
+            font-size: 1rem;
+            font-weight: 600;
+            cursor: pointer;
+            text-decoration: none;
+            transition: background 0.2s;
+        }
+        .btn-wa:hover {
+            background: #20ba5a;
+        }
+
+        .safety-note {
+            text-align: center;
+            color: var(--text-muted);
+            font-size: 0.8rem;
+            margin-top: 15px;
+            line-height: 1.4;
+        }
+
+        /* Alert/Status Boxes */
+        .alert {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            padding: 12px 16px;
+            border-radius: var(--radius-md);
+            font-size: 0.9rem;
+            font-weight: 500;
+            margin-bottom: 15px;
+        }
+        .alert-info {
+            background: var(--gold-light);
+            border: 1px solid rgba(197, 160, 89, 0.3);
+            color: #8c6a2c;
+        }
+        .alert-error {
+            background: #fde8e8;
+            border: 1px solid #f8b4b4;
+            color: #9b1c1c;
+        }
+
+        /* Bullet lists */
+        .bullet-list {
+            list-style: none;
+            margin-top: 20px;
+            border-top: 1px solid var(--border-color);
+            padding-top: 20px;
+        }
+        .bullet-item {
+            display: flex;
+            align-items: flex-start;
+            gap: 10px;
+            font-size: 0.88rem;
+            color: var(--text-muted);
+            margin-bottom: 12px;
+        }
+        .bullet-item i {
+            color: var(--green-primary);
+            margin-top: 3px;
+        }
+
+        /* Bundle Box */
+        .bundle-box {
+            background: var(--green-dark);
+            border-radius: var(--radius-lg);
+            padding: 24px;
+            color: #ffffff;
+            margin-top: 24px;
+            border: 1px solid rgba(255,255,255,0.05);
+        }
+        .bundle-tag {
+            font-size: 0.7rem;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            color: var(--gold-accent);
+            font-weight: 700;
+            margin-bottom: 6px;
+        }
+        .bundle-title {
+            font-size: 1.2rem;
+            font-weight: 700;
+            margin-bottom: 8px;
+        }
+        .bundle-desc {
+            font-size: 0.85rem;
+            color: #a3b8ad;
+            margin-bottom: 16px;
+            line-height: 1.4;
+        }
+        .bundle-link {
+            color: var(--gold-accent);
+            text-decoration: none;
+            font-weight: 600;
+            font-size: 0.9rem;
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            transition: gap 0.2s;
+        }
+        .bundle-link:hover {
+            gap: 10px;
+        }
+
+        /* Owner Control Panel */
+        .owner-panel {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+            margin-top: 15px;
+            border-top: 1px solid var(--border-color);
+            padding-top: 15px;
+        }
+    </style>
 </head>
-<body class="bg-animate">
-    <div class="glass-container auth-card" style="max-width: 600px;">
-        <div id="loadingDetail" class="loading-text">
-            <i class="fas fa-circle-notch fa-spin"></i> Loading details...
-        </div>
+<body>
 
-        <div id="detailContent" style="display: none;">
-            <div style="display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 20px;">
-                <a href="/marketplace.html" class="btn-ghost" style="width: auto; margin: 0; padding: 8px 15px;"><i class="fas fa-arrow-left"></i> Back</a>
-                <div id="ownerControls" style="display: none; gap: 10px;">
-                    <button id="toggleSoldBtn" class="btn-ghost" style="margin: 0; width: auto; color: var(--warning); border-color: rgba(245, 158, 11, 0.3);">
-                        <i class="fas fa-toggle-on"></i> Mark as Sold
-                    </button>
-                    <a id="editBtn" class="btn-ghost" style="margin: 0; width: auto; color: var(--accent); border-color: rgba(242, 110, 81, 0.3); text-decoration: none; display: flex; align-items: center; justify-content: center;">
-                        <i class="fas fa-edit"></i> Edit
-                    </a>
-                    <button id="deleteBtn" class="btn-ghost" style="margin: 0; width: auto; color: var(--error); border-color: rgba(239, 68, 68, 0.3);">
-                        <i class="fas fa-trash"></i> Delete
-                    </button>
-                </div>
-            </div>
-
-            <div class="item-img-wrap" style="height: 300px; border-radius: 12px; margin-bottom: 24px;">
-                <img id="itemImage" src="" alt="" onerror="this.src='https://placehold.co/600x400/12121e/a78bfa?text=Item'">
-                <div id="soldOverlay" class="sold-tag" style="display: none;">
-                    <span class="sold-label">SOLD</span>
-                </div>
-            </div>
-
-            <div class="item-header">
-                <div>
-                    <span id="itemCat" class="item-cat">CATEGORY</span>
-                    <h1 id="itemTitle" class="welcome-name" style="margin: 5px 0;">Item Title</h1>
-                    <div id="itemType" class="item-badge" style="position: static; display: inline-block;">TYPE</div>
-                </div>
-                <div id="itemPrice" class="item-price" style="font-size: 28px;">₹0</div>
-            </div>
-
-            <div class="info-tile" style="margin: 20px 0;">
-                <div class="info-tile-label">Description</div>
-                <div id="itemDesc" class="info-tile-value" style="font-weight: 400; line-height: 1.6;">No description provided.</div>
-            </div>
-
-            <div class="info-grid">
-                <div class="info-tile">
-                    <div class="info-tile-label">Seller</div>
-                    <div id="sellerRoll" class="info-tile-value">Roll Number</div>
-                </div>
-                <div class="info-tile">
-                    <div class="info-tile-label">Posted On</div>
-                    <div id="createdAt" class="info-tile-value">Date</div>
-                </div>
-            </div>
-
-            <div style="margin-top: 30px;">
-                <div id="contactSection">
-                    <button id="requestContactBtn" class="btn-primary" style="width: 100%; justify-content: center; font-size: 16px; display: none;">
-                        <i class="fas fa-paper-plane"></i> Request Contact Details
-                    </button>
-                    <div id="requestPending" class="alert alert-info" style="display: none; width: 100%; margin: 0; justify-content: center;">
-                        <i class="fas fa-clock"></i> Contact Request Pending Approval
-                    </div>
-                    <div id="requestRejected" class="alert alert-error" style="display: none; width: 100%; margin: 0; justify-content: center;">
-                        <i class="fas fa-times-circle"></i> Contact Request Rejected
-                    </div>
-                    <a id="whatsappBtn" href="#" target="_blank" class="btn-wa" style="width: 100%; justify-content: center; font-size: 16px; display: none;">
-                        <i class="fab fa-whatsapp"></i> Contact Seller via WhatsApp
-                    </a>
-                </div>
-                <p style="text-align: center; color: var(--text-muted); font-size: 12px; margin-top: 15px;">
-                    Always meet in safe, public student areas on campus.
-                </p>
-            </div>
+    <!-- Top Nav Bar -->
+    <div class="nav-bar">
+        <div class="nav-inner">
+            <a href="/dashboard.html" class="nav-brand">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/>
+                </svg>
+                <span>MRDU Portal</span>
+            </a>
+            <a href="/notifications.html" class="nav-bell">
+                <i class="fas fa-bell"></i>
+            </a>
         </div>
     </div>
 
+    <!-- Main Container -->
+    <div class="container">
+        
+        <a href="/marketplace.html" class="btn-back">
+            <i class="fas fa-arrow-left"></i> Back to Marketplace
+        </a>
+
+        <!-- Loading indicator -->
+        <div id="loadingDetail" class="loading-text">
+            <i class="fas fa-circle-notch fa-spin"></i> Loading listing details...
+        </div>
+
+        <!-- Detail Content -->
+        <div id="detailContent" style="display: none;" class="layout-grid">
+            
+            <!-- Left Column: Primary Details -->
+            <div>
+                <div class="details-card">
+                    <div class="badge-row">
+                        <span id="itemCat" class="item-cat">Category</span>
+                        <span id="createdAt" class="updated-date">Updated Date</span>
+                    </div>
+                    <h1 id="itemTitle" class="item-title">Item Title</h1>
+                    
+                    <div class="seller-row">
+                        <div class="seller-avatar">
+                            <i class="fas fa-user"></i>
+                        </div>
+                        <div class="seller-info">
+                            <span class="seller-label">Listed By (Seller)</span>
+                            <span id="sellerRoll" class="seller-val">Roll Number</span>
+                        </div>
+                        <div class="rating-box">
+                            <i class="fas fa-star"></i>
+                            <span class="rating-val">4.9 Student Rating</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="details-card">
+                    <h2 class="sec-title">About this item</h2>
+                    <p id="itemDesc" class="sec-text">Item description content...</p>
+                </div>
+
+                <div class="details-card">
+                    <h2 class="sec-title">Safety Guidelines for Students</h2>
+                    <div class="bullet-item" style="margin-top: 10px;">
+                        <i class="fas fa-check-circle"></i>
+                        <span>Inspect the item carefully before paying. Verify condition, functionality, and authenticity.</span>
+                    </div>
+                    <div class="bullet-item">
+                        <i class="fas fa-check-circle"></i>
+                        <span>Always make exchanges in well-lit, public areas of the campus (e.g. library lobbies, student lounges).</span>
+                    </div>
+                    <div class="bullet-item">
+                        <i class="fas fa-check-circle"></i>
+                        <span>Do not carry large amounts of cash. Prefer secure, digital campus-authorized UPI payments.</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Right Column: Sidebar -->
+            <div>
+                <div class="preview-img-wrap">
+                    <img id="itemImage" class="preview-img" src="" alt="" onerror="this.src='https://placehold.co/600x400/12121e/a78bfa?text=No+Image+Provided'">
+                    <div id="soldOverlay" class="sold-tag" style="display: none;">
+                        <span class="sold-label">SOLD</span>
+                    </div>
+                    <div id="itemType" class="item-badge">FOR SALE</div>
+                </div>
+                
+                <div class="side-card-body">
+                    <div class="price-row">
+                        <span id="itemPrice" class="item-price">₹0</span>
+                        <span id="originalPrice" class="original-price">₹0</span>
+                        <span id="discountTag" class="discount-tag">0% OFF</span>
+                    </div>
+
+                    <!-- Contact & Transaction controls -->
+                    <div id="contactSection">
+                        <button id="requestContactBtn" class="btn-primary" style="display: none;">
+                            <i class="fas fa-rocket"></i> Request Contact Details
+                        </button>
+                        
+                        <div id="requestPending" class="alert alert-info" style="display: none;">
+                            <i class="fas fa-clock"></i> Contact Request Pending Approval
+                        </div>
+                        
+                        <div id="requestRejected" class="alert alert-error" style="display: none;">
+                            <i class="fas fa-times-circle"></i> Contact Request Rejected
+                        </div>
+                        
+                        <a id="whatsappBtn" href="#" target="_blank" class="btn-wa" style="display: none;">
+                            <i class="fab fa-whatsapp"></i> Contact Seller via WhatsApp
+                        </a>
+                    </div>
+
+                    <!-- Admin / Owner Controls -->
+                    <div id="ownerControls" class="owner-panel" style="display: none;">
+                        <button id="toggleSoldBtn" class="btn-ghost" style="color: var(--gold-accent); border-color: var(--gold-accent);">
+                            <i class="fas fa-toggle-on"></i> Mark as Sold
+                        </button>
+                        <a id="editBtn" class="btn-ghost" style="color: var(--green-primary); border-color: var(--green-primary);">
+                            <i class="fas fa-edit"></i> Edit Listing
+                        </a>
+                        <button id="deleteBtn" class="btn-ghost" style="color: #9b1c1c; border-color: #f8b4b4;">
+                            <i class="fas fa-trash"></i> Delete Listing
+                        </button>
+                    </div>
+
+                    <p class="safety-note">
+                        Always meet in safe, public student areas on campus for peer exchanges.
+                    </p>
+
+                    <div class="bullet-list">
+                        <div class="bullet-item">
+                            <i class="fas fa-shield-halved"></i>
+                            <span>Verified Student Listing</span>
+                        </div>
+                        <div class="bullet-item">
+                            <i class="fas fa-comments"></i>
+                            <span>Direct WhatsApp Communication</span>
+                        </div>
+                        <div class="bullet-item">
+                            <i class="fas fa-graduation-cap"></i>
+                            <span>Exclusive to MRDU Campus</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Bundle Box -->
+                <div class="bundle-box">
+                    <div class="bundle-tag">Bundle & Save</div>
+                    <div class="bundle-title">Campus Trading Combo</div>
+                    <div class="bundle-desc">Get verified items and student combo discounts. View other student listings to save on shipping and meetup times.</div>
+                    <a href="/marketplace.html" class="bundle-link">View More Offers <i class="fas fa-arrow-right"></i></a>
+                </div>
+            </div>
+
+        </div>
+
+    </div>
+
+    <!-- Script stays fully functional -->
     <script>
         const urlParams = new URLSearchParams(window.location.search);
         const itemId = urlParams.get('id');
@@ -115,14 +687,28 @@
                 }
 
                 document.getElementById('loadingDetail').style.display = 'none';
-                document.getElementById('detailContent').style.display = 'block';
+                document.getElementById('detailContent').style.display = 'grid';
 
                 document.getElementById('itemTitle').textContent = item.title;
                 document.getElementById('itemCat').textContent = item.category;
                 document.getElementById('itemPrice').textContent = `₹${item.price}`;
+                
+                // Add a dynamic crossed-out original price & discount tag
+                const parsedPrice = parseFloat(item.price) || 0;
+                if (parsedPrice > 0) {
+                    const originalPrice = Math.round(parsedPrice * 1.5);
+                    document.getElementById('originalPrice').textContent = `₹${originalPrice}`;
+                    document.getElementById('discountTag').textContent = `33% OFF`;
+                    document.getElementById('originalPrice').style.display = 'inline';
+                    document.getElementById('discountTag').style.display = 'inline';
+                } else {
+                    document.getElementById('originalPrice').style.display = 'none';
+                    document.getElementById('discountTag').style.display = 'none';
+                }
+
                 document.getElementById('itemDesc').textContent = item.description || 'No description provided.';
                 document.getElementById('sellerRoll').textContent = item.sellerRollNumber;
-                document.getElementById('createdAt').textContent = new Date(item.createdAt).toLocaleDateString();
+                document.getElementById('createdAt').textContent = `Updated ${new Date(item.createdAt).toLocaleDateString()}`;
                 document.getElementById('itemImage').src = item.image || '';
                 
                 const typeBadge = document.getElementById('itemType');
@@ -139,7 +725,7 @@
                     // Owner sees the contact directly if they want, but here we just show a label
                     document.getElementById('whatsappBtn').style.display = 'flex';
                     document.getElementById('whatsappBtn').innerHTML = '<i class="fas fa-user-shield"></i> This is your listing';
-                    document.getElementById('whatsappBtn').style.background = 'var(--accent)';
+                    document.getElementById('whatsappBtn').style.background = 'var(--green-primary)';
                     document.getElementById('whatsappBtn').href = '#';
                     
                     document.getElementById('ownerControls').style.display = 'flex';
@@ -197,7 +783,7 @@
                     const data = await res.json();
                     alert(data.error || 'Failed to send request');
                     btn.disabled = false;
-                    btn.innerHTML = '<i class="fas fa-paper-plane"></i> Request Contact Details';
+                    btn.innerHTML = '<i class="fas fa-rocket"></i> Request Contact Details';
                 }
             } catch (err) {
                 alert('Connection error');

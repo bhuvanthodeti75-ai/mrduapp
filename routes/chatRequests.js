@@ -171,4 +171,24 @@ router.patch('/:id', requireAuth, async (req, res) => {
   }
 });
 
+// GET /api/chat-request/user/:rollNumber
+router.get('/user/:rollNumber', requireAuth, async (req, res) => {
+  try {
+    const roll = req.params.rollNumber.trim().toUpperCase();
+    const user = await users.findOne({ rollNumber: roll });
+    if (!user) return res.status(404).json({ error: 'User not found' });
+    
+    // Return only public details
+    res.json({
+      rollNumber: user.rollNumber,
+      name: user.name || roll,
+      department: user.department || 'Student',
+      course: user.course || 'CSE',
+      section: user.section || 'A'
+    });
+  } catch (err) {
+    res.status(500).json({ error: 'Failed to fetch user' });
+  }
+});
+
 module.exports = router;

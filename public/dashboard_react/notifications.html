@@ -4,95 +4,346 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Notifications — MRDU Student Portal</title>
-  <link rel="stylesheet" href="styles.css">
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet" />
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
   <style>
+    /* ═══════════════════════════════════════════════════════════
+       UniPortal Notifications — Light Theme with Forest Green
+       ═══════════════════════════════════════════════════════════ */
+
+    :root {
+      --bg-page: #f2f0e8;
+      --bg-card: #ffffff;
+      --bg-input: #f7f7f5;
+
+      --green-dark: #1a3c34;
+      --green-deep: #0f2b24;
+      --green-accent: #2d6a4f;
+      --green-muted: rgba(26, 60, 52, 0.08);
+      --gold-accent: #c9a84c;
+      --gold-light: rgba(201, 168, 76, 0.2);
+
+      --text-primary: #1a1a1a;
+      --text-secondary: #555555;
+      --text-muted: #999999;
+      --text-on-dark: #f0efe8;
+
+      --border-light: #e5e3dc;
+      --border-mid: #d0cfc7;
+
+      --success: #16a34a;
+      --error: #dc2626;
+      --warning: #d97706;
+
+      --radius-sm: 8px;
+      --radius-md: 12px;
+      --radius-lg: 16px;
+      --radius-xl: 20px;
+      --radius-2xl: 24px;
+
+      --shadow-sm: 0 1px 4px rgba(0,0,0,0.06);
+      --shadow-card: 0 2px 12px rgba(0,0,0,0.07);
+      --shadow-nav: 0 1px 0 var(--border-light);
+    }
+
+    /* ─── Reset & Base ─────────────────────────────────────────── */
+    *, *::before, *::after {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    html {
+      -webkit-font-smoothing: antialiased;
+    }
+
+    body {
+      font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+      background: var(--bg-page);
+      color: var(--text-primary);
+      min-height: 100vh;
+    }
+
+    /* ─── Top Navigation Bar ─────────────────────────────────── */
+    .nav-bar {
+      background: var(--bg-card);
+      border-bottom: 1px solid var(--border-light);
+      box-shadow: var(--shadow-nav);
+      position: sticky;
+      top: 0;
+      z-index: 100;
+    }
+
+    .nav-inner {
+      max-width: 1100px;
+      margin: 0 auto;
+      padding: 0 24px;
+      height: 60px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+
+    .nav-brand {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      font-size: 18px;
+      font-weight: 800;
+      color: var(--text-primary);
+      text-decoration: none;
+      letter-spacing: -0.3px;
+    }
+
+    .nav-brand-icon {
+      width: 32px;
+      height: 32px;
+      background: var(--green-dark);
+      border-radius: 8px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .nav-brand-icon svg {
+      width: 18px;
+      height: 18px;
+      color: #fff;
+    }
+
+    .btn-ghost {
+      font-size: 14px;
+      font-weight: 600;
+      color: var(--green-accent);
+      text-decoration: none;
+      padding: 8px 16px;
+      border-radius: var(--radius-sm);
+      border: 1px solid var(--border-light);
+      background: var(--bg-card);
+      transition: all 0.2s;
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .btn-ghost:hover {
+      background: var(--green-muted);
+      border-color: var(--green-accent);
+      color: var(--green-dark);
+    }
+
+    /* ─── Main Container ────────────────────────────────────────── */
+    .page-content {
+      max-width: 800px;
+      margin: 0 auto;
+      padding: 32px 24px 60px;
+    }
+
+    .glass-container {
+      background: var(--bg-card);
+      border: 1px solid var(--border-light);
+      border-radius: var(--radius-xl);
+      box-shadow: var(--shadow-card);
+      padding: 32px;
+    }
+
+    .market-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding-bottom: 20px;
+      margin-bottom: 24px;
+      border-bottom: 1.5px solid var(--border-light);
+    }
+
+    .welcome-name {
+      font-size: 24px;
+      font-weight: 800;
+      color: var(--green-dark);
+      letter-spacing: -0.5px;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .welcome-roll {
+      font-size: 13.5px;
+      color: var(--text-secondary);
+      margin-top: 4px;
+    }
+
+    /* ─── Notification Cards ────────────────────────────────────── */
     .notif-card {
-      background: rgba(255, 255, 255, 0.02);
-      border: 1px solid var(--border);
-      border-radius: 12px;
-      padding: 16px;
+      background: var(--bg-card);
+      border: 1px solid var(--border-light);
+      border-radius: var(--radius-md);
+      padding: 18px 20px;
       margin-bottom: 12px;
       display: flex;
       align-items: flex-start;
       gap: 16px;
       cursor: pointer;
-      transition: all 0.2s;
+      transition: all 0.25s ease;
       text-decoration: none;
       color: inherit;
+      box-shadow: var(--shadow-sm);
+      position: relative;
     }
+
     .notif-card:hover {
-      background: rgba(255, 255, 255, 0.05);
-      border-color: rgba(242, 110, 81, 0.3);
+      transform: translateY(-1px);
+      box-shadow: 0 4px 12px rgba(26,60,52,0.06);
+      border-color: var(--green-accent);
     }
+
     .notif-unread {
-      background: rgba(242, 110, 81, 0.08);
-      border-color: rgba(242, 110, 81, 0.4);
+      background: rgba(45, 106, 79, 0.03);
+      border-color: rgba(45, 106, 79, 0.2);
     }
+
+    .notif-unread::before {
+      content: '';
+      position: absolute;
+      left: 0;
+      top: 18px;
+      bottom: 18px;
+      width: 3.5px;
+      background: var(--green-accent);
+      border-radius: 0 4px 4px 0;
+    }
+
     .notif-icon {
-      width: 40px;
-      height: 40px;
+      width: 42px;
+      height: 42px;
       border-radius: 10px;
       display: flex;
       align-items: center;
       justify-content: center;
-      font-size: 16px;
+      font-size: 18px;
       flex-shrink: 0;
+      box-shadow: 0 2px 6px rgba(0,0,0,0.04);
     }
+
     .notif-content {
       flex: 1;
+      padding-top: 2px;
     }
+
     .notif-message {
       font-size: 14px;
       color: var(--text-primary);
-      margin-bottom: 4px;
-      line-height: 1.4;
+      margin-bottom: 6px;
+      line-height: 1.45;
     }
+
     .notif-time {
-      font-size: 11px;
+      font-size: 12px;
+      color: var(--text-muted);
+      font-weight: 500;
+    }
+
+    /* Icon Themes based on type */
+    .icon-chat { background: rgba(59, 130, 246, 0.08); color: #2563eb; }
+    .icon-contact { background: rgba(16, 185, 129, 0.08); color: #059669; }
+    .icon-feed { background: rgba(245, 158, 11, 0.08); color: #d97706; }
+    .icon-default { background: var(--green-muted); color: var(--green-dark); }
+
+    /* ─── States ────────────────────────────────────────────────── */
+    .loading-text {
+      text-align: center;
+      padding: 40px 0;
+      font-size: 15px;
+      color: var(--text-secondary);
+      font-weight: 500;
+    }
+
+    .empty-state {
+      text-align: center;
+      padding: 48px 24px;
+      color: var(--text-secondary);
+    }
+
+    .empty-icon {
+      font-size: 48px;
+      display: block;
+      margin-bottom: 16px;
+      opacity: 0.8;
+    }
+
+    .empty-state h3 {
+      font-size: 18px;
+      font-weight: 700;
+      color: var(--green-dark);
+      margin-bottom: 6px;
+    }
+
+    .empty-state p {
+      font-size: 14px;
       color: var(--text-muted);
     }
-    
-    /* Icon Themes based on type */
-    .icon-chat { background: rgba(59, 130, 246, 0.1); color: #3b82f6; }
-    .icon-contact { background: rgba(16, 185, 129, 0.1); color: #10b981; }
-    .icon-feed { background: rgba(245, 158, 11, 0.1); color: #f59e0b; }
-    .icon-default { background: rgba(242, 110, 81, 0.1); color: #F26E51; }
 
+    /* ─── Responsive ────────────────────────────────────────────── */
     @media (max-width: 480px) {
-      .notif-card { padding: 12px; gap: 12px; }
-      .notif-icon { width: 32px; height: 32px; font-size: 14px; }
-      .notif-message { font-size: 13px; }
-      .notif-time { font-size: 10px; }
-      .market-header { flex-direction: column; align-items: flex-start; gap: 10px; }
-      .market-header .btn-ghost { width: 100%; text-align: center; }
+      .page-content { padding: 16px 12px 40px; }
+      .glass-container { padding: 20px 16px; border-radius: var(--radius-lg); }
+      .market-header { flex-direction: column; align-items: flex-start; gap: 14px; }
+      .market-header .btn-ghost { width: 100%; justify-content: center; }
+      .notif-card { padding: 14px; gap: 12px; }
+      .notif-icon { width: 36px; height: 36px; font-size: 15px; }
     }
   </style>
 </head>
-<body class="bg-animate">
-  <div class="glass-container dashboard-card" style="max-width: 800px;">
-    <div class="market-header" style="border-bottom: 1px solid var(--border); padding-bottom: 20px; margin-bottom: 20px;">
-      <div>
-        <h1 class="welcome-name"><i class="fas fa-bell"></i> Notifications</h1>
-        <p class="welcome-roll">Stay updated with your campus activity</p>
-      </div>
-      <div>
-        <a href="/dashboard.html" class="btn-ghost" style="width: auto; margin-top: 0;"><i class="fas fa-arrow-left"></i> Dashboard</a>
+<body>
+
+  <!-- Top Nav Bar -->
+  <div class="nav-bar">
+    <div class="nav-inner">
+      <a href="/dashboard.html" class="nav-brand">
+        <div class="nav-brand-icon">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <line x1="3" y1="21" x2="21" y2="21" />
+            <line x1="3" y1="10" x2="21" y2="10" />
+            <polyline points="12 3 21 10 3 10" />
+            <line x1="7" y1="10" x2="7" y2="21" />
+            <line x1="12" y1="10" x2="12" y2="21" />
+            <line x1="17" y1="10" x2="17" y2="21" />
+          </svg>
+        </div>
+        <span>MRDU Student Portal</span>
+      </a>
+      <div class="nav-actions">
+        <a href="/dashboard.html" class="btn-ghost"><i class="fas fa-arrow-left"></i> Dashboard</a>
       </div>
     </div>
+  </div>
 
-    <div id="loadingState" class="loading-text">
+  <!-- Main Content Area -->
+  <div class="page-content">
+    <div class="glass-container">
+      
+      <div class="market-header">
+        <div>
+          <h1 class="welcome-name"><i class="fas fa-bell"></i> Notifications</h1>
+          <p class="welcome-roll">Stay updated with your campus activity</p>
+        </div>
+      </div>
+
+      <div id="loadingState" class="loading-text">
         <i class="fas fa-circle-notch fa-spin"></i> Loading...
-    </div>
+      </div>
 
-    <div id="notifList" style="display: none;">
-      <!-- Dynamically filled -->
-    </div>
+      <div id="notifList" style="display: none;">
+        <!-- Dynamically filled -->
+      </div>
 
-    <div id="emptyState" class="empty-state" style="display: none;">
+      <div id="emptyState" class="empty-state" style="display: none;">
         <span class="empty-icon">🔔</span>
         <h3>No notifications yet</h3>
         <p>You're all caught up!</p>
+      </div>
+
     </div>
   </div>
 
@@ -130,7 +381,9 @@
 
         if (notifs.length === 0) {
           empty.style.display = 'block';
+          list.style.display = 'none';
         } else {
+          empty.style.display = 'none';
           list.style.display = 'block';
           list.innerHTML = notifs.map(n => {
             const ui = getIconInfo(n.type);
@@ -143,7 +396,7 @@
                   <div class="notif-message" style="font-weight: ${!n.isRead ? '600' : '400'}">${n.message}</div>
                   <div class="notif-time">${timeAgo(n.createdAt)}</div>
                 </div>
-                ${!n.isRead ? '<div style="width:10px; height:10px; background:var(--accent); border-radius:50%; align-self:center;"></div>' : ''}
+                ${!n.isRead ? '<div style="width: 8px; height: 8px; background: var(--green-accent); border-radius: 50%; align-self: center; margin-left: 8px; flex-shrink: 0;"></div>' : ''}
               </div>
             `;
           }).join('');

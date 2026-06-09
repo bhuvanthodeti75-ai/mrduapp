@@ -1,151 +1,372 @@
 <!DOCTYPE html>
 <html lang="en">
-
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Create Course — MRDU Student Portal</title>
-  <link rel="stylesheet" href="styles.css" />
+  <title>Create Course — UniPortal</title>
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" />
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
   <style>
-    .form-group {
-      margin-bottom: 20px;
+    :root {
+      --bg-color: #edebe4;
+      --card-bg: #ffffff;
+      --sidebar-bg: #013b27;
+      --text-main: #111827;
+      --text-muted: #6b7280;
+      --border-color: #e5e7eb;
+      --accent: #10b981;
+      --input-bg: #ffffff;
+    }
+    * {
+      box-sizing: border-box;
+      font-family: 'Plus Jakarta Sans', sans-serif;
+    }
+    body {
+      margin: 0;
+      background-color: var(--bg-color);
+      color: var(--text-main);
+    }
+    /* Nav */
+    .nav {
+      background: #fff;
+      border-bottom: 1px solid var(--border-color);
+      padding: 1rem 2rem;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+    .nav-logo {
+      font-weight: 700;
+      font-size: 1.25rem;
+      color: var(--sidebar-bg);
+      text-decoration: none;
+    }
+    .nav-links {
+      display: flex;
+      gap: 2rem;
+    }
+    .nav-link {
+      text-decoration: none;
+      color: var(--text-muted);
+      font-weight: 500;
+      transition: color 0.2s;
+    }
+    .nav-link:hover {
+      color: var(--sidebar-bg);
+    }
+    .nav-user {
+      width: 40px;
+      height: 40px;
+      background: var(--sidebar-bg);
+      color: white;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-weight: 600;
     }
 
+    /* Container */
+    .container {
+      max-width: 1200px;
+      margin: 2rem auto;
+      padding: 0 1rem;
+      display: grid;
+      grid-template-columns: 300px 1fr;
+      gap: 2rem;
+      align-items: start;
+    }
+
+    /* Sidebar */
+    .sidebar {
+      background-color: var(--sidebar-bg);
+      color: white;
+      border-radius: 16px;
+      padding: 2rem;
+      position: sticky;
+      top: 2rem;
+    }
+    .sidebar h1 {
+      margin: 0 0 1rem 0;
+      font-size: 1.5rem;
+    }
+    .sidebar p {
+      color: rgba(255, 255, 255, 0.8);
+      font-size: 0.9rem;
+      line-height: 1.5;
+      margin-bottom: 2rem;
+    }
+    .checklist {
+      background: white;
+      border-radius: 12px;
+      padding: 1.5rem;
+      color: var(--text-main);
+    }
+    .checklist h3 {
+      margin: 0 0 1rem 0;
+      font-size: 1rem;
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+    }
+    .checklist ul {
+      list-style: none;
+      padding: 0;
+      margin: 0;
+    }
+    .checklist li {
+      display: flex;
+      gap: 0.75rem;
+      font-size: 0.85rem;
+      margin-bottom: 0.75rem;
+      color: var(--text-muted);
+    }
+    .checklist li i {
+      color: var(--sidebar-bg);
+      margin-top: 0.2rem;
+    }
+    .back-btn {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.5rem;
+      color: white;
+      text-decoration: none;
+      margin-top: 2rem;
+      font-size: 0.9rem;
+      font-weight: 500;
+    }
+
+    /* Main Form */
+    .form-card {
+      background: white;
+      border-radius: 16px;
+      padding: 2.5rem;
+      border: 1px solid var(--border-color);
+    }
+    .form-group {
+      margin-bottom: 1.5rem;
+    }
     .form-label {
       display: block;
-      font-size: 13px;
+      font-size: 0.9rem;
       font-weight: 600;
-      color: var(--text-muted);
-      margin-bottom: 8px;
+      color: var(--text-main);
+      margin-bottom: 0.75rem;
     }
-
-    .form-input,
-    .form-textarea {
+    .form-input, .form-textarea {
       width: 100%;
-      padding: 12px 16px;
-      border-radius: 10px;
-      border: 1px solid var(--border);
-      background: rgba(255, 255, 255, 0.03);
-      color: var(--text);
-      outline: none;
+      padding: 0.85rem 1rem;
+      border: 1px solid #f1f3f5; /* Lighter border for input fields */
+      border-radius: 8px;
+      background: #fafafa; /* Slightly lighter background */
+      color: var(--text-main);
+      font-size: 0.9rem;
       transition: all 0.2s;
     }
-
-    .form-input:focus,
-    .form-textarea:focus {
-      border-color: var(--accent);
-      background: rgba(255, 255, 255, 0.05);
+    .form-input::placeholder, .form-textarea::placeholder {
+      color: #9ca3af;
     }
-
+    .form-input:focus, .form-textarea:focus {
+      outline: none;
+      border-color: var(--accent);
+      box-shadow: 0 0 0 3px rgba(16, 185, 129, 0.1);
+    }
     .form-textarea {
-      height: 100px;
+      height: 120px;
       resize: vertical;
     }
-
-    .content-links-container {
-      display: flex;
-      flex-direction: column;
-      gap: 10px;
+    .form-row {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 1.5rem;
     }
-
+    .input-with-icon {
+      position: relative;
+    }
+    .input-with-icon i {
+      position: absolute;
+      left: 1rem;
+      top: 50%;
+      transform: translateY(-50%);
+      color: var(--text-muted);
+    }
+    .input-with-icon .form-input {
+      padding-left: 2.5rem;
+    }
+    .helper-text {
+      font-size: 0.75rem;
+      color: var(--text-muted);
+      margin-top: 0.5rem;
+    }
     .link-row {
       display: flex;
-      gap: 10px;
+      gap: 1rem;
+      margin-bottom: 1rem;
     }
-
     .remove-link {
-      background: rgba(239, 68, 68, 0.1);
-      border: 1px solid rgba(239, 68, 68, 0.2);
-      color: #7f1d1d;
-      width: 44px;
-      height: 44px;
-      border-radius: 10px;
+      background: #fee2e2;
+      color: #ef4444;
+      border: none;
+      width: 42px;
+      height: 42px;
+      border-radius: 8px;
       cursor: pointer;
       display: flex;
       align-items: center;
       justify-content: center;
+      transition: background 0.2s;
+    }
+    .remove-link:hover {
+      background: #fca5a5;
+    }
+    .btn-ghost {
+      background: none;
+      border: 1px dashed var(--border-color);
+      color: var(--text-muted);
+      padding: 0.75rem 1.5rem;
+      border-radius: 8px;
+      cursor: pointer;
+      font-weight: 500;
       transition: all 0.2s;
     }
-
-    .remove-link:hover {
-      background: rgba(239, 68, 68, 0.2);
-      border-color: rgba(239, 68, 68, 0.4);
+    .btn-ghost:hover {
+      background: #f9fafb;
+      color: var(--text-main);
+    }
+    .drop-zone {
+      border: 2px dashed var(--border-color);
+      border-radius: 12px;
+      padding: 2rem;
+      text-align: center;
+      cursor: pointer;
+      transition: all 0.2s;
+      background: #f9fafb;
+    }
+    .drop-zone:hover {
+      border-color: var(--sidebar-bg);
+      background: rgba(1, 59, 39, 0.02);
+    }
+    .drop-zone i {
+      font-size: 2rem;
+      color: var(--text-muted);
+      margin-bottom: 1rem;
+    }
+    .btn-primary {
+      background: var(--sidebar-bg);
+      color: white;
+      border: none;
+      padding: 1rem 2rem;
+      border-radius: 8px;
+      font-weight: 600;
+      font-size: 1rem;
+      width: 100%;
+      cursor: pointer;
+      transition: background 0.2s;
+      margin-top: 1rem;
+    }
+    .btn-primary:hover {
+      background: #022a1c;
+    }
+    .disclaimer {
+      text-align: center;
+      font-size: 0.75rem;
+      color: var(--text-muted);
+      margin-top: 1rem;
     }
   </style>
 </head>
-
 <body>
-  <div class="grid-bg"></div>
-  <div class="page">
-    <div class="auth-card" style="max-width: 600px;">
-      <div style="margin-bottom: 32px;">
-        <div style="display: flex; gap: 8px; margin-bottom: 16px;">
-          <a href="/dashboard.html" class="btn-ghost"
-            style="width: auto; margin: 0; padding: 6px 12px; font-size: 12px;">
-            <i class="fas fa-home"></i> Dashboard
-          </a>
-          <a href="/courses.html" class="btn-ghost" style="width: auto; margin: 0; padding: 6px 12px; font-size: 12px;">
-            <i class="fas fa-arrow-left"></i> Back to Hub
-          </a>
-        </div>
-        <h1 style="font-size: 24px; margin: 0;">🚀 Launch Your Course</h1>
-        <p style="color: var(--text-muted); font-size: 14px; margin-top: 4px;">Share your expertise with the student
-          community.(MRDU)</p>
+  <nav class="nav">
+    <a href="/dashboard.html" class="nav-logo">UniPortal</a>
+    <div class="nav-links">
+      <a href="/dashboard.html" class="nav-link">Dashboard</a>
+      <a href="/courses.html" class="nav-link">Learning</a>
+    </div>
+    <div class="nav-user">
+      <i class="fas fa-user"></i>
+    </div>
+  </nav>
+
+  <div class="container">
+    <div class="sidebar">
+      <h1>Launch Your Course</h1>
+      <p>Share your expertise with the MRDU student community. Create an engaging learning experience.</p>
+      
+      <div class="checklist">
+        <h3><i class="fa-solid fa-circle-check"></i> Creator Checklist</h3>
+        <ul>
+          <li><i class="fas fa-image"></i> High-quality cover image</li>
+          <li><i class="fas fa-link"></i> Detailed curriculum links</li>
+          <li><i class="fas fa-address-book"></i> Direct contact information</li>
+        </ul>
       </div>
 
+      <a href="/my-courses.html" class="back-btn">
+        <i class="fas fa-arrow-left"></i> Back to Hub
+      </a>
+    </div>
+
+    <div class="form-card">
       <form id="course-form">
         <div class="form-group">
-          <label class="form-label">Course Title <span style="color: var(--error, #ef4444);">*</span></label>
-          <input type="text" id="title" class="form-input" placeholder="e.g. Master Competitive Programming" required />
+          <label class="form-label">Course Title <span style="color: #ef4444;">*</span></label>
+          <input type="text" id="title" class="form-input" placeholder="e.g. Advanced Digital Marketing Strategies" required />
         </div>
 
         <div class="form-group">
-          <label class="form-label">Description <span style="color: var(--error, #ef4444);">*</span></label>
-          <textarea id="description" class="form-textarea" placeholder="What will students learn in this course?"
-            required></textarea>
+          <label class="form-label">Description <span style="color: #ef4444;">*</span></label>
+          <textarea id="description" class="form-textarea" placeholder="What will students learn in this course?" required></textarea>
         </div>
 
-        <div class="form-group">
-          <label class="form-label">Contact/WhatsApp Number <span style="color: var(--error, #ef4444);">*</span></label>
-          <input type="tel" id="contact" class="form-input" placeholder="e.g. 9876543210" required />
-        </div>
-
-        <div class="form-group">
-          <label class="form-label">Price (0 for Free) <span style="color: var(--error, #ef4444);">*</span></label>
-          <div style="position: relative;">
-            <span style="position: absolute; left: 16px; top: 12px; color: var(--text-muted);">₹</span>
-            <input type="number" id="price" class="form-input" style="padding-left: 32px;" value="0" min="0" required />
-          </div>
-          <p style="font-size: 11px; color: var(--text-muted); margin-top: 6px;">
-            <i class="fas fa-info-circle"></i> Paid courses will be labeled as "Paid".
-          </p>
-        </div>
-
-        <div class="form-group">
-          <label class="form-label">Course Content (Links & Uploads)</label>
-          <div id="content-links" class="content-links-container">
-            <div class="link-row">
-              <input type="url" class="form-input content-link" placeholder="External link (e.g. Drive, YouTube...)" />
-              <button type="button" class="remove-link" onclick="this.parentElement.remove()"
-                style="visibility: hidden;"><i class="fas fa-times"></i></button>
+        <div class="form-row">
+          <div class="form-group">
+            <label class="form-label">Contact/WhatsApp Number <span style="color: #ef4444;">*</span></label>
+            <div class="input-with-icon">
+              <i class="fas fa-phone"></i>
+              <input type="tel" id="contact" class="form-input" placeholder="e.g. +91 9876543210" required />
             </div>
           </div>
-          <button type="button" id="add-link-btn" class="btn-ghost"
-            style="width: auto; margin: 12px 0 0 0; padding: 8px 16px; font-size: 13px;">
-            <i class="fas fa-plus"></i> Add Another Link
-          </button>
 
-          <div id="drop-zone" style="margin-top: 16px; border: 2px dashed rgba(255,255,255,0.2); border-radius: 12px; padding: 32px; text-align: center; cursor: pointer; transition: 0.2s;">
-            <i class="fas fa-cloud-upload-alt" style="font-size: 32px; color: var(--accent); margin-bottom: 12px;"></i>
-            <h3 style="margin: 0 0 8px 0; font-size: 16px;">Drag & Drop files here</h3>
-            <p style="margin: 0; font-size: 13px; color: var(--text-muted);">or click to browse from device</p>
-            <input type="file" id="file-input" style="display: none;" multiple />
-            <div id="file-list" style="margin-top: 16px; display: flex; flex-direction: column; gap: 8px; text-align: left;"></div>
+          <div class="form-group">
+            <label class="form-label">Price <span style="color: #ef4444;">*</span></label>
+            <div class="input-with-icon">
+              <span style="position: absolute; left: 1rem; top: 50%; transform: translateY(-50%); color: var(--text-muted); font-weight: 500;">Rs</span>
+              <input type="number" id="price" class="form-input" placeholder="0" value="0" min="0" required />
+            </div>
+            <div class="helper-text">Note: All courses with a price > 0 will be labeled as "Paid".</div>
           </div>
         </div>
 
-        <button type="submit" id="submit-btn" class="btn-primary" style="margin-top: 12px;">Create Course</button>
+        <div class="form-group">
+          <label class="form-label">Course Content Links</label>
+          <div id="content-links">
+            <div class="link-row">
+              <input type="url" class="form-input content-link" placeholder="External link (e.g. Drive, YouTube...)" />
+              <button type="button" class="remove-link" onclick="this.parentElement.remove()" style="visibility: hidden;">
+                <i class="fas fa-trash"></i>
+              </button>
+            </div>
+          </div>
+          <button type="button" id="add-link-btn" class="btn-ghost">
+            <i class="fas fa-plus"></i> Add Another Link
+          </button>
+        </div>
+
+        <div class="form-group">
+          <label class="form-label">Supplementary Files</label>
+          <div id="drop-zone" class="drop-zone">
+            <i class="fas fa-cloud-upload-alt"></i>
+            <h3 style="margin: 0 0 0.5rem 0; font-size: 1rem; color: var(--text-main);">Drag & Drop files here</h3>
+            <p style="margin: 0; font-size: 0.85rem; color: var(--text-muted);">or click to browse from device (Maximum file size 50MB)</p>
+            <input type="file" id="file-input" style="display: none;" multiple />
+            <div id="file-list" style="margin-top: 1rem; display: flex; flex-direction: column; gap: 0.5rem; text-align: left;"></div>
+          </div>
+        </div>
+
+        <button type="submit" id="submit-btn" class="btn-primary">Create Course</button>
+        <div class="disclaimer">
+          By clicking "Create Course", you agree to our MRDU Community Guidelines and Terms of Service.
+        </div>
       </form>
     </div>
   </div>
@@ -164,7 +385,7 @@
       div.className = 'link-row';
       div.innerHTML = `
         <input type="url" class="form-input content-link" placeholder="External link (e.g. Drive, YouTube...)" />
-        <button type="button" class="remove-link" onclick="this.parentElement.remove()"><i class="fas fa-times"></i></button>
+        <button type="button" class="remove-link" onclick="this.parentElement.remove()"><i class="fas fa-trash"></i></button>
       `;
       contentLinks.appendChild(div);
     };
@@ -172,18 +393,18 @@
     dropZone.addEventListener('click', () => fileInput.click());
     dropZone.addEventListener('dragover', (e) => {
       e.preventDefault();
-      dropZone.style.borderColor = 'var(--accent)';
-      dropZone.style.background = 'rgba(242, 110, 81, 0.05)';
+      dropZone.style.borderColor = 'var(--sidebar-bg)';
+      dropZone.style.background = 'rgba(1, 59, 39, 0.05)';
     });
     dropZone.addEventListener('dragleave', (e) => {
       e.preventDefault();
-      dropZone.style.borderColor = 'rgba(255,255,255,0.2)';
-      dropZone.style.background = 'transparent';
+      dropZone.style.borderColor = 'var(--border-color)';
+      dropZone.style.background = '#f9fafb';
     });
     dropZone.addEventListener('drop', (e) => {
       e.preventDefault();
-      dropZone.style.borderColor = 'rgba(255,255,255,0.2)';
-      dropZone.style.background = 'transparent';
+      dropZone.style.borderColor = 'var(--border-color)';
+      dropZone.style.background = '#f9fafb';
       handleFiles(e.dataTransfer.files);
     });
     fileInput.addEventListener('change', () => handleFiles(fileInput.files));
@@ -197,9 +418,9 @@
       fileList.innerHTML = '';
       selectedFiles.forEach((file, index) => {
         const div = document.createElement('div');
-        div.style.cssText = 'display: flex; justify-content: space-between; align-items: center; background: rgba(255,255,255,0.05); padding: 8px 12px; border-radius: 8px; font-size: 13px;';
+        div.style.cssText = 'display: flex; justify-content: space-between; align-items: center; background: white; border: 1px solid var(--border-color); padding: 0.5rem 1rem; border-radius: 8px; font-size: 0.85rem;';
         div.innerHTML = `
-          <span style="overflow: hidden; text-overflow: ellipsis; white-space: nowrap;"><i class="fas fa-file-alt" style="margin-right:8px; color:var(--accent);"></i> ${file.name}</span>
+          <span style="overflow: hidden; text-overflow: ellipsis; white-space: nowrap;"><i class="fas fa-file-alt" style="margin-right:0.5rem; color:var(--text-muted);"></i> ${file.name}</span>
           <button type="button" style="background:none; border:none; color:#ef4444; cursor:pointer;" onclick="event.stopPropagation(); removeFile(${index})"><i class="fas fa-times"></i></button>
         `;
         fileList.appendChild(div);
@@ -235,7 +456,7 @@
 
         if (res.ok) {
           alert('Course launched successfully!');
-          window.location.href = '/courses.html';
+          window.location.href = '/my-courses.html';
         } else {
           const data = await res.json();
           alert(data.error || 'Failed to create course');
@@ -250,5 +471,4 @@
     };
   </script>
 </body>
-
 </html>

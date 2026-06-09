@@ -4,222 +4,541 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Courses — MRDU Student Portal</title>
-  <link rel="stylesheet" href="styles.css" />
-  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" />
+  <title>Learning Hub — UniPortal</title>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
   <style>
+    @import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&display=swap');
+
+    :root {
+      --bg-base: #edebe4;
+      --bg-card: #ffffff;
+      --text-primary: #04140f;
+      --text-secondary: #556660;
+      --accent: #013b27;
+      --accent-hover: #002216;
+      --accent-light: rgba(1, 59, 39, 0.05);
+      --border-color: #e5ecea;
+      
+      --shadow-sm: 0 2px 8px rgba(0, 0, 0, 0.04);
+      --shadow-md: 0 8px 24px rgba(6, 29, 21, 0.06);
+      
+      --radius-sm: 8px;
+      --radius-md: 12px;
+      --radius-lg: 16px;
+    }
+
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: 'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, sans-serif;
+      background: var(--bg-base);
+      color: var(--text-primary);
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+    }
+
+    /* ─── Top Navigation ────────────────────────────────────────────── */
+    .nav-bar {
+      background: #ffffff;
+      border-bottom: 1px solid var(--border-color);
+      position: sticky;
+      top: 0;
+      z-index: 100;
+      padding: 0 24px;
+      height: 72px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .nav-inner {
+      width: 100%;
+      max-width: 1000px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .nav-brand {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      font-size: 22px;
+      font-weight: 800;
+      color: var(--accent);
+      text-decoration: none;
+    }
+
+    .nav-brand i {
+      font-size: 24px;
+    }
+
+    .nav-actions {
+      display: flex;
+      align-items: center;
+      gap: 20px;
+    }
+
+    .btn-back-hub {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      color: var(--text-secondary);
+      font-size: 14px;
+      font-weight: 600;
+      text-decoration: none;
+      transition: color 0.2s;
+    }
+
+    .btn-back-hub:hover {
+      color: var(--accent);
+    }
+
+    .nav-avatar {
+      width: 40px;
+      height: 40px;
+      border-radius: 50%;
+      background: var(--accent);
+      color: #ffffff;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-weight: 700;
+      font-size: 16px;
+      cursor: pointer;
+      border: 2px solid var(--border-color);
+    }
+
+    /* ─── Page Container ────────────────────────────────────────────── */
+    .page-container {
+      flex: 1;
+      width: 100%;
+      max-width: 1048px;
+      margin: 0 auto;
+      padding: 48px 24px;
+    }
+
+    /* ─── Header Section ────────────────────────────────────────────── */
+    .header-section {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 32px;
+      gap: 20px;
+      flex-wrap: wrap;
+    }
+
+    .header-text h1 {
+      font-size: 32px;
+      font-weight: 800;
+      color: var(--accent);
+      letter-spacing: -1px;
+      margin-bottom: 6px;
+    }
+
+    .header-text p {
+      font-size: 15px;
+      color: var(--text-secondary);
+      font-weight: 500;
+    }
+
+    .header-buttons {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+
+    .btn-bell {
+      text-decoration: none;
+      position: relative;
+      background: rgba(2, 62, 43, 0.05);
+      border: 1.5px solid rgba(2, 62, 43, 0.15);
+      color: var(--accent);
+      width: 44px;
+      height: 44px;
+      border-radius: var(--radius-md);
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      transition: 0.2s;
+    }
+
+    .btn-bell:hover {
+      background: rgba(2, 62, 43, 0.1);
+      transform: translateY(-1px);
+    }
+
+    .unread-badge {
+      position: absolute;
+      top: -5px;
+      right: -5px;
+      background: #dc2626;
+      color: white;
+      font-size: 10px;
+      font-weight: bold;
+      padding: 2px 6px;
+      border-radius: 10px;
+      display: none;
+      border: 2px solid #ffffff;
+    }
+
+    .btn-my-courses {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      padding: 12px 20px;
+      border: 1.5px solid var(--accent);
+      background: transparent;
+      color: var(--accent);
+      font-size: 14px;
+      font-weight: 700;
+      border-radius: var(--radius-md);
+      cursor: pointer;
+      text-decoration: none;
+      transition: all 0.2s;
+    }
+
+    .btn-my-courses:hover {
+      background: var(--accent-light);
+      transform: translateY(-1px);
+    }
+
+    .btn-create-course {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      background: var(--accent);
+      color: #ffffff;
+      font-size: 14px;
+      font-weight: 700;
+      padding: 13px 22px;
+      border-radius: var(--radius-md);
+      border: none;
+      cursor: pointer;
+      text-decoration: none;
+      box-shadow: 0 4px 12px rgba(2, 62, 43, 0.12);
+      transition: all 0.2s;
+    }
+
+    .btn-create-course:hover {
+      background: var(--accent-hover);
+      transform: translateY(-2px);
+      box-shadow: 0 6px 18px rgba(2, 62, 43, 0.22);
+    }
+
+    /* ─── Search Section ────────────────────────────────────────────── */
     .search-container {
-      margin-bottom: 24px;
       display: flex;
       gap: 12px;
+      margin-bottom: 36px;
     }
 
     .search-input {
       flex: 1;
-      padding: 12px 16px;
-      border-radius: 12px;
-      border: 1px solid var(--border);
-      background: rgba(255, 255, 255, 0.03);
-      color: var(--text);
+      padding: 14px 20px;
+      border-radius: var(--radius-md);
+      border: 1.5px solid var(--border-color);
+      background: #ffffff;
+      color: var(--text-primary);
       outline: none;
+      font-family: inherit;
+      font-size: 15px;
+      font-weight: 500;
+      box-shadow: var(--shadow-sm);
       transition: all 0.2s;
     }
 
     .search-input:focus {
       border-color: var(--accent);
-      background: rgba(255, 255, 255, 0.05);
+      box-shadow: 0 0 0 4px rgba(2, 62, 43, 0.08);
     }
 
-    .course-grid {
-      display: grid;
-      grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
-      gap: 20px;
-    }
-
-    .course-card {
-      background: var(--card-bg);
-      border: 1px solid var(--border);
-      border-radius: 16px;
-      overflow: hidden;
-      transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    .btn-search {
+      background: var(--accent);
+      color: #ffffff;
+      border: none;
+      border-radius: var(--radius-md);
+      padding: 0 24px;
+      font-size: 16px;
       cursor: pointer;
-      display: flex;
-      flex-direction: column;
-    }
-
-    .course-card:hover {
-      transform: translateY(-4px);
-      border-color: var(--accent);
-      box-shadow: 0 12px 24px -10px rgba(0, 0, 0, 0.5);
-    }
-
-    .course-header {
-      padding: 20px;
-      background: linear-gradient(135deg, rgba(242, 110, 81, 0.1), rgba(124, 58, 237, 0.05));
-      border-bottom: 1px solid var(--border);
-      height: 120px;
       display: flex;
       align-items: center;
       justify-content: center;
-      text-align: center;
+      transition: all 0.2s;
+      box-shadow: 0 4px 12px rgba(2, 62, 43, 0.12);
+    }
+
+    .btn-search:hover {
+      background: var(--accent-hover);
+      transform: translateY(-1px);
+    }
+
+    /* ─── Course Grid ───────────────────────────────────────────────── */
+    .course-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(290px, 1fr));
+      gap: 28px;
+    }
+
+    .course-card {
+      background: var(--bg-card);
+      border: 1px solid var(--border-color);
+      border-radius: var(--radius-lg);
+      overflow: hidden;
+      display: flex;
+      flex-direction: column;
+      box-shadow: var(--shadow-sm);
+      transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+      cursor: pointer;
+    }
+
+    .course-card:hover {
+      transform: translateY(-6px);
+      box-shadow: var(--shadow-md);
+      border-color: var(--accent);
+    }
+
+    .course-header {
+      background: var(--accent);
+      height: 140px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
     }
 
     .course-header i {
-      font-size: 40px;
-      color: var(--accent);
-      opacity: 0.8;
+      font-size: 48px;
+      color: rgba(255, 255, 255, 0.15);
     }
 
     .course-body {
-      padding: 20px;
+      padding: 24px;
+      display: flex;
+      flex-direction: column;
       flex: 1;
     }
 
     .course-title {
       font-size: 18px;
       font-weight: 700;
+      color: var(--text-primary);
       margin-bottom: 8px;
-      color: var(--text);
+      line-height: 1.3;
     }
 
     .course-desc {
       font-size: 14px;
-      color: var(--text-muted);
-      margin-bottom: 16px;
+      color: var(--text-secondary);
+      line-height: 1.5;
+      margin-bottom: 24px;
       display: -webkit-box;
       -webkit-line-clamp: 2;
       -webkit-box-orient: vertical;
       overflow: hidden;
+      flex: 1;
     }
 
     .course-footer {
-      padding: 16px 20px;
-      border-top: 1px solid var(--border);
       display: flex;
       justify-content: space-between;
       align-items: center;
+      padding-top: 16px;
+      border-top: 1px solid var(--border-color);
     }
 
     .course-price {
-      font-weight: 700;
+      font-size: 16px;
+      font-weight: 800;
       color: var(--accent);
     }
 
     .course-price.free {
-      color: var(--success);
+      color: #16a34a;
     }
 
     .instructor-tag {
-      font-size: 11px;
-      color: var(--text-muted);
-      background: rgba(255, 255, 255, 0.05);
-      padding: 4px 8px;
-      border-radius: 6px;
+      font-size: 12px;
+      font-weight: 700;
+      color: var(--text-secondary);
+      background: var(--bg-base);
+      padding: 6px 12px;
+      border-radius: 20px;
+      display: flex;
+      align-items: center;
+      gap: 6px;
     }
 
+    /* ─── States ────────────────────────────────────────────────────── */
     .empty-state {
       text-align: center;
-      padding: 60px 20px;
-      color: var(--text-muted);
+      padding: 80px 40px;
+      color: var(--text-secondary);
+      grid-column: 1 / -1;
     }
 
     .empty-state i {
-      font-size: 48px;
-      margin-bottom: 16px;
+      font-size: 56px;
+      color: var(--text-secondary);
       opacity: 0.3;
+      margin-bottom: 20px;
+    }
+
+    .empty-state h3 {
+      font-size: 20px;
+      font-weight: 700;
+      color: var(--accent);
+      margin-bottom: 8px;
+    }
+
+    .empty-state p {
+      font-size: 15px;
+      margin-bottom: 24px;
+    }
+
+    .loading-state {
+      text-align: center;
+      padding: 60px;
+      grid-column: 1 / -1;
+    }
+
+    .loading-state i {
+      font-size: 32px;
+      color: var(--accent);
+      animation: fa-spin 1s linear infinite;
     }
   </style>
 </head>
 
 <body>
-  <div class="grid-bg"></div>
-  <div class="page">
-    <div class="auth-card" style="max-width: 1000px; width: 95%;">
-      <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 32px;">
-        <div style="display: flex; align-items: flex-start; gap: 16px;">
-          <a href="/dashboard.html" class="btn-ghost"
-            style="width: auto; margin: 0; padding: 10px; height: 44px; width: 44px; display: flex; align-items: center; justify-content: center; border-radius: 12px;"
-            title="Back to Dashboard">
-            <i class="fas fa-home" style="margin: 0; font-size: 18px;"></i>
-          </a>
-          <div>
-            <h1 style="font-size: 24px; margin: 0;">🎓 Learning Hub(MRDU)</h1>
-            <p style="color: var(--text-muted); font-size: 14px; margin-top: 4px;">Explor e and enroll in student-led
-              courses.</p>
-          </div>
-        </div>
-        <div style="display: flex; gap: 12px;">
-          <a href="/notifications.html" id="nav-bell" style="text-decoration:none; position:relative; background: rgba(242, 110, 81, 0.08); border: 1px solid rgba(242, 110, 81, 0.25); color: #F26E51; padding: 10px 14px; border-radius: 8px; display:inline-flex; align-items:center; justify-content:center; transition:0.2s;">
-            <i class="fas fa-bell"></i>
-            <span id="unread-badge" style="position:absolute; top:-5px; right:-5px; background:var(--error); color:white; font-size:10px; font-weight:bold; padding:2px 5px; border-radius:10px; display:none;">0</span>
-          </a>
-          <a href="/my-courses.html" class="btn-ghost" style="width: auto; margin: 0; padding: 10px 18px;"><i
-              class="fas fa-book"></i> My Courses</a>
-          <a href="/add-course.html" class="btn-primary" style="width: auto; margin: 0; padding: 10px 18px;"><i
-              class="fas fa-plus"></i> Create Course</a>
-        </div>
+  <!-- Navigation -->
+  <nav class="nav-bar">
+    <div class="nav-inner">
+      <a class="nav-brand" href="/dashboard.html">
+        <i class="fa-solid fa-graduation-cap"></i> UniPortal
+      </a>
+      <div class="nav-actions">
+        <a href="/dashboard.html" class="btn-back-hub">
+          <i class="fa-solid fa-arrow-left"></i> Back to Dashboard
+        </a>
+        <div class="nav-avatar" id="nav-avatar" onclick="location.href='/profile.html'">?</div>
       </div>
+    </div>
+  </nav>
 
-      <div class="search-container">
-        <input type="text" id="search-input" class="search-input"
-          placeholder="Search for courses, topics, or instructors..." />
-        <button id="search-btn" class="btn-primary" style="width: auto; margin: 0; padding: 0 24px;"><i
-            class="fas fa-search"></i></button>
+  <!-- Page Container -->
+  <div class="page-container">
+    <div class="header-section">
+      <div class="header-text">
+        <h1>Learning Hub</h1>
+        <p>Explore and enroll in student-led courses.</p>
       </div>
-
-      <div id="course-list" class="course-grid">
-        <!-- Courses injected here -->
+      <div class="header-buttons">
+        <a href="/notifications.html" class="btn-bell" id="nav-bell">
+          <i class="fa-solid fa-bell"></i>
+          <span class="unread-badge" id="unread-badge">0</span>
+        </a>
+        <a href="/my-courses.html" class="btn-my-courses">
+          <i class="fa-solid fa-book"></i> My Courses
+        </a>
+        <a href="/add-course.html" class="btn-create-course">
+          <i class="fa-solid fa-plus"></i> Create Course
+        </a>
       </div>
+    </div>
 
-      <div id="empty-state" class="empty-state" style="display: none;">
-        <i class="fas fa-graduation-cap"></i>
-        <h3>No courses available yet</h3>
-        <p>Be the first to share your knowledge with other students!</p>
-        <a href="/add-course.html" class="btn-primary"
-          style="display: inline-block; width: auto; margin-top: 20px;">Create a Course</a>
+    <!-- Search Bar -->
+    <div class="search-container">
+      <input type="text" id="search-input" class="search-input" placeholder="Search for courses, topics, or instructors..." />
+      <button id="search-btn" class="btn-search">
+        <i class="fa-solid fa-magnifying-glass"></i>
+      </button>
+    </div>
+
+    <!-- Courses Grid -->
+    <div id="course-list" class="course-grid">
+      <div class="loading-state">
+        <i class="fa-solid fa-circle-notch"></i>
       </div>
     </div>
   </div>
 
   <script>
+    async function checkAuth() {
+      try {
+        const res = await fetch('/api/auth/me', { credentials: 'include' });
+        if (!res.ok) {
+          window.location.replace('/');
+          return;
+        }
+        const data = await res.json();
+        if (data.user) {
+          const initial = (data.user.name || 'U').charAt(0).toUpperCase();
+          document.getElementById('nav-avatar').textContent = initial;
+        }
+      } catch (err) {
+        window.location.replace('/');
+      }
+    }
+
     async function fetchCourses(search = '') {
+      const list = document.getElementById('course-list');
+      list.innerHTML = `<div class="loading-state"><i class="fa-solid fa-circle-notch"></i></div>`;
+
       try {
         const url = search ? `/api/courses?search=${encodeURIComponent(search)}` : '/api/courses';
         const res = await fetch(url);
         if (!res.ok) throw new Error('Failed to fetch');
         const courses = await res.json();
 
-        const list = document.getElementById('course-list');
-        const empty = document.getElementById('empty-state');
-
         if (courses.length === 0) {
-          list.innerHTML = '';
-          empty.style.display = 'block';
+          list.innerHTML = `
+            <div class="empty-state">
+              <i class="fa-solid fa-graduation-cap"></i>
+              <h3>No courses available</h3>
+              <p>Be the first to share your knowledge with other students!</p>
+              <a href="/add-course.html" class="btn-create-course" style="display: inline-block; width: auto;">Create a Course</a>
+            </div>
+          `;
           return;
         }
 
-        empty.style.display = 'none';
-        list.innerHTML = courses.map(c => `
-          <div class="course-card" onclick="location.href='/course-details.html?id=${c.id}'">
-            <div class="course-header">
-              <i class="fas fa-book-open"></i>
-            </div>
-            <div class="course-body">
-              <div class="course-title">${c.title}</div>
-              <div class="course-desc">${c.description}</div>
-            </div>
-            <div class="course-footer">
-              <div class="course-price ${c.price === 0 ? 'free' : ''}">
-                ${c.price === 0 ? 'FREE' : '₹' + c.price}
+        list.innerHTML = courses.map(c => {
+          const isPaid = c.price > 0;
+          const priceHtml = isPaid ? `₹${c.price}` : 'FREE';
+          const priceClass = isPaid ? '' : 'free';
+          const instructorDisplay = c.instructorName ? c.instructorName : c.instructorRollNumber;
+
+          return `
+            <div class="course-card" onclick="location.href='/course-details.html?id=${c.id}'">
+              <div class="course-header">
+                <i class="fa-solid fa-book-open"></i>
               </div>
-              <div class="instructor-tag">
-                <i class="fas fa-user-graduate"></i> ${c.instructorRollNumber}
+              <div class="course-body">
+                <div class="course-title">${c.title}</div>
+                <div class="course-desc">${c.description}</div>
+                <div class="course-footer">
+                  <span class="course-price ${priceClass}">${priceHtml}</span>
+                  <span class="instructor-tag">
+                    <i class="fa-solid fa-user-graduate"></i> ${instructorDisplay}
+                  </span>
+                </div>
               </div>
             </div>
-          </div>
-        `).join('');
+          `;
+        }).join('');
       } catch (err) {
-        console.error(err);
+        list.innerHTML = `
+          <div class="empty-state">
+            <i class="fa-solid fa-triangle-exclamation" style="color: var(--text-secondary);"></i>
+            <h3>Failed to load courses</h3>
+            <p>Please check your connection and try again.</p>
+          </div>
+        `;
       }
     }
 
@@ -230,8 +549,6 @@
     document.getElementById('search-input').onkeyup = (e) => {
       if (e.key === 'Enter') fetchCourses(e.target.value);
     };
-
-    fetchCourses();
 
     async function pollNotifications() {
       try {
@@ -249,6 +566,10 @@
         }
       } catch (err) {}
     }
+
+    // Init
+    checkAuth();
+    fetchCourses();
     setInterval(pollNotifications, 10000);
     setTimeout(pollNotifications, 500);
   </script>

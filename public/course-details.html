@@ -1,117 +1,375 @@
 <!DOCTYPE html>
 <html lang="en">
-
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Course Details — MRDU Student Portal</title>
-  <link rel="stylesheet" href="styles.css" />
+  <title>Course Details — UniPortal</title>
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" />
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
   <style>
-    .details-container {
+    :root {
+      --bg-color: #edebe4;
+      --card-bg: #ffffff;
+      --sidebar-bg: #013b27;
+      --text-main: #111827;
+      --text-muted: #6b7280;
+      --border-color: #e5e7eb;
+      --accent: #10b981;
+      --error: #ef4444;
+      --success: #10b981;
+      --warning: #f59e0b;
+    }
+    * {
+      box-sizing: border-box;
+      font-family: 'Plus Jakarta Sans', sans-serif;
+    }
+    body {
+      margin: 0;
+      background-color: var(--bg-color);
+      color: var(--text-main);
+    }
+    /* Nav */
+    .nav {
+      background: #fff;
+      border-bottom: 1px solid var(--border-color);
+      padding: 1rem 2rem;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+    .nav-logo {
+      font-weight: 700;
+      font-size: 1.25rem;
+      color: var(--sidebar-bg);
+      text-decoration: none;
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+    }
+    .nav-links {
+      display: flex;
+      gap: 2rem;
+    }
+    .nav-link {
+      text-decoration: none;
+      color: var(--text-muted);
+      font-weight: 500;
+      transition: color 0.2s;
+    }
+    .nav-link:hover {
+      color: var(--sidebar-bg);
+    }
+    .nav-user {
+      width: 40px;
+      height: 40px;
+      background: var(--sidebar-bg);
+      color: white;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-weight: 600;
+    }
+
+    /* Container */
+    .container {
+      max-width: 1200px;
+      margin: 2rem auto;
+      padding: 0 1rem;
+    }
+
+    /* Action Bar */
+    .action-bar {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 2rem;
+    }
+    .action-bar-left {
+      display: flex;
+      gap: 1rem;
+    }
+    .action-bar-right {
+      display: flex;
+      gap: 1rem;
+    }
+    .btn-ghost {
+      background: white;
+      border: 1px solid var(--border-color);
+      color: var(--text-muted);
+      padding: 0.5rem 1rem;
+      border-radius: 6px;
+      text-decoration: none;
+      font-size: 0.85rem;
+      font-weight: 500;
+      display: inline-flex;
+      align-items: center;
+      gap: 0.5rem;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+    .btn-ghost:hover {
+      background: #f9fafb;
+      color: var(--text-main);
+    }
+    .btn-edit {
+      color: var(--text-main);
+    }
+    .btn-delete {
+      background: #fee2e2;
+      color: var(--error);
+      border-color: #fca5a5;
+    }
+    .btn-delete:hover {
+      background: #fca5a5;
+    }
+
+    /* Hero */
+    .hero {
+      background-color: var(--sidebar-bg);
+      border-radius: 16px;
+      padding: 4rem 2rem;
+      text-align: center;
+      color: white;
+      margin-bottom: 2rem;
+      position: relative;
+      overflow: hidden;
+    }
+    .hero-subtitle {
+      font-size: 0.75rem;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+      color: rgba(255, 255, 255, 0.7);
+      margin-bottom: 1rem;
+    }
+    .hero-title {
+      font-size: 3.5rem;
+      font-weight: 700;
+      margin: 0 0 1rem 0;
+    }
+    .hero-instructor {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.5rem;
+      font-size: 0.9rem;
+      color: rgba(255, 255, 255, 0.9);
+      margin-bottom: 1.5rem;
+    }
+    .hero-price {
+      font-size: 2rem;
+      font-weight: 700;
+      margin-bottom: 1.5rem;
+    }
+    .status-pill {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.5rem;
+      background: #bbf7d0;
+      color: #166534;
+      padding: 0.5rem 1.5rem;
+      border-radius: 9999px;
+      font-weight: 600;
+      font-size: 0.85rem;
+    }
+    .btn-primary {
+      background: var(--accent);
+      color: white;
+      border: none;
+      padding: 0.75rem 2rem;
+      border-radius: 8px;
+      font-weight: 600;
+      cursor: pointer;
+      font-size: 1rem;
+    }
+    .btn-primary:hover {
+      background: #059669;
+    }
+
+    /* Two Column Content */
+    .content-grid {
+      display: grid;
+      grid-template-columns: 2fr 1fr;
+      gap: 2rem;
+    }
+    .card {
+      background: white;
+      border-radius: 12px;
+      padding: 2rem;
+      margin-bottom: 2rem;
+      box-shadow: 0 1px 3px rgba(0,0,0,0.05);
+    }
+    .card-title {
+      font-size: 1.25rem;
+      font-weight: 600;
+      margin: 0 0 1.5rem 0;
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      color: var(--sidebar-bg);
+    }
+    
+    /* Links inside content */
+    .link-list {
       display: flex;
       flex-direction: column;
-      gap: 24px;
+      gap: 1rem;
     }
-
-    .hero-section {
-      padding: 40px;
-      background: linear-gradient(135deg, rgba(242, 110, 81, 0.15), rgba(124, 58, 237, 0.08));
-      border: 1px solid var(--border);
-      border-radius: 20px;
-      text-align: center;
+    .link-item {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      background: #f4f3f0;
+      padding: 1rem 1.5rem;
+      border-radius: 8px;
+      text-decoration: none;
+      color: var(--text-main);
+      font-weight: 500;
+      font-size: 0.9rem;
+      transition: background 0.2s;
     }
-
-    .price-tag {
-      font-size: 24px;
-      font-weight: 800;
-      color: var(--accent);
-      margin: 16px 0;
+    .link-item:hover {
+      background: #e7e5df;
     }
-
-    .price-tag.free {
-      color: var(--success);
+    .link-item-left {
+      display: flex;
+      align-items: center;
+      gap: 1rem;
     }
-
-    .content-box {
-      background: rgba(255, 255, 255, 0.02);
-      border: 1px solid var(--border);
-      border-radius: 16px;
-      padding: 24px;
-    }
-
-    .lock-overlay {
-      text-align: center;
-      padding: 40px 20px;
+    .link-item i {
       color: var(--text-muted);
     }
 
-    .lock-overlay i {
-      font-size: 48px;
-      margin-bottom: 20px;
-      color: var(--warning);
-      opacity: 0.6;
-    }
-
-    .link-list {
-      list-style: none;
-      padding: 0;
-      margin-top: 16px;
-    }
-
-    .link-item {
-      padding: 14px;
-      background: rgba(255, 255, 255, 0.05);
-      border: 1px solid var(--border);
+    /* Sidebar info card */
+    .info-card {
+      background: var(--sidebar-bg);
+      color: white;
       border-radius: 12px;
-      margin-bottom: 10px;
+      padding: 2rem;
+      margin-bottom: 1.5rem;
+    }
+    .info-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 1rem;
+      margin-bottom: 1.5rem;
+    }
+    .info-stat h4 {
+      font-size: 1.5rem;
+      margin: 0 0 0.25rem 0;
+    }
+    .info-stat p {
+      font-size: 0.75rem;
+      color: rgba(255, 255, 255, 0.7);
+      margin: 0;
+    }
+    .info-divider {
+      border-top: 1px solid rgba(255, 255, 255, 0.1);
+      margin-bottom: 1.5rem;
+    }
+    .info-list {
+      display: flex;
+      flex-direction: column;
+      gap: 1rem;
+    }
+    .info-list-item {
       display: flex;
       align-items: center;
-      gap: 12px;
-      transition: all 0.2s;
-      text-decoration: none;
-      color: var(--text);
+      gap: 0.75rem;
+      font-size: 0.85rem;
+      color: rgba(255, 255, 255, 0.9);
     }
-
-    .link-item:hover {
-      background: rgba(255, 255, 255, 0.08);
-      border-color: var(--accent);
-      transform: translateX(5px);
-    }
-
-    .link-item i {
+    .info-list-item i {
       color: var(--accent);
+    }
+    
+    /* Image Placeholder */
+    .image-placeholder {
+      background: linear-gradient(rgba(1, 59, 39, 0.6), rgba(1, 59, 39, 0.9)), url('https://images.unsplash.com/photo-1555066931-4365d14bab8c?ixlib=rb-1.2.1&auto=format&fit=crop&w=500&q=80') center/cover;
+      height: 200px;
+      border-radius: 12px;
+      display: flex;
+      align-items: flex-end;
+      padding: 1.5rem;
+      color: white;
+      font-weight: 600;
+      font-size: 0.9rem;
+    }
+
+    /* Footer */
+    .footer {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 2rem 0;
+      border-top: 1px solid var(--border-color);
+      margin-top: 4rem;
+      font-size: 0.75rem;
+      color: var(--text-muted);
+    }
+    .footer-links {
+      display: flex;
+      gap: 1.5rem;
+    }
+
+    /* Lock overlay */
+    .lock-overlay {
+      text-align: center;
+      padding: 3rem 1rem;
+    }
+    .lock-overlay i {
+      font-size: 3rem;
+      color: var(--warning);
+      margin-bottom: 1rem;
     }
   </style>
 </head>
-
 <body>
-  <div class="grid-bg"></div>
-  <div class="page">
-    <div class="auth-card" style="max-width: 800px; width: 95%;">
-      <div style="margin-bottom: 20px; display: flex; gap: 8px;">
-        <a href="/dashboard.html" class="btn-ghost" style="width: auto; margin: 0; padding: 6px 12px; font-size: 12px;">
+  <nav class="nav">
+    <a href="/dashboard.html" class="nav-logo">
+      <i class="fas fa-graduation-cap"></i> UniPortal
+    </a>
+    <div class="nav-links">
+      <a href="/dashboard.html" class="nav-link">Dashboard</a>
+      <a href="#" class="nav-link">Market</a>
+      <a href="/courses.html" class="nav-link">Learning</a>
+    </div>
+    <div class="nav-user">
+      <i class="fas fa-user"></i>
+    </div>
+  </nav>
+
+  <div class="container">
+    <div class="action-bar">
+      <div class="action-bar-left">
+        <a href="/dashboard.html" class="btn-ghost">
           <i class="fas fa-home"></i> Dashboard
         </a>
-        <a href="/courses.html" class="btn-ghost" style="width: auto; margin: 0; padding: 6px 12px; font-size: 12px;">
+        <a href="/courses.html" class="btn-ghost">
           <i class="fas fa-arrow-left"></i> Back to Hub
         </a>
-        <div id="owner-controls" style="display: none; gap: 8px; margin-left: auto;">
-            <a id="edit-course-btn" class="btn-ghost" style="width: auto; margin: 0; padding: 6px 12px; font-size: 12px; color: var(--accent); border-color: rgba(242, 110, 81, 0.3); text-decoration: none;">
-                <i class="fas fa-edit"></i> Edit
-            </a>
-            <button onclick="deleteCourse()" class="btn-ghost" style="width: auto; margin: 0; padding: 6px 12px; font-size: 12px; color: var(--error); border-color: rgba(239, 68, 68, 0.3);">
-                <i class="fas fa-trash"></i> Delete
-            </button>
-        </div>
       </div>
+      <div class="action-bar-right" id="owner-controls" style="display: none;">
+        <a id="edit-course-btn" class="btn-ghost btn-edit">
+          <i class="fas fa-edit"></i> Edit
+        </a>
+        <button onclick="deleteCourse()" class="btn-ghost btn-delete">
+          <i class="fas fa-trash"></i> Delete
+        </button>
+      </div>
+    </div>
 
-      <div id="course-content-area" class="details-container">
-        <!-- Details injected here -->
-        <div style="text-align:center; padding: 40px;">
-          <i class="fas fa-circle-notch fa-spin" style="font-size: 32px; color: var(--accent);"></i>
-          <p style="margin-top: 10px;">Loading course details...</p>
-        </div>
+    <div id="course-content-area">
+      <div style="text-align:center; padding: 4rem;">
+        <i class="fas fa-circle-notch fa-spin" style="font-size: 32px; color: var(--accent);"></i>
+        <p style="margin-top: 10px;">Loading course details...</p>
+      </div>
+    </div>
+
+    <div class="footer">
+      <div id="footer-date">Course created on --/--/----</div>
+      <div class="footer-links">
+        <span>Privacy Policy</span>
+        <span>Terms of Service</span>
       </div>
     </div>
   </div>
@@ -140,14 +398,12 @@
               reqStatus = statusData.status;
               if (reqStatus === 'accepted' && statusData.contact) {
                 course.contact = statusData.contact;
-                course.isEnrolled = true; // since it was just accepted and auto-enrolled!
-                // We should actually re-fetch courses to get the content if we are enrolled!
+                course.isEnrolled = true;
               }
             }
           } catch(e){}
         }
 
-        // If auto-enrolled via request just now but content is missing, reload data:
         if (reqStatus === 'accepted' && !course.content) {
           const resFull = await fetch(`/api/courses/${courseId}`);
           const courseFull = await resFull.json();
@@ -162,10 +418,10 @@
         }
       } catch (err) {
         document.getElementById('course-content-area').innerHTML = `
-          <div style="text-align:center; padding: 40px;">
+          <div style="text-align:center; padding: 4rem;">
              <i class="fas fa-exclamation-triangle" style="font-size: 48px; color: var(--error);"></i>
              <h3>Course not found</h3>
-             <a href="/courses.html" class="btn-primary" style="display:inline-block; width:auto; margin-top:20px;">Back to Hub</a>
+             <a href="/courses.html" class="btn-primary" style="display:inline-block; width:auto; margin-top:20px; text-decoration:none;">Back to Hub</a>
           </div>
         `;
       }
@@ -173,40 +429,46 @@
 
     function renderCourse(course, reqStatus) {
       const container = document.getElementById('course-content-area');
+      const footerDate = document.getElementById('footer-date');
+      
+      if (course.createdAt) {
+         footerDate.textContent = `Course created on ${new Date(course.createdAt).toLocaleDateString()}`;
+      }
 
       const isPaid = course.price > 0;
       const priceHtml = isPaid ? `₹${course.price}` : 'FREE';
-      const priceClass = isPaid ? '' : 'free';
 
       let actionsHtml = '';
       if (course.isEnrolled || course.isInstructor) {
-        actionsHtml = `<span class="status-badge" style="color:var(--success);"><i class="fas fa-check-circle"></i> ${course.isInstructor ? 'INSTRUCTOR' : 'ENROLLED'}</span>`;
+        actionsHtml = `<div class="status-pill"><i class="fas fa-check-circle"></i> ${course.isInstructor ? 'INSTRUCTOR' : 'ENROLLED'}</div>`;
       } else {
         if (reqStatus === 'pending') {
-          actionsHtml = `<span class="status-badge" style="color:var(--warning); border: 1px solid var(--warning); padding: 8px 16px;"><i class="fas fa-clock"></i> Enrollment Pending</span>`;
+          actionsHtml = `<div class="status-pill" style="background: var(--warning); color: white;"><i class="fas fa-clock"></i> PENDING</div>`;
         } else if (reqStatus === 'rejected') {
-          actionsHtml = `<span class="status-badge" style="color:var(--error); border: 1px solid var(--error); padding: 8px 16px;"><i class="fas fa-times-circle"></i> Enrollment Rejected</span>`;
+          actionsHtml = `<div class="status-pill" style="background: var(--error); color: white;"><i class="fas fa-times-circle"></i> REJECTED</div>`;
         } else {
-          actionsHtml = `<button id="enroll-btn" class="btn-primary" onclick="enroll()" style="width: auto; padding: 12px 32px;">Enroll Now — ${priceHtml}</button>`;
+          actionsHtml = `<button id="enroll-btn" class="btn-primary" onclick="enroll()">Enroll Now — ${priceHtml}</button>`;
         }
       }
 
       let contentHtml = '';
       if (course.content) {
         contentHtml = `
-          <div class="content-box">
-            <h3 style="margin-bottom: 16px;"><i class="fas fa-play-circle"></i> Course Content</h3>
+          <div class="card">
+            <h3 class="card-title"><i class="fas fa-play-circle"></i> Course Content</h3>
             <div class="link-list">
               ${course.content.map((link, idx) => {
                 const isUpload = link.startsWith('/uploads/');
                 const fileName = isUpload ? decodeURIComponent(link.split('-').slice(1).join('-')) : `External Link #${idx + 1}`;
                 const icon = isUpload ? 'fa-file-download' : 'fa-link';
-                const rightIcon = isUpload ? 'fa-download' : 'fa-external-link-alt';
+                const rightIcon = isUpload ? 'fa-download' : 'fa-external-link-square-alt';
                 return `
                 <a href="${link}" target="_blank" class="link-item" ${isUpload ? 'download' : ''}>
-                  <i class="fas ${icon}"></i>
-                  <span style="overflow:hidden; text-overflow:ellipsis; white-space:nowrap; max-width:80%;">${fileName}</span>
-                  <i class="fas ${rightIcon}" style="margin-left:auto; font-size:12px; opacity: 0.5;"></i>
+                  <div class="link-item-left">
+                    <i class="fas ${icon}"></i>
+                    <span>${fileName}</span>
+                  </div>
+                  <i class="fas ${rightIcon}"></i>
                 </a>
                 `;
               }).join('')}
@@ -215,44 +477,68 @@
         `;
       } else {
         contentHtml = `
-          <div class="content-box">
+          <div class="card">
             <div class="lock-overlay">
               <i class="fas fa-lock"></i>
               <h3>Content Protected</h3>
-              <p>Please enroll in this course to access the learning materials.</p>
-              ${!course.isEnrolled ? `<button class="btn-primary" onclick="enroll()" style="width:auto; margin-top:16px;">Enroll to Unlock</button>` : ''}
+              <p style="color: var(--text-muted); margin-bottom: 1.5rem;">Please enroll in this course to access the learning materials.</p>
+              ${!course.isEnrolled ? `<button class="btn-primary" onclick="enroll()">Enroll to Unlock</button>` : ''}
             </div>
           </div>
         `;
       }
 
       container.innerHTML = `
-        <div class="hero-section">
-          <div style="font-size: 12px; color: var(--text-muted); margin-bottom: 8px; text-transform: uppercase; letter-spacing: 1px;">Course Details</div>
-          <h1 style="font-size: 32px; margin: 0 0 12px 0;">${course.title}</h1>
-          <div class="instructor-tag" style="display: inline-block; font-size: 13px;">
-            <i class="fas fa-user-graduate"></i> Instructor: ${course.instructorRollNumber}
+        <div class="hero">
+          <div class="hero-subtitle">Course Details</div>
+          <h1 class="hero-title">${course.title}</h1>
+          <div class="hero-instructor">
+            <i class="far fa-user"></i> Instructor: ${course.instructorRollNumber}
           </div>
           ${course.contact ? `
-            <div style="margin-top: 8px;">
-              <a href="https://wa.me/91${course.contact.replace(/\D/g, '')}?text=Hi, I am interested in your course %22${encodeURIComponent(course.title)}%22 on MRDU Portal." target="_blank" style="color: #25D366; text-decoration: none; font-size: 14px; display: inline-flex; align-items: center; gap: 4px;">
+            <div style="margin-bottom: 1.5rem;">
+              <a href="https://wa.me/91${course.contact.replace(/\D/g, '')}?text=Hi, I am interested in your course %22${encodeURIComponent(course.title)}%22 on MRDU Portal." target="_blank" style="color: #bbf7d0; text-decoration: none; font-size: 0.9rem; display: inline-flex; align-items: center; gap: 0.5rem; border: 1px solid rgba(187, 247, 208, 0.3); padding: 0.5rem 1rem; border-radius: 999px;">
                 <i class="fab fa-whatsapp"></i> Chat on WhatsApp
               </a>
             </div>
           ` : ''}
-          <div class="price-tag ${priceClass}">${priceHtml}</div>
-          <div style="margin-top: 24px;">${actionsHtml}</div>
+          <div class="hero-price">${priceHtml}</div>
+          <div>${actionsHtml}</div>
         </div>
 
-        <div class="content-box">
-          <h3 style="margin-bottom: 12px;"><i class="fas fa-align-left"></i> About this course</h3>
-          <p style="color: var(--text-muted); line-height: 1.6; white-space: pre-line;">${course.description}</p>
-        </div>
-
-        ${contentHtml}
-
-        <div style="font-size: 12px; color: var(--text-muted); text-align: center;">
-          Course created on ${new Date(course.createdAt).toLocaleDateString()}
+        <div class="content-grid">
+          <div class="main-column">
+            <div class="card">
+              <p style="color: var(--text-main); line-height: 1.6; white-space: pre-line; margin: 0;">${course.description}</p>
+            </div>
+            ${contentHtml}
+          </div>
+          <div class="sidebar-column">
+            <div class="info-card">
+              <div class="info-grid">
+                <div class="info-stat">
+                  <h4>1</h4>
+                  <p>Modules</p>
+                </div>
+                <div class="info-stat">
+                  <h4 style="font-size: 1.1rem; margin-top: 0.35rem;">Self-Paced</h4>
+                  <p>Learning Mode</p>
+                </div>
+              </div>
+              <div class="info-divider"></div>
+              <div class="info-list">
+                <div class="info-list-item">
+                  <i class="fas fa-globe"></i> Language: English
+                </div>
+                <div class="info-list-item">
+                  <i class="far fa-calendar-alt"></i> Enrollment: Open
+                </div>
+              </div>
+            </div>
+            <div class="image-placeholder">
+              Elevate your career with ${course.title} programming
+            </div>
+          </div>
         </div>
       `;
     }
@@ -301,5 +587,4 @@
     loadCourse();
   </script>
 </body>
-
 </html>

@@ -4,308 +4,813 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>My Profile - MRDU App</title>
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="/styles.css">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
   <style>
-    :root {
-      --primary: #6366f1;
-      --primary-hover: #F26E51;
-      --bg-dark: #0f1117;
-      --bg-card: #1e212b;
-      --text-main: #f8fafc;
-      --text-muted: #94a3b8;
-      --border: #2e3342;
-      --danger: #ef4444;
-      --success: #10b981;
-      --warning: #f59e0b;
-    }
-
+    /* Reset styles.css flex-body centering and dark background */
     body {
-      background-color: var(--bg-dark);
-      color: var(--text-main);
-      font-family: 'Inter', sans-serif;
-      margin: 0;
-      padding: 0;
+      background: #f3f2eb !important;
+      color: #0e291e !important;
+      font-family: 'Inter', sans-serif !important;
+      min-height: 100vh !important;
+      display: block !important;
+      padding: 0 0 100px 0 !important;
+      margin: 0 !important;
+      position: relative !important;
+      overflow-x: auto !important;
     }
+    body::before, body::after, .grid-bg { display: none !important; }
 
-    .container {
-      max-width: 1000px;
-      margin: 0 auto;
-      padding: 2rem;
+    /* Navbar */
+    .edu-navbar {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      background: #f3f2eb;
+      border-bottom: 1px solid rgba(14,41,30,0.08);
+      padding: 16px 8%;
+      position: sticky;
+      top: 0;
+      z-index: 100;
     }
-
-    /* ─── Header ─── */
-    .profile-header {
+    .nav-brand {
+      font-size: 22px; font-weight: 800; color: #07442d;
+      cursor: pointer; display: flex; align-items: center; gap: 8px;
+    }
+    .nav-actions {
       display: flex;
       align-items: center;
-      gap: 1.5rem;
-      background: var(--bg-card);
-      padding: 2rem;
-      border-radius: 1rem;
-      border: 1px solid var(--border);
-      margin-bottom: 2rem;
+      gap: 20px;
+    }
+    .settings-btn {
+      font-size: 18px;
+      color: #4a5a51;
+      cursor: pointer;
+      transition: color 0.2s;
+    }
+    .settings-btn:hover {
+      color: #07442d;
+    }
+    .nav-avatar {
+      width: 32px;
+      height: 32px;
+      border-radius: 50%;
+      cursor: pointer;
+      border: 1px solid rgba(14,41,30,0.15);
+      object-fit: cover;
     }
 
-    .avatar {
-      width: 80px;
-      height: 80px;
-      border-radius: 50%;
-      background: linear-gradient(135deg, var(--primary), #a855f7);
+    /* Container */
+    .container {
+      max-width: 1200px;
+      margin: 0 auto;
+      padding: 24px 8%;
+      box-shadow: none !important;
+      background: transparent !important;
+    }
+
+    .back-link {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      color: #4a5a51;
+      text-decoration: none;
+      font-size: 14px;
+      font-weight: 500;
+      margin-bottom: 24px;
+      transition: color 0.2s;
+    }
+    .back-link:hover {
+      color: #07442d;
+    }
+
+    /* Profile Green Card */
+    .profile-green-card {
+      background: #07442d;
+      border-radius: 12px;
+      padding: 32px;
+      display: flex;
+      align-items: center;
+      gap: 24px;
+      color: #ffffff;
+      margin-bottom: 32px;
+    }
+    .avatar-square {
+      width: 100px;
+      height: 100px;
+      background: #fccb56;
+      border-radius: 12px;
       display: flex;
       align-items: center;
       justify-content: center;
-      font-size: 2rem;
-      font-weight: 700;
-      color: white;
-      text-transform: uppercase;
+      font-size: 36px;
+      font-weight: 800;
+      color: #07442d;
+      flex-shrink: 0;
     }
-
-    .profile-info h1 {
-      margin: 0 0 0.5rem 0;
-      font-size: 1.8rem;
+    .profile-details {
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
     }
-
-    .profile-info p {
-      margin: 0 0 0.25rem 0;
-      color: var(--text-muted);
-      font-size: 0.95rem;
+    .profile-name {
+      font-size: 24px;
+      font-weight: 800;
+      margin: 0;
+      letter-spacing: -0.5px;
+      color: #ffffff !important;
+    }
+    .profile-meta-item {
       display: flex;
       align-items: center;
-      gap: 0.5rem;
+      gap: 8px;
+      font-size: 14px;
+      color: rgba(255, 255, 255, 0.75);
+    }
+    .profile-meta-item i {
+      width: 16px;
+    }
+    .profile-meta-item.email-item {
+      color: #a8d5c4;
+    }
+    .section-badge {
+      align-self: flex-start;
+      background: rgba(0, 0, 0, 0.3) !important;
+      border: 1px solid rgba(255, 255, 255, 0.1) !important;
+      padding: 8px 12px;
+      border-radius: 4px;
+      font-size: 12px;
+      font-weight: 700;
+      letter-spacing: 1.5px;
+      color: #ffffff !important;
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      margin-top: 8px;
     }
 
-    .tag {
-      background: rgba(99, 102, 241, 0.15);
-      color: #a5b4fc;
-      padding: 0.25rem 0.75rem;
-      border-radius: 999px;
-      font-size: 0.8rem;
-      font-weight: 600;
-      margin-top: 0.5rem;
-      display: inline-block;
-    }
-
-    /* ─── Quick Actions ─── */
-    .quick-actions {
+    /* Quick Navigation Links */
+    .quick-navigation-grid {
       display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
-      gap: 1rem;
-      margin-bottom: 3rem;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 16px;
+      margin-bottom: 48px;
+    }
+    .nav-card {
+      background: #ffffff;
+      border: 1px solid rgba(14,41,30,0.08);
+      border-radius: 12px;
+      padding: 24px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 12px;
+      color: #0e291e !important;
+      font-size: 18px;
+      font-weight: 700;
+      text-decoration: none;
+      transition: all 0.2s;
+    }
+    .nav-card:hover {
+      border-color: rgba(7,68,45,0.2);
+      box-shadow: 0 4px 12px rgba(7,68,45,0.04);
+      transform: translateY(-2px);
+    }
+    .nav-card i {
+      font-size: 20px;
+      color: #07442d;
     }
 
-    .action-btn {
-      background: var(--bg-card);
-      color: var(--text-main);
-      border: 1px solid var(--border);
-      padding: 1rem;
-      border-radius: 0.75rem;
+    /* Column layouts */
+    .profile-sections-grid {
+      display: grid;
+      grid-template-columns: 1.8fr 1.2fr;
+      gap: 32px;
+      margin-bottom: 48px;
+    }
+    .section-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 16px;
+    }
+    .section-header h2 {
+      font-size: 20px;
+      font-weight: 800;
+      color: #0e291e;
+      margin: 0;
+    }
+    .manage-all-link {
+      font-size: 13px;
+      font-weight: 600;
+      color: #07442d;
+      text-decoration: none;
+    }
+    .manage-all-link:hover {
+      text-decoration: underline;
+    }
+
+    /* Side cards */
+    .sidebar-card {
+      background: #ffffff;
+      border: 1px solid rgba(14,41,30,0.08);
+      border-radius: 12px;
+      padding: 20px;
+      margin-bottom: 16px;
+    }
+    .sidebar-label {
+      font-size: 11px;
+      font-weight: 700;
+      letter-spacing: 1px;
+      color: #8b9a91;
+      margin-bottom: 8px;
+      text-transform: uppercase;
+    }
+    .status-value {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      font-size: 14px;
+      font-weight: 600;
+      color: #0e291e;
+    }
+    .dot {
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+    }
+    .green-dot {
+      background: #10b981;
+      box-shadow: 0 0 0 4px rgba(16, 185, 129, 0.2);
+    }
+
+    .trust-card {
+      background: #07442d;
+      color: #ffffff;
+      border: none;
+    }
+    .trust-header {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      font-size: 14px;
+      font-weight: 700;
+      margin-bottom: 8px;
+    }
+    .trust-icon {
+      color: #fccb56;
+      font-size: 16px;
+    }
+    .trust-desc {
+      font-size: 12px;
+      color: rgba(255, 255, 255, 0.85);
+      margin: 0;
+      line-height: 1.5;
+    }
+
+    .logout-btn-new {
+      width: 100%;
+      background: #fee2e2;
+      color: #b91c1c;
+      border: none;
+      border-radius: 10px;
+      padding: 14px 20px;
+      font-family: 'Inter', sans-serif;
+      font-size: 14px;
+      font-weight: 700;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+    .logout-btn-new:hover {
+      background: #fecaca;
+    }
+
+    /* Empty boxes */
+    .empty-dashed-box {
+      background: transparent;
+      border: 1px dashed rgba(14,41,30,0.15);
+      border-radius: 12px;
+      padding: 40px 20px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      gap: 12px;
+      color: #8b9a91;
+      text-align: center;
+      min-height: 160px;
+    }
+    .empty-dashed-box i {
+      font-size: 28px;
+    }
+    .empty-dashed-box p {
+      margin: 0;
+      font-size: 13px;
+    }
+
+    /* Private Chat empty state */
+    .empty-chat-box {
+      background: #ffffff;
+      border: 1px solid rgba(14,41,30,0.08);
+      border-radius: 12px;
+      padding: 32px 20px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      gap: 12px;
+      text-align: center;
+    }
+    .empty-chat-icon {
+      font-size: 24px;
+      color: #8b9a91;
+    }
+    .empty-chat-box p {
+      font-size: 13px;
+      color: #4a5a51;
+      margin: 0;
+    }
+    .start-chat-btn {
+      background: #ffffff;
+      border: 1px solid rgba(7,68,45,0.3);
+      color: #07442d;
+      padding: 8px 16px;
+      border-radius: 8px;
+      font-family: 'Inter', sans-serif;
+      font-size: 13px;
       font-weight: 600;
       cursor: pointer;
       transition: all 0.2s;
-      text-align: center;
-      text-decoration: none;
+    }
+    .start-chat-btn:hover {
+      background: rgba(7,68,45,0.05);
+    }
+
+    /* Course section & tabs */
+    .courses-section {
+      margin-top: 32px;
+    }
+    .course-tabs {
       display: flex;
-      align-items: center;
-      justify-content: center;
-      gap: 0.5rem;
+      gap: 16px;
+      margin-bottom: 24px;
+      border-bottom: 1px solid rgba(14,41,30,0.08);
+    }
+    .tab-btn {
+      background: transparent;
+      border: none;
+      font-family: 'Inter', sans-serif;
+      font-weight: 600;
+      padding: 8px 16px 12px;
+      cursor: pointer;
+      font-size: 14px;
+      color: #8b9a91;
+      border-bottom: 2px solid transparent;
+      transition: all 0.2s;
+    }
+    .tab-btn.active {
+      color: #07442d;
+      border-bottom-color: #07442d;
     }
 
-    .action-btn:hover {
-      background: rgba(99, 102, 241, 0.1);
-      border-color: var(--primary);
-      transform: translateY(-2px);
-    }
-    .action-btn.danger:hover {
-      background: rgba(239, 68, 68, 0.1);
-      border-color: var(--danger);
-      color: var(--danger);
-    }
-
-    /* ─── Sections ─── */
-    .section-title {
-      font-size: 1.4rem;
-      margin-bottom: 1.5rem;
-      padding-bottom: 0.5rem;
-      border-bottom: 1px solid var(--border);
-    }
-
+    /* Listings grid cards */
     .grid-layout {
       display: grid;
-      grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
-      gap: 1.5rem;
-      margin-bottom: 3rem;
+      grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+      gap: 16px;
+    }
+    #courseEnrolledArea:not(.active), #courseCreatedArea:not(.active) {
+      display: none;
     }
 
+    /* Cards */
     .card {
-      background: var(--bg-card);
-      border: 1px solid var(--border);
-      border-radius: 1rem;
-      padding: 1.25rem;
+      background: #ffffff;
+      border: 1px solid rgba(14,41,30,0.08);
+      border-radius: 12px;
+      padding: 16px;
       display: flex;
       flex-direction: column;
+      gap: 12px;
+      transition: all 0.2s;
     }
-    
+    .card:hover {
+      border-color: rgba(7,68,45,0.15);
+      box-shadow: 0 4px 12px rgba(7,68,45,0.04);
+    }
+    .card-img {
+      width: 100%;
+      height: 140px;
+      border-radius: 8px;
+      object-fit: cover;
+      background: #e9e8e0;
+    }
     .card-header {
       display: flex;
       justify-content: space-between;
       align-items: flex-start;
-      margin-bottom: 1rem;
+      margin-bottom: 0;
     }
-
     .card-title {
-      font-size: 1.1rem;
-      font-weight: 600;
+      font-size: 15px;
+      font-weight: 700;
+      color: #0e291e;
       margin: 0;
     }
-
     .card-price {
-      font-weight: 700;
-      color: var(--success);
+      font-size: 15px;
+      font-weight: 850;
+      color: #b8860b;
     }
-
     .card-meta {
-      font-size: 0.85rem;
-      color: var(--text-muted);
-      margin-bottom: 1.5rem;
-      flex-grow: 1;
+      font-size: 12px;
+      color: #8b9a91;
+      line-height: 1.5;
     }
-
     .card-actions {
       display: flex;
-      gap: 0.75rem;
+      gap: 8px;
       margin-top: auto;
     }
-
     .btn-small {
       flex: 1;
-      padding: 0.5rem;
-      border: none;
-      border-radius: 0.5rem;
+      padding: 8px;
+      border-radius: 6px;
+      font-family: 'Inter', sans-serif;
+      font-size: 12px;
       font-weight: 600;
-      font-size: 0.85rem;
       cursor: pointer;
-      transition: opacity 0.2s;
+      border: 1px solid rgba(14,41,30,0.12);
+      background: #ffffff;
+      color: #4a5a51;
+      transition: all 0.2s;
     }
-
-    .btn-toggle {
-      background: rgba(245, 158, 11, 0.15);
-      color: var(--warning);
+    .btn-small:hover {
+      border-color: #07442d;
+      color: #07442d;
     }
     .btn-toggle.active {
-      background: rgba(16, 185, 129, 0.15);
-      color: var(--success);
+      background: #07442d;
+      color: #ffffff;
+      border-color: #07442d;
     }
-    
     .btn-delete {
-      background: rgba(239, 68, 68, 0.15);
-      color: var(--danger);
+      background: #fee2e2;
+      color: #b91c1c;
+      border-color: #fee2e2;
+    }
+    .btn-delete:hover {
+      background: #fecaca;
+      color: #b91c1c;
+      border-color: #fecaca;
     }
 
-    .btn-small:hover {
-      opacity: 0.8;
-    }
-
-    .empty-state {
-      grid-column: 1 / -1;
-      text-align: center;
-      padding: 3rem;
-      background: rgba(30, 33, 43, 0.5);
-      border-radius: 1rem;
-      border: 1px dashed var(--border);
-      color: var(--text-muted);
-    }
-
-    /* Course specific */
-    .course-tabs {
+    /* Course cards */
+    .course-card {
+      background: #ffffff;
+      border: 1px solid rgba(14,41,30,0.08);
+      border-radius: 12px;
+      overflow: hidden;
       display: flex;
-      gap: 1rem;
-      margin-bottom: 1.5rem;
+      flex-direction: column;
     }
-
-    .tab-btn {
-      background: transparent;
+    .course-card-body {
+      padding: 16px;
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+      flex: 1;
+    }
+    .course-title {
+      font-size: 16px;
+      font-weight: 800;
+      color: #0e291e;
+      margin: 0;
+    }
+    .course-desc {
+      font-size: 13px;
+      color: #4a5a51;
+      line-height: 1.5;
+      flex: 1;
+    }
+    .course-btn {
+      background: #07442d;
+      color: #ffffff;
       border: none;
-      color: var(--text-muted);
-      font-weight: 600;
-      padding: 0.5rem 1rem;
+      border-radius: 8px;
+      padding: 10px 16px;
+      font-family: 'Inter', sans-serif;
+      font-size: 13px;
+      font-weight: 700;
+      text-align: center;
+      text-decoration: none;
       cursor: pointer;
-      font-size: 1rem;
-      border-bottom: 2px solid transparent;
+      transition: all 0.2s;
+    }
+    .course-btn:hover {
+      background: #0a5a3d;
     }
 
-    .tab-btn.active {
-      color: var(--primary);
-      border-bottom-color: var(--primary);
+    /* Empty created courses */
+    .empty-created-box {
+      background: #ffffff;
+      border: 1px solid rgba(14,41,30,0.08);
+      border-radius: 12px;
+      padding: 48px 24px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      gap: 16px;
+      text-align: center;
+      grid-column: 1 / -1;
     }
-    
-    #courseEnrolledArea { display: none; }
-    #courseEnrolledArea.active { display: grid; }
-    #courseCreatedArea { display: none; }
-    #courseCreatedArea.active { display: grid; }
+    .empty-created-icon {
+      font-size: 36px;
+      color: #8b9a91;
+    }
+    .empty-created-box p {
+      font-size: 14px;
+      color: #4a5a51;
+      margin: 0;
+    }
+    .yellow-btn {
+      background: #fccb56;
+      color: #0e291e;
+      border: none;
+      border-radius: 8px;
+      padding: 12px 24px;
+      font-family: 'Inter', sans-serif;
+      font-size: 14px;
+      font-weight: 700;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+    .yellow-btn:hover {
+      background: #e5b33c;
+    }
+
+    /* Bottom sticky navigation bar */
+    .bottom-nav {
+      position: fixed;
+      bottom: 0;
+      left: 0;
+      right: 0;
+      height: 72px;
+      background: #ffffff;
+      border-top: 1px solid rgba(14,41,30,0.08);
+      display: flex;
+      justify-content: space-around;
+      align-items: center;
+      z-index: 1000;
+      padding: 0 24px;
+    }
+    .bottom-nav-item {
+      text-decoration: none;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+    .bottom-nav-icon-wrap {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 4px;
+      color: #8b9a91;
+      font-size: 11px;
+      font-weight: 500;
+      transition: all 0.2s;
+    }
+    .bottom-nav-icon-wrap i {
+      font-size: 20px;
+    }
+    .bottom-nav-item:hover .bottom-nav-icon-wrap {
+      color: #07442d;
+    }
+    .bottom-nav-active-pill {
+      background: #07442d;
+      color: #ffffff;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      padding: 10px 20px;
+      border-radius: 99px;
+      font-size: 14px;
+      font-weight: 700;
+      transition: all 0.2s;
+    }
+    .bottom-nav-active-pill i {
+      font-size: 16px;
+    }
+
+    @media (max-width: 900px) {
+      .profile-sections-grid {
+        grid-template-columns: 1fr;
+      }
+      .quick-navigation-grid {
+        grid-template-columns: 1fr;
+      }
+      .profile-green-card {
+        flex-direction: column;
+        text-align: center;
+        padding: 24px;
+      }
+      .section-badge {
+        align-self: center;
+      }
+      .container {
+        padding: 16px 4%;
+      }
+    }
   </style>
 </head>
 <body>
 
-  <div class="container">
-    <nav style="margin-bottom: 2rem;">
-      <a href="/dashboard.html" style="color: var(--text-muted); text-decoration: none;">← Back to Dashboard</a>
-    </nav>
+  <!-- Top Navbar -->
+  <nav class="edu-navbar">
+    <div class="nav-brand" onclick="location.href='/dashboard.html'">
+      MRDU Portal
+    </div>
+    <div class="nav-actions">
+      <i class="fas fa-cog settings-btn" onclick="location.href='/settings.html'"></i>
+      <img src="/avatar.png" alt="Profile" class="nav-avatar" onclick="location.href='/profile.html'">
+    </div>
+  </nav>
 
-    <!-- HEADER -->
-    <div class="profile-header" id="profileHeader">
-      <div class="avatar" id="avatarDisplay">?</div>
-      <div class="profile-info">
-        <h1 id="userName">Loading...</h1>
-        <p>🆔 <span id="userRollNumber"></span></p>
-        <p>📧 <span id="userEmail"></span></p>
-        <div class="tag" id="userCourseSection"></div>
+  <div class="container">
+    <a href="/dashboard.html" class="back-link"><i class="fas fa-arrow-left"></i> Back to Dashboard</a>
+
+    <!-- Profile Green Card -->
+    <div class="profile-green-card">
+      <div class="avatar-square" id="avatarDisplay">KA</div>
+      <div class="profile-details">
+        <h1 class="profile-name" id="userName">Loading...</h1>
+        <div class="profile-meta-item">
+          <i class="far fa-address-card"></i> <span id="userRollNumber"></span>
+        </div>
+        <div class="profile-meta-item email-item">
+          <i class="far fa-envelope"></i> <span id="userEmail"></span>
+        </div>
+        <div class="section-badge">
+          <i class="fas fa-lock"></i> <span id="userCourseSection"></span>
+        </div>
       </div>
     </div>
 
-    <!-- QUICK ACTIONS -->
-    <div class="quick-actions">
-      <a href="/marketplace.html" class="action-btn">🛒 Go to Marketplace</a>
-      <a href="/services.html" class="action-btn">💼 Go to Services</a>
-      <a href="/courses.html" class="action-btn">🎓 Go to Courses</a>
-      <button class="action-btn danger" onclick="logout()">🚪 Logout</button>
+    <!-- Quick Navigation Links -->
+    <div class="quick-navigation-grid">
+      <a href="/marketplace.html" class="nav-card">
+        <i class="fas fa-store"></i> Marketplace
+      </a>
+      <a href="/services.html" class="nav-card">
+        <i class="fas fa-concierge-bell"></i> Services
+      </a>
+      <a href="/courses.html" class="nav-card">
+        <i class="fas fa-graduation-cap"></i> Courses
+      </a>
     </div>
 
-    <!-- MARKETPLACE LISTINGS -->
-    <h2 class="section-title">My Marketplace Listings</h2>
-    <div class="grid-layout" id="marketplaceArea">
-      <div class="empty-state">Loading your listings...</div>
+    <!-- Marketplace Listings & Private Chats Column Layout -->
+    <div class="profile-sections-grid">
+      <!-- Left Column: Marketplace -->
+      <div class="main-column">
+        <div class="section-header">
+          <h2>My Marketplace Listings</h2>
+          <a href="/marketplace.html" class="manage-all-link">Manage All</a>
+        </div>
+        <div class="grid-layout" id="marketplaceArea">
+          <div class="empty-dashed-box">
+            <i class="fas fa-circle-notch fa-spin"></i>
+            <p>Loading your listings...</p>
+          </div>
+        </div>
+      </div>
+      <!-- Right Column: Private Chats -->
+      <div class="sidebar-column">
+        <div class="section-header">
+          <h2>My Private Chats</h2>
+        </div>
+        <div id="privateChatsArea">
+          <div class="empty-chat-box">
+            <i class="fas fa-circle-notch fa-spin" style="color: #8b9a91;"></i>
+            <p>Loading your private chats...</p>
+          </div>
+        </div>
+      </div>
     </div>
 
-    <!-- SERVICES -->
-    <h2 class="section-title">My Services</h2>
-    <div class="grid-layout" id="servicesArea">
-      <div class="empty-state">Loading your services...</div>
+    <!-- Services & Sidebar Status Layout -->
+    <div class="profile-sections-grid">
+      <!-- Left Column: Services -->
+      <div class="main-column">
+        <div class="section-header">
+          <h2>My Services</h2>
+          <a href="/services.html" class="manage-all-link">Post New</a>
+        </div>
+        <div class="grid-layout" id="servicesArea">
+          <div class="empty-dashed-box">
+            <i class="fas fa-circle-notch fa-spin"></i>
+            <p>Loading your services...</p>
+          </div>
+        </div>
+      </div>
+      <!-- Right Column: Account Status & Logout -->
+      <div class="sidebar-column">
+        <div class="sidebar-card">
+          <div class="sidebar-label">Account Status</div>
+          <div class="status-value">
+            <span class="dot green-dot"></span> Verified Student Profile
+          </div>
+        </div>
+        <div class="sidebar-card trust-card">
+          <div class="trust-header">
+            <i class="fas fa-certificate trust-icon"></i>
+            <span>Trust Score: 98%</span>
+          </div>
+          <p class="trust-desc">Top performer in Marketplace interactions.</p>
+        </div>
+        <button class="logout-btn-new" onclick="logout()">
+          <i class="fas fa-sign-out-alt"></i> Logout
+        </button>
+      </div>
     </div>
 
-    <!-- PRIVATE CHATS -->
-    <h2 class="section-title">My Private Chats</h2>
-    <div class="grid-layout" id="privateChatsArea">
-      <div class="empty-state">Loading your private chats...</div>
-    </div>
-
-    <!-- COURSES -->
-    <h2 class="section-title">My Courses</h2>
-    <div class="course-tabs">
-      <button class="tab-btn active" onclick="switchCourseTab('enrolled')" id="tabEnrolled">Enrolled Courses</button>
-      <button class="tab-btn" onclick="switchCourseTab('created')" id="tabCreated">Created Courses</button>
-    </div>
-    
-    <div class="grid-layout active" id="courseEnrolledArea">
-      <div class="empty-state">Loading enrolled courses...</div>
-    </div>
-    <div class="grid-layout" id="courseCreatedArea">
-      <div class="empty-state">Loading created courses...</div>
+    <!-- Courses Section -->
+    <div class="courses-section">
+      <div class="section-header">
+        <h2>My Courses</h2>
+      </div>
+      <div class="course-tabs">
+        <button class="tab-btn active" onclick="switchCourseTab('enrolled')" id="tabEnrolled">Enrolled Courses</button>
+        <button class="tab-btn" onclick="switchCourseTab('created')" id="tabCreated">Created Courses</button>
+      </div>
+      
+      <div class="grid-layout active" id="courseEnrolledArea">
+        <div class="empty-dashed-box">
+          <i class="fas fa-circle-notch fa-spin"></i>
+          <p>Loading enrolled courses...</p>
+        </div>
+      </div>
+      <div class="grid-layout" id="courseCreatedArea">
+        <div class="empty-dashed-box">
+          <i class="fas fa-circle-notch fa-spin"></i>
+          <p>Loading created courses...</p>
+        </div>
+      </div>
     </div>
 
   </div>
 
+  <!-- Bottom Sticky Navigation Bar -->
+  <div class="bottom-nav">
+    <a href="/dashboard.html" class="bottom-nav-item">
+      <div class="bottom-nav-icon-wrap">
+        <i class="fas fa-home"></i>
+        <span>Home</span>
+      </div>
+    </a>
+    <a href="/chat.html" class="bottom-nav-item">
+      <div class="bottom-nav-icon-wrap">
+        <i class="far fa-comments"></i>
+        <span>Chat</span>
+      </div>
+    </a>
+    <a href="/marketplace.html" class="bottom-nav-item">
+      <div class="bottom-nav-icon-wrap">
+        <i class="fas fa-shopping-bag"></i>
+        <span>Store</span>
+      </div>
+    </a>
+    <a href="/profile.html" class="bottom-nav-item active">
+      <div class="bottom-nav-active-pill">
+        <i class="fas fa-user"></i>
+        <span>Profile</span>
+      </div>
+    </a>
+  </div>
+
   <script>
     let currentUser = null;
+
+    function getCourseImage(course) {
+      if (course.image) return course.image;
+      if (Array.isArray(course.content)) {
+        const imgItem = course.content.find(item => typeof item === 'string' && (item.startsWith('/uploads/') || item.match(/\.(jpeg|jpg|gif|png|webp)/i)));
+        if (imgItem) return imgItem;
+      }
+      const title = (course.title || '').toLowerCase();
+      if (title.includes('java')) {
+        return 'https://images.unsplash.com/photo-1517694712202-14dd9538aa97?w=400&q=80';
+      }
+      if (title.includes('python')) {
+        return 'https://images.unsplash.com/photo-1526374965328-7f61d4dc18c5?w=400&q=80';
+      }
+      return 'https://images.unsplash.com/photo-1486312338219-ce68d2c6f44d?w=400&q=80';
+    }
 
     async function checkAuth() {
       try {
@@ -333,10 +838,10 @@
       document.getElementById('userRollNumber').innerText = currentUser.rollNumber;
       document.getElementById('userEmail').innerText = currentUser.email || 'Email missing';
       
-      const initials = name.substring(0, 2).toUpperCase();
-      document.getElementById('avatarDisplay').innerText = initials;
+      const initials = name.split(' ').map(n => n[0]).join('').substring(0, 2).toUpperCase();
+      document.getElementById('avatarDisplay').innerText = initials || 'KA';
       
-      document.getElementById('userCourseSection').innerText = `🏫 ${currentUser.course || 'CSE'} - Section ${currentUser.section || 'A'}`;
+      document.getElementById('userCourseSection').innerText = `${currentUser.course || 'CSE'} - Section ${currentUser.section || 'A'}`;
     }
 
     async function logout() {
@@ -353,7 +858,12 @@
         const area = document.getElementById('marketplaceArea');
         
         if (items.length === 0) {
-          area.innerHTML = `<div class="empty-state">You haven't posted any items yet.</div>`;
+          area.innerHTML = `
+            <div class="empty-dashed-box" style="grid-column: 1/-1;">
+              <i class="fas fa-shopping-basket" style="color: #8b9a91;"></i>
+              <p>You haven't posted any items yet.</p>
+            </div>
+          `;
           return;
         }
 
@@ -364,7 +874,7 @@
               <div class="card-price">₹${item.price}</div>
             </div>
             <div class="card-meta">
-              <span style="display:inline-block; margin-bottom: 0.5rem; padding: 2px 8px; border-radius: 4px; font-size: 0.75rem; background: ${item.isAvailable ? 'rgba(16,185,129,0.1)' : 'rgba(239,68,68,0.1)'}; color: ${item.isAvailable ? '#10b981' : '#ef4444'}">
+              <span style="display:inline-block; margin-bottom: 0.5rem; padding: 2px 8px; border-radius: 4px; font-size: 0.75rem; background: ${item.isAvailable ? 'rgba(7,68,45,0.08)' : 'rgba(185,28,28,0.08)'}; color: ${item.isAvailable ? '#07442d' : '#b91c1c'}; font-weight: 600;">
                 ${item.isAvailable ? 'Available' : 'Sold / Unavailable'}
               </span><br>
               ${item.category} • ${item.type}
@@ -401,7 +911,12 @@
         const area = document.getElementById('servicesArea');
         
         if (items.length === 0) {
-          area.innerHTML = `<div class="empty-state">You aren't offering any services yet.</div>`;
+          area.innerHTML = `
+            <div class="empty-dashed-box" style="grid-column: 1/-1;">
+              <i class="fas fa-concierge-bell" style="color: #8b9a91;"></i>
+              <p>You aren't offering any services yet.</p>
+            </div>
+          `;
           return;
         }
 
@@ -412,7 +927,7 @@
               <div class="card-price">₹${item.price}</div>
             </div>
             <div class="card-meta">
-              <span style="display:inline-block; margin-bottom: 0.5rem; padding: 2px 8px; border-radius: 4px; font-size: 0.75rem; background: ${item.isAvailable ? 'rgba(16,185,129,0.1)' : 'rgba(239,68,68,0.1)'}; color: ${item.isAvailable ? '#10b981' : '#ef4444'}">
+              <span style="display:inline-block; margin-bottom: 0.5rem; padding: 2px 8px; border-radius: 4px; font-size: 0.75rem; background: ${item.isAvailable ? 'rgba(7,68,45,0.08)' : 'rgba(185,28,28,0.08)'}; color: ${item.isAvailable ? '#07442d' : '#b91c1c'}; font-weight: 600;">
                 ${item.isAvailable ? 'Active' : 'Paused'}
               </span><br>
               ${item.category}
@@ -449,24 +964,30 @@
         const area = document.getElementById('privateChatsArea');
         
         if (accepted.length === 0) {
-          area.innerHTML = `<div class="empty-state">No active private conversations found.</div>`;
+          area.innerHTML = `
+            <div class="empty-chat-box">
+              <i class="far fa-comment empty-chat-icon"></i>
+              <p>No active private conversations found.</p>
+              <button onclick="location.href='/chat.html'" class="start-chat-btn">Start a Chat</button>
+            </div>
+          `;
           return;
         }
 
         area.innerHTML = accepted.map(req => {
           const otherUser = req.senderRollNumber === currentUser.rollNumber ? req.receiverRollNumber : req.senderRollNumber;
           return `
-            <div class="card" style="flex-direction: row; align-items: center; justify-content: space-between; cursor: pointer; transition: all 0.2s;" onclick="location.href='/private-chat.html?roll=${otherUser}'" onmouseover="this.style.background='rgba(255,255,255,0.06)'" onmouseout="this.style.background=''">
+            <div class="card" style="flex-direction: row; align-items: center; justify-content: space-between; cursor: pointer; transition: all 0.2s;" onclick="location.href='/private-chat.html?roll=${otherUser}'" onmouseover="this.style.background='rgba(7,68,45,0.03)'" onmouseout="this.style.background='#ffffff'">
               <div style="display: flex; align-items: center; gap: 16px;">
-                <div style="width: 48px; height: 48px; border-radius: 12px; background: var(--success); display: flex; align-items: center; justify-content: center; font-size: 16px; font-weight: bold; color: white;">
+                <div style="width: 48px; height: 48px; border-radius: 12px; background: #07442d; display: flex; align-items: center; justify-content: center; font-size: 16px; font-weight: bold; color: white;">
                   ${otherUser.slice(0, 2)}
                 </div>
                 <div>
-                  <div style="font-weight: 700; font-size: 16px;">${otherUser}</div>
-                  <div style="font-size: 13px; color: var(--success);">Connected ${new Date(req.createdAt).toLocaleDateString()}</div>
+                  <div style="font-weight: 700; font-size: 16px; color: #0e291e;">${otherUser}</div>
+                  <div style="font-size: 13px; color: #4a5a51;">Connected ${new Date(req.createdAt).toLocaleDateString()}</div>
                 </div>
               </div>
-              <span style="font-size: 1.5rem; color: var(--text-muted); opacity: 0.5;">💬</span>
+              <span style="font-size: 1.5rem; color: #8b9a91; opacity: 0.5;">💬</span>
             </div>
           `;
         }).join('');
@@ -490,30 +1011,53 @@
         const createdArea = document.getElementById('courseCreatedArea');
 
         if (enrolled.length === 0) {
-          enrolledArea.innerHTML = `<div class="empty-state">You are not enrolled in any courses.</div>`;
-        } else {
-          enrolledArea.innerHTML = enrolled.map(c => `
-            <div class="card">
-              <div class="card-header"><h3 class="card-title">${c.title}</h3></div>
-              <div class="card-meta">${c.description.substring(0, 60)}...</div>
-              <a href="/courses.html?id=${c.id}" class="action-btn" style="padding: 0.5rem;">View Course</a>
+          enrolledArea.innerHTML = `
+            <div class="empty-dashed-box" style="grid-column: 1/-1;">
+              <i class="fas fa-graduation-cap" style="color: #8b9a91;"></i>
+              <p>You are not enrolled in any courses.</p>
             </div>
-          `).join('');
+          `;
+        } else {
+          enrolledArea.innerHTML = enrolled.map(c => {
+            const courseImg = getCourseImage(c);
+            return `
+              <div class="course-card">
+                <img src="${courseImg}" alt="${c.title}" class="card-img" onerror="this.src='https://images.unsplash.com/photo-1486312338219-ce68d2c6f44d?w=400&q=80'">
+                <div class="course-card-body">
+                  <h3 class="course-title">${c.title}</h3>
+                  <p class="course-desc">${c.description.substring(0, 60)}...</p>
+                  <a href="/courses.html?id=${c.id}" class="course-btn">View Course</a>
+                </div>
+              </div>
+            `;
+          }).join('');
         }
 
         if (created.length === 0) {
-          createdArea.innerHTML = `<div class="empty-state">You haven't created any courses.</div>`;
-        } else {
-          createdArea.innerHTML = created.map(c => `
-            <div class="card">
-              <div class="card-header">
-                <h3 class="card-title">${c.title}</h3>
-                <div class="card-price">₹${c.price}</div>
-              </div>
-              <div class="card-meta">${c.description.substring(0, 60)}...</div>
-              <a href="/courses.html?id=${c.id}" class="action-btn" style="padding: 0.5rem;">Manage Course</a>
+          createdArea.innerHTML = `
+            <div class="empty-created-box">
+              <i class="far fa-file-alt empty-created-icon"></i>
+              <p>You haven't created any courses yet.</p>
+              <button onclick="location.href='/courses.html'" class="yellow-btn">Start Creating</button>
             </div>
-          `).join('');
+          `;
+        } else {
+          createdArea.innerHTML = created.map(c => {
+            const courseImg = getCourseImage(c);
+            return `
+              <div class="course-card">
+                <img src="${courseImg}" alt="${c.title}" class="card-img" onerror="this.src='https://images.unsplash.com/photo-1486312338219-ce68d2c6f44d?w=400&q=80'">
+                <div class="course-card-body">
+                  <div style="display:flex; justify-content:space-between; align-items:center;">
+                    <h3 class="course-title">${c.title}</h3>
+                    <div class="card-price">₹${c.price}</div>
+                  </div>
+                  <p class="course-desc">${c.description.substring(0, 60)}...</p>
+                  <a href="/courses.html?id=${c.id}" class="course-btn">Manage Course</a>
+                </div>
+              </div>
+            `;
+          }).join('');
         }
       } catch (err) {
         console.error(err);

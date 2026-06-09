@@ -4,120 +4,680 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Post Item — Student Marketplace</title>
-    <link rel="stylesheet" href="styles.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet" />
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        /* ═══════════════════════════════════════════════════════════
+           UniPortal Marketplace — Light Theme with Forest Green
+           ═══════════════════════════════════════════════════════════ */
+
+        :root {
+            --bg-page: #f2f0e8;
+            --bg-card: #ffffff;
+            --bg-input: #f7f7f5;
+            --bg-input-focus: #ffffff;
+
+            --green-dark: #1a3c34;
+            --green-deep: #0f2b24;
+            --green-accent: #2d6a4f;
+            --green-muted: rgba(26, 60, 52, 0.08);
+            --gold-accent: #c9a84c;
+
+            --text-primary: #1a1a1a;
+            --text-secondary: #555555;
+            --text-muted: #999999;
+            --text-on-dark: #f0efe8;
+
+            --border-light: #e5e3dc;
+            --border-input: #ddd9d0;
+
+            --error-bg: #fef2f2;
+            --error-border: #fecaca;
+            --error-text: #b91c1c;
+
+            --radius-sm: 8px;
+            --radius-md: 12px;
+            --radius-lg: 16px;
+            --radius-xl: 20px;
+            --radius-2xl: 24px;
+
+            --shadow-sm: 0 1px 4px rgba(0,0,0,0.06);
+            --shadow-card: 0 2px 12px rgba(0,0,0,0.07);
+            --shadow-nav: 0 1px 0 var(--border-light);
+        }
+
+        /* ─── Reset & Base ─────────────────────────────────────────── */
+        *, *::before, *::after {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        html {
+            -webkit-font-smoothing: antialiased;
+        }
+
+        body {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+            background: var(--bg-page);
+            color: var(--text-primary);
+            min-height: 100vh;
+        }
+
+        /* ─── Top Navigation Bar ─────────────────────────────────── */
+        .nav-bar {
+            background: var(--bg-card);
+            border-bottom: 1px solid var(--border-light);
+            box-shadow: var(--shadow-nav);
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+
+        .nav-inner {
+            max-width: 1100px;
+            margin: 0 auto;
+            padding: 0 24px;
+            height: 60px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+
+        .nav-left {
+            display: flex;
+            align-items: center;
+            gap: 16px;
+        }
+
+        .back-btn {
+            color: var(--text-secondary);
+            font-size: 16px;
+            text-decoration: none;
+            transition: color 0.2s;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-weight: 600;
+        }
+
+        .back-btn:hover {
+            color: var(--green-accent);
+        }
+
+        .nav-profile {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .profile-text {
+            text-align: right;
+        }
+
+        .profile-name {
+            font-size: 14px;
+            font-weight: 700;
+            color: var(--text-primary);
+        }
+
+        .profile-year {
+            font-size: 12px;
+            color: var(--text-muted);
+        }
+
+        .profile-avatar {
+            width: 36px;
+            height: 36px;
+            border-radius: 50%;
+            overflow: hidden;
+            background: var(--green-dark);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-weight: 700;
+            font-size: 14px;
+        }
+
+        .profile-avatar img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+        /* ─── Page Layout ────────────────────────────────────────── */
+        .page-content {
+            max-width: 1100px;
+            margin: 0 auto;
+            padding: 32px 24px 60px;
+        }
+
+        .layout-grid {
+            display: grid;
+            grid-template-columns: 320px 1fr;
+            gap: 32px;
+            align-items: start;
+        }
+
+        /* ─── Left Column: Guidelines ────────────────────────────── */
+        .guidelines-card {
+            background: var(--bg-card);
+            border: 1px solid var(--border-light);
+            border-radius: var(--radius-lg);
+            padding: 24px;
+            box-shadow: var(--shadow-sm);
+        }
+
+        .gl-icon-box {
+            width: 48px;
+            height: 48px;
+            background: var(--green-dark);
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-bottom: 20px;
+            font-size: 20px;
+            color: white;
+        }
+
+        .gl-title {
+            font-size: 18px;
+            font-weight: 700;
+            color: var(--green-dark);
+            margin-bottom: 12px;
+        }
+
+        .gl-desc {
+            font-size: 13.5px;
+            color: var(--text-secondary);
+            line-height: 1.5;
+            margin-bottom: 24px;
+        }
+
+        .gl-list {
+            list-style: none;
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+        }
+
+        .gl-item {
+            font-size: 13px;
+            color: var(--text-secondary);
+            line-height: 1.4;
+            display: flex;
+            align-items: flex-start;
+            gap: 8px;
+        }
+
+        .gl-item svg {
+            color: var(--green-accent);
+            margin-top: 2px;
+            flex-shrink: 0;
+            font-size: 12px;
+        }
+
+        /* ─── Right Column: Form fields ──────────────────────────── */
+        .form-section-header {
+            margin-bottom: 24px;
+        }
+
+        .form-section-tag {
+            font-size: 11px;
+            font-weight: 700;
+            letter-spacing: 1.5px;
+            text-transform: uppercase;
+            color: var(--green-accent);
+            margin-bottom: 4px;
+        }
+
+        .form-section-title {
+            font-size: 28px;
+            font-weight: 800;
+            color: var(--green-dark);
+            letter-spacing: -0.5px;
+            margin-bottom: 8px;
+        }
+
+        .form-section-sub {
+            font-size: 14px;
+            color: var(--text-secondary);
+        }
+
+        .form-card {
+            background: var(--bg-card);
+            border: 1px solid var(--border-light);
+            border-radius: var(--radius-lg);
+            padding: 32px;
+            box-shadow: var(--shadow-sm);
+            margin-bottom: 20px;
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        .form-group:last-child {
+            margin-bottom: 0;
+        }
+
+        .input-label {
+            display: block;
+            font-size: 11px;
+            font-weight: 700;
+            letter-spacing: 1px;
+            text-transform: uppercase;
+            color: var(--text-secondary);
+            margin-bottom: 8px;
+        }
+
+        .input-wrapper {
+            position: relative;
+        }
+
+        .input-field {
+            width: 100%;
+            background: var(--bg-input);
+            border: 1.5px solid var(--border-input);
+            border-radius: var(--radius-sm);
+            color: var(--text-primary);
+            font-family: 'Inter', sans-serif;
+            font-size: 14px;
+            font-weight: 500;
+            padding: 13px 14px 13px 44px;
+            transition: all 0.2s ease;
+            outline: none;
+        }
+
+        .input-field:focus {
+            background: var(--bg-input-focus);
+            border-color: var(--green-accent);
+            box-shadow: 0 0 0 3px rgba(45, 106, 79, 0.1);
+        }
+
+        .input-icon {
+            position: absolute;
+            left: 14px;
+            top: 50%;
+            transform: translateY(-50%);
+            color: var(--text-muted);
+            pointer-events: none;
+            display: flex;
+            align-items: center;
+            font-size: 15px;
+            transition: color 0.2s;
+        }
+
+        .input-field:focus ~ .input-icon {
+            color: var(--green-accent);
+        }
+
+        /* ─── Upload Area ────────────────────────────────────────── */
+        .upload-zone {
+            width: 100%;
+            border: 2px dashed var(--border-input);
+            border-radius: var(--radius-md);
+            padding: 40px 24px;
+            text-align: center;
+            background: var(--bg-input);
+            cursor: pointer;
+            transition: all 0.25s ease;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .upload-zone:hover, .upload-zone.drag-over {
+            border-color: var(--green-accent);
+            background: rgba(45, 106, 79, 0.02);
+        }
+
+        .upload-icon-box {
+            width: 44px;
+            height: 44px;
+            background: var(--green-muted);
+            color: var(--green-dark);
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 20px;
+            margin-bottom: 16px;
+            box-shadow: 0 2px 6px rgba(0,0,0,0.02);
+        }
+
+        .upload-text {
+            font-size: 14px;
+            font-weight: 600;
+            color: var(--text-primary);
+            margin-bottom: 4px;
+        }
+
+        .upload-subtext {
+            font-size: 12px;
+            color: var(--text-muted);
+        }
+
+        /* Preview Container */
+        .preview-container {
+            display: none;
+            width: 100%;
+            max-width: 240px;
+            position: relative;
+            border-radius: var(--radius-md);
+            overflow: hidden;
+            border: 1px solid var(--border-light);
+        }
+
+        .preview-img {
+            width: 100%;
+            height: 160px;
+            object-fit: cover;
+        }
+
+        .preview-overlay {
+            position: absolute;
+            inset: 0;
+            background: rgba(0,0,0,0.4);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            opacity: 0;
+            transition: opacity 0.2s;
+        }
+
+        .preview-container:hover .preview-overlay {
+            opacity: 1;
+        }
+
+        .remove-btn {
+            background: var(--error-bg);
+            color: var(--error-text);
+            border: 1px solid var(--error-border);
+            padding: 8px 16px;
+            border-radius: var(--radius-sm);
+            font-size: 12px;
+            font-weight: 700;
+            cursor: pointer;
+        }
+
+        /* ─── Buttons ───────────────────────────────────────────── */
+        .btn-primary {
+            padding: 14px 24px;
+            background: var(--green-dark);
+            color: #fff;
+            font-family: 'Inter', sans-serif;
+            font-size: 14px;
+            font-weight: 700;
+            border: none;
+            border-radius: var(--radius-sm);
+            cursor: pointer;
+            transition: all 0.25s ease;
+            box-shadow: var(--shadow-btn);
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+        }
+
+        .btn-primary:hover {
+            background: var(--green-deep);
+            transform: translateY(-1px);
+        }
+
+        .btn-primary:active {
+            transform: translateY(0);
+        }
+
+        .btn-primary:disabled {
+            opacity: 0.55;
+            cursor: not-allowed;
+            transform: none;
+            box-shadow: none;
+        }
+
+        .btn-ghost {
+            background: var(--bg-card);
+            border: 1.5px solid var(--border-input);
+            color: var(--text-secondary);
+            font-family: 'Inter', sans-serif;
+            font-size: 14px;
+            font-weight: 600;
+            padding: 13px 24px;
+            border-radius: var(--radius-sm);
+            cursor: pointer;
+            transition: all 0.2s;
+            text-align: center;
+            text-decoration: none;
+        }
+
+        .btn-ghost:hover {
+            border-color: var(--green-accent);
+            color: var(--green-dark);
+            background: var(--bg-input);
+        }
+
+        .alert {
+            padding: 12px 14px;
+            border-radius: var(--radius-sm);
+            font-size: 13px;
+            font-weight: 500;
+            display: none;
+            align-items: flex-start;
+            gap: 10px;
+            margin-bottom: 20px;
+        }
+
+        .alert.show { display: flex; }
+
+        .alert-error {
+            background: var(--error-bg);
+            border: 1px solid var(--error-border);
+            color: var(--error-text);
+        }
+
+        .spinner {
+            display: inline-block;
+            width: 16px;
+            height: 16px;
+            border: 2px solid rgba(255, 255, 255, 0.3);
+            border-top-color: white;
+            border-radius: 50%;
+            animation: spin 0.7s linear infinite;
+        }
+
+        @keyframes spin { to { transform: rotate(360deg); } }
+
+        /* ─── Responsive ────────────────────────────────────────── */
+        @media (max-width: 820px) {
+            .layout-grid {
+                grid-template-columns: 1fr;
+                gap: 24px;
+            }
+            .guidelines-card {
+                order: 2;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .page-content { padding: 16px 12px 40px; }
+            .form-card { padding: 20px 16px; border-radius: var(--radius-lg); }
+            .form-section-title { font-size: 22px; }
+            .upload-zone { padding: 24px 16px; }
+        }
+    </style>
 </head>
-<body class="bg-animate">
-    <div class="grid-bg"></div>
+<body>
+
+    <!-- Top Navigation Bar -->
+    <div class="nav-bar">
+        <div class="nav-inner">
+            <div class="nav-left">
+                <a href="/marketplace.html" class="back-btn"><i class="fas fa-arrow-left"></i> UniPortal</a>
+            </div>
+            <div class="nav-profile">
+                <div class="profile-text">
+                    <div class="profile-name" id="userName">Student</div>
+                    <div class="profile-year" id="userYear">Year 1</div>
+                </div>
+                <div class="profile-avatar" id="userAvatar">U</div>
+            </div>
+        </div>
+    </div>
     
-    <div class="page">
-        <div class="auth-card" style="max-width: 550px;">
-            <div class="brand">
-                <div class="brand-icon"><i class="fas fa-store"></i></div>
-                <div class="brand-title">Marketplace</div>
-                <div class="brand-sub">Malla Reddy Deemed to be University</div>
+    <div class="page-content">
+        <div class="layout-grid">
+            
+            <!-- Left Guidelines Card -->
+            <div class="guidelines-card">
+                <div class="gl-icon-box">
+                    <i class="fas fa-store"></i>
+                </div>
+                <h2 class="gl-title">Selling Guidelines</h2>
+                <p class="gl-desc">Help keep our campus marketplace safe and high-quality. Ensure your items are described accurately and images are clear.</p>
+                
+                <ul class="gl-list">
+                    <li class="gl-item">
+                        <i class="fas fa-check-circle"></i>
+                        <span>Accurate titles attract more buyers</span>
+                    </li>
+                    <li class="gl-item">
+                        <i class="fas fa-check-circle"></i>
+                        <span>Fair pricing for fellow students</span>
+                    </li>
+                    <li class="gl-item">
+                        <i class="fas fa-check-circle"></i>
+                        <span>Use WhatsApp for direct communication</span>
+                    </li>
+                </ul>
             </div>
 
-            <div class="form-header" style="text-align: center; margin-bottom: 30px;">
-                <h1 class="screen-title">Post New Item</h1>
-                <p class="screen-subtitle">Turn your unused items into cash or help a fellow student.</p>
-            </div>
-
-            <form id="addItemForm">
-                <div class="form-group">
-                    <label class="input-label">Item Title*</label>
-                    <div class="input-wrapper">
-                        <input type="text" id="title" class="input-field" placeholder="e.g. Engineering Maths Textbook" required>
-                        <i class="fas fa-tag input-icon"></i>
-                    </div>
+            <!-- Right Form Section -->
+            <div>
+                <div class="form-section-header">
+                    <div class="form-section-tag">Marketplace</div>
+                    <h1 class="form-section-title">Post New Item</h1>
+                    <p class="form-section-sub">Turn your unused items into cash or help a fellow student find what they need.</p>
                 </div>
 
-                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 16px; margin-bottom: 16px;">
-                    <div class="form-group" style="margin-bottom: 0;">
-                        <label class="input-label">Category*</label>
-                        <div class="input-wrapper">
-                            <select id="category" class="input-field" required style="appearance: none;">
-                                <option value="" disabled selected>Select Category</option>
-                                <option value="Books">Books</option>
-                                <option value="Electronics">Electronics</option>
-                                <option value="Stationery">Stationery</option>
-                                <option value="Hostel Items">Hostel Items</option>
-                                <option value="Other">Other</option>
-                            </select>
-                            <i class="fas fa-list input-icon"></i>
-                            <i class="fas fa-chevron-down" style="position: absolute; right: 16px; top: 50%; transform: translateY(-50%); font-size: 12px; color: var(--text-muted); pointer-events: none;"></i>
+                <form id="addItemForm">
+                    
+                    <!-- Main details card -->
+                    <div class="form-card">
+                        
+                        <!-- Title -->
+                        <div class="form-group">
+                            <label class="input-label">Item Title*</label>
+                            <div class="input-wrapper">
+                                <input type="text" id="title" class="input-field" placeholder="e.g. Engineering Maths Textbook" required>
+                                <span class="input-icon">🏷️</span>
+                            </div>
                         </div>
-                    </div>
-                    <div class="form-group" style="margin-bottom: 0;">
-                        <label class="input-label">Listing Type*</label>
-                        <div class="input-wrapper">
-                            <select id="type" class="input-field" required style="appearance: none;">
-                                <option value="sell">For Sale</option>
-                                <option value="rent">For Rent</option>
-                            </select>
-                            <i class="fas fa-hand-holding-dollar input-icon"></i>
-                            <i class="fas fa-chevron-down" style="position: absolute; right: 16px; top: 50%; transform: translateY(-50%); font-size: 12px; color: var(--text-muted); pointer-events: none;"></i>
-                        </div>
-                    </div>
-                </div>
 
-                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 16px; margin-bottom: 16px;">
-                    <div class="form-group" style="margin-bottom: 0;">
-                        <label class="input-label">Price (₹)*</label>
-                        <div class="input-wrapper">
-                            <input type="number" id="price" class="input-field" placeholder="0.00" required>
-                            <i class="fas fa-indian-rupee-sign input-icon"></i>
+                        <!-- Category & Type -->
+                        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 16px; margin-bottom: 20px;">
+                            <div class="form-group" style="margin-bottom: 0;">
+                                <label class="input-label">Category*</label>
+                                <div class="input-wrapper">
+                                    <select id="category" class="input-field" required style="appearance: none;">
+                                        <option value="" disabled selected>Select Category</option>
+                                        <option value="Books">Books</option>
+                                        <option value="Electronics">Electronics</option>
+                                        <option value="Stationery">Stationery</option>
+                                        <option value="Hostel Items">Hostel Items</option>
+                                        <option value="Other">Other</option>
+                                    </select>
+                                    <span class="input-icon">📐</span>
+                                    <i class="fas fa-chevron-down" style="position: absolute; right: 16px; top: 50%; transform: translateY(-50%); font-size: 12px; color: var(--text-muted); pointer-events: none;"></i>
+                                </div>
+                            </div>
+                            <div class="form-group" style="margin-bottom: 0;">
+                                <label class="input-label">Listing Type*</label>
+                                <div class="input-wrapper">
+                                    <select id="type" class="input-field" required style="appearance: none;">
+                                        <option value="sell">For Sale</option>
+                                        <option value="rent">For Rent</option>
+                                    </select>
+                                    <span class="input-icon">💵</span>
+                                    <i class="fas fa-chevron-down" style="position: absolute; right: 16px; top: 50%; transform: translateY(-50%); font-size: 12px; color: var(--text-muted); pointer-events: none;"></i>
+                                </div>
+                            </div>
                         </div>
-                    </div>
-                    <div class="form-group" style="margin-bottom: 0;">
-                        <label class="input-label">WhatsApp Number*</label>
-                        <div class="input-wrapper">
-                            <input type="text" id="contact" class="input-field" placeholder="9876543210" required>
-                            <i class="fab fa-whatsapp input-icon"></i>
-                        </div>
-                    </div>
-                </div>
 
-                <div class="form-group">
-                    <label class="input-label">Item Description</label>
-                    <div class="input-wrapper">
-                        <textarea id="description" class="input-field" style="height: 100px; padding-top: 12px; resize: none; padding-left: 16px;" placeholder="Describe condition, age, usage, etc."></textarea>
-                    </div>
-                </div>
-
-                <div class="form-group">
-                    <label class="input-label">Product Image*</label>
-                    <div class="upload-zone" id="uploadZone">
-                        <input type="file" id="imageInput" accept="image/*" style="display: none;">
-                        <div id="uploadPlaceholder">
-                            <i class="fas fa-cloud-upload-alt upload-icon"></i>
-                            <p class="upload-text">Click or drag image to upload</p>
-                            <p style="font-size: 11px; color: var(--text-muted); margin-top: 4px;">PNG, JPG up to 5MB</p>
+                        <!-- Price & WhatsApp -->
+                        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 16px; margin-bottom: 20px;">
+                            <div class="form-group" style="margin-bottom: 0;">
+                                <label class="input-label">Price (₹)*</label>
+                                <div class="input-wrapper">
+                                    <input type="number" id="price" class="input-field" placeholder="0.00" required>
+                                    <span class="input-icon">₹</span>
+                                </div>
+                            </div>
+                            <div class="form-group" style="margin-bottom: 0;">
+                                <label class="input-label">WhatsApp Number*</label>
+                                <div class="input-wrapper">
+                                    <input type="text" id="contact" class="input-field" placeholder="9876543210" required>
+                                    <span class="input-icon">💬</span>
+                                </div>
+                            </div>
                         </div>
-                        <div class="preview-container" id="previewContainer">
-                            <img src="" alt="Preview" class="preview-img" id="previewImg">
-                            <div class="preview-overlay">
-                                <button type="button" class="remove-btn" id="removeBtn">Replace Image</button>
+
+                        <!-- Description -->
+                        <div class="form-group" style="margin-bottom: 0;">
+                            <label class="input-label">Item Description</label>
+                            <div class="input-wrapper">
+                                <textarea id="description" class="input-field" style="height: 110px; padding-top: 12px; resize: none; padding-left: 16px;" placeholder="Describe condition, age, usage, warranty, etc..."></textarea>
+                            </div>
+                        </div>
+
+                    </div>
+
+                    <!-- Image Upload Card -->
+                    <div class="form-card">
+                        <label class="input-label">Product Image*</label>
+                        <div class="upload-zone" id="uploadZone">
+                            <input type="file" id="imageInput" accept="image/*" style="display: none;">
+                            <div id="uploadPlaceholder" style="display: flex; flex-direction: column; align-items: center; justify-content: center;">
+                                <div class="upload-icon-box">
+                                    <i class="fas fa-file-upload"></i>
+                                </div>
+                                <p class="upload-text">Click or drag image to upload</p>
+                                <p class="upload-subtext">PNG, JPG up to 5MB (Max 3 photos)</p>
+                            </div>
+                            <div class="preview-container" id="previewContainer">
+                                <img src="" alt="Preview" class="preview-img" id="previewImg">
+                                <div class="preview-overlay">
+                                    <button type="button" class="remove-btn" id="removeBtn">Replace Image</button>
+                                </div>
                             </div>
                         </div>
                     </div>
-                </div>
 
-                <div id="errorAlert" class="alert alert-error">
-                    <i class="fas fa-exclamation-circle alert-icon"></i>
-                    <span id="errorMessage"></span>
-                </div>
+                    <!-- Error Alert -->
+                    <div id="errorAlert" class="alert alert-error">
+                        <i class="fas fa-exclamation-circle" style="margin-top: 2px;"></i>
+                        <span id="errorMessage"></span>
+                    </div>
 
-                <div style="display: grid; grid-template-columns: 1fr 2fr; gap: 12px; margin-top: 32px;">
-                    <a href="/marketplace.html" class="btn-ghost" style="margin-top: 0; display: flex; align-items: center; justify-content: center;">Cancel</a>
-                    <button type="submit" id="submitBtn" class="btn-primary" style="margin-top: 0;">
-                        <span id="btnText">Post Item</span>
-                        <div id="btnLoading" style="display: none;">
-                            <div class="spinner"></div> Posting...
-                        </div>
-                    </button>
-                </div>
-            </form>
+                    <!-- Actions -->
+                    <div style="display: flex; justify-content: flex-end; gap: 12px; margin-top: 24px;">
+                        <a href="/marketplace.html" class="btn-ghost" style="min-width: 120px;">Cancel</a>
+                        <button type="submit" id="submitBtn" class="btn-primary" style="min-width: 160px;">
+                            <i class="fas fa-check"></i> <span id="btnText">Post Item</span>
+                            <div id="btnLoading" style="display: none;">
+                                <div class="spinner"></div> Posting...
+                            </div>
+                        </button>
+                    </div>
+
+                </form>
+            </div>
+            
         </div>
     </div>
 
@@ -221,12 +781,32 @@
             }
         };
 
-        // Auth Check
+        // Auth Check & Profile Load
         window.onload = async () => {
-            const res = await fetch('/api/auth/me');
-            if (!res.ok) window.location.href = '/';
+            try {
+                const res = await fetch('/api/auth/me');
+                if (!res.ok) {
+                    window.location.href = '/';
+                    return;
+                }
+                const data = await res.json();
+                
+                // Populate profile header
+                if (data.user) {
+                    document.getElementById('userName').textContent = data.user.name || 'Student';
+                    document.getElementById('userYear').textContent = `Year ${data.user.year || '1'}`;
+                    
+                    const avatarEl = document.getElementById('userAvatar');
+                    if (data.user.avatarUrl) {
+                        avatarEl.innerHTML = `<img src="${data.user.avatarUrl}" alt="Avatar">`;
+                    } else {
+                        avatarEl.textContent = (data.user.name || 'S').charAt(0).toUpperCase();
+                    }
+                }
+            } catch (err) {
+                console.error(err);
+            }
         };
     </script>
 </body>
-
 </html>

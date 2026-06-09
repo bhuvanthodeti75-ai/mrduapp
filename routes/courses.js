@@ -44,10 +44,25 @@ function writeData(filePath, items) {
   }
 }
 
+// Helper to enrich courses with instructor names
+async function enrichCourses(coursesList) {
+  return Promise.all(coursesList.map(async c => {
+    try {
+      const user = await users.findOne({ rollNumber: c.instructorRollNumber });
+      return {
+        ...c,
+        instructorName: user && user.name ? user.name : c.instructorRollNumber
+      };
+    } catch (err) {
+      return { ...c, instructorName: c.instructorRollNumber };
+    }
+  }));
+}
+
 // ════════════════════════════════════════════════════════════════════════════════
 // GET /api/courses - List all courses
 // ════════════════════════════════════════════════════════════════════════════════
-router.get('/', requireAuth, (req, res) => {
+router.get('/', requireAuth, async (req, res) => {
   let courses = readData(COURSES_FILE);
   const { search } = req.query;
 
@@ -62,23 +77,26 @@ router.get('/', requireAuth, (req, res) => {
   // Sort by latest first
   courses.sort((a, b) => (b.createdAt || 0) - (a.createdAt || 0));
 
-  res.json(courses);
+  const enriched = await enrichCourses(courses);
+  res.json(enriched);
 });
 
 // ════════════════════════════════════════════════════════════════════════════════
 // GET /api/courses/my - List courses created by the user
 // ════════════════════════════════════════════════════════════════════════════════
-router.get('/my', requireAuth, (req, res) => {
+router.get('/my', requireAuth, async (req, res) => {
   const courses = readData(COURSES_FILE);
   const myCourses = courses.filter(c => c.instructorRollNumber === req.user.rollNumber);
   myCourses.sort((a, b) => (b.createdAt || 0) - (a.createdAt || 0));
-  res.json(myCourses);
+  
+  const enriched = await enrichCourses(myCourses);
+  res.json(enriched);
 });
 
 // ════════════════════════════════════════════════════════════════════════════════
 // GET /api/courses/enrolled - List enrolled courses
 // ════════════════════════════════════════════════════════════════════════════════
-router.get('/enrolled', requireAuth, (req, res) => {
+router.get('/enrolled', requireAuth, async (req, res) => {
   const enrollments = readData(ENROLLMENTS_FILE);
   const courses = readData(COURSES_FILE);
   
@@ -89,13 +107,14 @@ router.get('/enrolled', requireAuth, (req, res) => {
   const myEnrolledCourses = courses.filter(c => myEnrollmentIds.includes(c.id));
   myEnrolledCourses.sort((a, b) => (b.createdAt || 0) - (a.createdAt || 0));
   
-  res.json(myEnrolledCourses);
+  const enriched = await enrichCourses(myEnrolledCourses);
+  res.json(enriched);
 });
 
 // ════════════════════════════════════════════════════════════════════════════════
 // GET /api/courses/:id - Get course details
 // ════════════════════════════════════════════════════════════════════════════════
-router.get('/:id', requireAuth, (req, res) => {
+router.get('/:id', requireAuth, async (req, res) => {
   const courses = readData(COURSES_FILE);
   const enrollments = readData(ENROLLMENTS_FILE);
   
@@ -108,8 +127,14 @@ router.get('/:id', requireAuth, (req, res) => {
 
   const isInstructor = course.instructorRollNumber === req.user.rollNumber;
 
+  let instructorName = course.instructorRollNumber;
+  try {
+    const user = await users.findOne({ rollNumber: course.instructorRollNumber });
+    if (user && user.name) instructorName = user.name;
+  } catch (err) {}
+
   // Content protection: Only show content and contact if enrolled or instructor
-  const responseData = { ...course, isEnrolled, isInstructor };
+  const responseData = { ...course, isEnrolled, isInstructor, instructorName };
   if (!isEnrolled && !isInstructor) {
     delete responseData.content;
     delete responseData.contact;

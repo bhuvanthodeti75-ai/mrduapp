@@ -4,84 +4,485 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Private Chat — MRDU Student Portal</title>
-  <link rel="stylesheet" href="styles.css" />
-  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
   <style>
-    .chat-container {
-      display: flex; flex-direction: column; height: calc(100vh - 120px);
-      background: var(--card-bg); border: 1px solid var(--border); border-radius: 20px; overflow: hidden;
+    /* ═══════════════════════════════════════════════════════════
+       UniPortal Private Chat — Light Theme with Forest Green
+       ═══════════════════════════════════════════════════════════ */
+
+    :root {
+      --bg-page: #f2f0e8;
+      --bg-card: #ffffff;
+      --bg-input: #f4f3ee;
+      --bg-input-focus: #ffffff;
+
+      --green-dark: #1a3c34;
+      --green-deep: #0f2b24;
+      --green-accent: #2d6a4f;
+      --green-muted: rgba(26, 60, 52, 0.08);
+      --gold-accent: #c9a84c;
+
+      --text-primary: #1a1a1a;
+      --text-secondary: #555555;
+      --text-muted: #999999;
+      --text-on-dark: #f0efe8;
+
+      --border-light: #e5e3dc;
+      --border-input: #ddd9d0;
+
+      --radius-sm: 8px;
+      --radius-md: 12px;
+      --radius-lg: 16px;
+      --radius-xl: 20px;
+      --radius-2xl: 24px;
+
+      --shadow-sm: 0 1px 4px rgba(0,0,0,0.06);
+      --shadow-card: 0 2px 12px rgba(0,0,0,0.07);
+      --shadow-nav: 0 1px 0 var(--border-light);
     }
-    .header {
-      padding: 16px 20px; background: rgba(255,255,255,0.03); border-bottom: 1px solid var(--border);
-      display: flex; align-items: center; justify-content: space-between;
+
+    /* ─── Reset & Base ─────────────────────────────────────────── */
+    *, *::before, *::after {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
     }
+
+    html {
+      -webkit-font-smoothing: antialiased;
+    }
+
+    body {
+      font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+      background: var(--bg-page);
+      color: var(--text-primary);
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+    }
+
+    /* ─── Top Navigation Bar ─────────────────────────────────── */
+    .nav-bar {
+      background: var(--bg-card);
+      border-bottom: 1px solid var(--border-light);
+      box-shadow: var(--shadow-nav);
+      position: sticky;
+      top: 0;
+      z-index: 100;
+    }
+
+    .nav-inner {
+      max-width: 800px;
+      margin: 0 auto;
+      padding: 0 16px;
+      height: 60px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+
+    .nav-left {
+      display: flex;
+      align-items: center;
+      gap: 16px;
+    }
+
+    .back-btn {
+      color: var(--text-secondary);
+      font-size: 16px;
+      text-decoration: none;
+      transition: color 0.2s;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      font-weight: 600;
+    }
+
+    .back-btn:hover {
+      color: var(--green-accent);
+    }
+
+    .nav-profile {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .profile-text {
+      text-align: right;
+    }
+
+    .profile-name {
+      font-size: 14px;
+      font-weight: 700;
+      color: var(--text-primary);
+    }
+
+    .profile-year {
+      font-size: 12px;
+      color: var(--text-muted);
+    }
+
+    .profile-avatar {
+      width: 36px;
+      height: 36px;
+      border-radius: 50%;
+      overflow: hidden;
+      background: var(--green-dark);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: white;
+      font-weight: 700;
+      font-size: 14px;
+    }
+
+    .profile-avatar img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+    }
+
+    /* ─── Main Content Container ───────────────────────────────── */
+    .page-content {
+      max-width: 800px;
+      width: 100%;
+      margin: 0 auto;
+      padding: 24px 16px 40px;
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+    }
+
+    .chat-header-row {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 16px;
+    }
+
+    .chat-title-info {
+      display: flex;
+      flex-direction: column;
+    }
+
+    .chat-title-text {
+      font-size: 18px;
+      font-weight: 800;
+      color: var(--green-dark);
+      letter-spacing: -0.3px;
+    }
+
+    .chat-title-sub {
+      font-size: 12px;
+      color: var(--text-secondary);
+      margin-top: 2px;
+    }
+
+    .status-badge {
+      font-size: 11px;
+      font-weight: 700;
+      letter-spacing: 0.5px;
+      padding: 4px 10px;
+      border-radius: 12px;
+      text-transform: uppercase;
+    }
+
+    /* ─── Chat Card Container ────────────────────────────────── */
+    .chat-card {
+      background: var(--bg-card);
+      border: 1px solid var(--border-light);
+      border-radius: var(--radius-lg);
+      box-shadow: var(--shadow-sm);
+      display: flex;
+      flex-direction: column;
+      height: calc(100vh - 190px);
+      min-height: 480px;
+      overflow: hidden;
+      position: relative;
+    }
+
+    /* Message Date separator */
+    .date-separator {
+      display: flex;
+      align-items: center;
+      text-align: center;
+      color: var(--text-secondary);
+      font-size: 11px;
+      font-weight: 700;
+      letter-spacing: 1.5px;
+      margin: 16px 0;
+    }
+
+    .date-separator::before, .date-separator::after {
+      content: '';
+      flex: 1;
+      border-bottom: 1.5px solid var(--border-light);
+    }
+
+    .date-separator:not(:empty)::before {
+      margin-right: 16px;
+    }
+
+    .date-separator:not(:empty)::after {
+      margin-left: 16px;
+    }
+
     .messages-area {
-      flex: 1; overflow-y: auto; padding: 20px; display: flex; flex-direction: column; gap: 12px;
-      background: rgba(0,0,0,0.1);
+      flex: 1;
+      overflow-y: auto;
+      padding: 24px;
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
     }
+
+    /* Message bubbles */
     .message-bubble {
-      max-width: 80%; padding: 12px 16px; border-radius: 16px; font-size: 14px; position: relative;
+      max-width: 70%;
+      padding: 10px 14px;
+      border-radius: 14px;
+      font-size: 14px;
+      line-height: 1.45;
+      display: flex;
+      flex-direction: column;
+      gap: 4px;
+      box-shadow: 0 1px 2px rgba(0,0,0,0.02);
     }
-    .msg-received { background: rgba(255,255,255,0.05); align-self: flex-start; border-bottom-left-radius: 4px; border: 1px solid var(--border); }
-    .msg-sent { background: var(--accent); align-self: flex-end; border-bottom-right-radius: 4px; color: white; }
-    
-    .input-area {
-      padding: 16px; border-top: 1px solid var(--border); display: flex; gap: 12px;
-      background: rgba(255,10,10,0.02);
+
+    .msg-received {
+      background: var(--bg-input);
+      align-self: flex-start;
+      border-bottom-left-radius: 4px;
+      color: var(--text-primary);
+      border: 1px solid var(--border-light);
     }
+
+    .msg-sent {
+      background: var(--green-dark);
+      align-self: flex-end;
+      border-bottom-right-radius: 4px;
+      color: white;
+    }
+
+    .msg-time {
+      font-size: 9.5px;
+      opacity: 0.6;
+      text-align: right;
+    }
+
+    /* ─── Bottom Message Input Panel ────────────────────────── */
+    .input-panel {
+      padding: 16px 20px;
+      background: var(--bg-card);
+      border-top: 1.5px solid var(--border-light);
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+
+    /* Circular action plus button */
+    .plus-btn {
+      width: 42px;
+      height: 42px;
+      border-radius: 50%;
+      border: 1.5px solid var(--border-input);
+      background: var(--bg-card);
+      color: var(--text-secondary);
+      font-size: 18px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      transition: all 0.2s;
+      flex-shrink: 0;
+    }
+
+    .plus-btn:hover {
+      border-color: var(--green-accent);
+      color: var(--green-accent);
+      background: var(--bg-input);
+    }
+
+    .input-form {
+      flex: 1;
+      display: flex;
+      align-items: center;
+      background: var(--bg-input);
+      border-radius: 24px;
+      padding: 4px 6px 4px 16px;
+      border: 1.5px solid transparent;
+      transition: all 0.2s;
+    }
+
+    .input-form:focus-within {
+      background: var(--bg-input-focus);
+      border-color: var(--green-accent);
+      box-shadow: 0 0 0 3px rgba(45, 106, 79, 0.08);
+    }
+
     .chat-input {
-      flex: 1; padding: 12px 20px; border-radius: 12px; border: 1px solid var(--border);
-      background: rgba(255,255,255,0.03); color: var(--text); outline: none; transition: all 0.2s;
+      flex: 1;
+      border: none;
+      background: none;
+      outline: none;
+      font-family: 'Inter', sans-serif;
+      font-size: 14.5px;
+      color: var(--text-primary);
+      padding: 8px 0;
     }
-    
+
+    .chat-input::placeholder {
+      color: var(--text-muted);
+    }
+
+    /* Circular dark green send button */
+    .send-btn {
+      width: 34px;
+      height: 34px;
+      border-radius: 50%;
+      background: var(--green-dark);
+      color: white;
+      border: none;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      transition: background 0.2s;
+      flex-shrink: 0;
+      font-size: 13px;
+      padding-left: 2px; /* slight plane alignment */
+    }
+
+    .send-btn:hover {
+      background: var(--green-deep);
+    }
+
+    /* ─── State Overlays ─────────────────────────────────────── */
     .status-overlay {
-      display: flex; flex-direction: column; align-items: center; justify-content: center; height: 100%;
-      text-align: center; padding: 40px; gap: 20px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      height: 100%;
+      text-align: center;
+      padding: 40px 24px;
     }
-    .status-icon { font-size: 64px; opacity: 0.2; }
+
+    .status-icon-box {
+      width: 80px;
+      height: 80px;
+      border-radius: 50%;
+      background: var(--bg-input);
+      color: var(--text-muted);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 32px;
+      margin-bottom: 20px;
+      border: 1px solid var(--border-light);
+    }
+
+    .status-overlay h3 {
+      font-size: 18px;
+      font-weight: 700;
+      color: var(--green-dark);
+      margin-bottom: 8px;
+    }
+
+    .status-overlay p {
+      font-size: 14px;
+      color: var(--text-secondary);
+      max-width: 360px;
+      line-height: 1.5;
+      margin-bottom: 24px;
+    }
+
+    /* ─── Responsive ────────────────────────────────────────── */
+    @media (max-width: 480px) {
+      .page-content { padding: 12px 8px; }
+      .chat-card { height: calc(100vh - 140px); }
+      .messages-area { padding: 16px; }
+      .message-bubble { max-width: 85%; }
+    }
   </style>
 </head>
 <body>
-  <div class="grid-bg"></div>
-  <div class="page">
-    <div style="max-width: 800px; width: 95%; margin: 0 auto;">
-      <div style="display: flex; align-items: center; gap: 12px; margin-bottom: 24px;">
-        <a href="/chat.html" class="btn-ghost" style="width: auto; padding: 10px 18px;">
-          <i class="fas fa-arrow-left"></i> Hub
-        </a>
-        <h1 style="font-size: 20px; margin: 0;" id="chat-title">Chat</h1>
+
+  <!-- Top Navigation Bar -->
+  <div class="nav-bar">
+    <div class="nav-inner">
+      <div class="nav-left">
+        <a href="/chat.html" class="back-btn"><i class="fas fa-arrow-left"></i> UniPortal</a>
       </div>
-
-      <div class="chat-container">
-        <div class="header">
-          <div id="target-user-info" style="font-weight: 600;">Loading...</div>
-          <div id="connection-status" class="status-badge" style="font-size: 11px;">Checking...</div>
+      <div class="nav-profile">
+        <div class="profile-text">
+          <div class="profile-name" id="userName">Student</div>
+          <div class="profile-year" id="userYear">Year 1</div>
         </div>
+        <div class="profile-avatar" id="userAvatar">U</div>
+      </div>
+    </div>
+  </div>
 
-        <div id="chat-content" style="flex: 1; display: flex; flex-direction: column; min-height: 0;">
-          <!-- Content will be injected based on status -->
-          <div style="text-align:center; padding: 60px;"><i class="fas fa-spinner fa-spin"></i></div>
+  <!-- Main Area -->
+  <div class="page-content">
+
+    <div class="chat-header-row">
+      <div class="chat-title-info">
+        <h1 class="chat-title-text" id="chat-title">Chat</h1>
+        <div class="chat-title-sub" id="target-user-info">Connecting...</div>
+      </div>
+      <div id="connection-status" class="status-badge" style="background: var(--bg-input); color: var(--text-secondary);">Checking...</div>
+    </div>
+
+    <!-- Chat Card -->
+    <div class="chat-card">
+      <div id="chat-content" style="flex: 1; display: flex; flex-direction: column; min-height: 0;">
+        <div style="display:flex; align-items:center; justify-content:center; height:100%;">
+          <i class="fas fa-circle-notch fa-spin" style="font-size:24px; color:var(--green-accent);"></i>
         </div>
       </div>
     </div>
+
   </div>
 
   <script>
     const urlParams = new URLSearchParams(window.location.search);
     const targetRoll = urlParams.get('roll')?.toUpperCase();
     let myRoll = '';
-    let chatStatus = 'unknown'; // no_request, pending, accepted
+    let chatStatus = 'unknown';
 
     async function init() {
       if (!targetRoll) return location.href = '/chat.html';
       document.getElementById('target-user-info').textContent = `Chat with ${targetRoll}`;
       
       const res = await fetch('/api/auth/me');
+      if (!res.ok) {
+        window.location.href = '/';
+        return;
+      }
       const data = await res.json();
-      myRoll = data.user.rollNumber;
+      
+      // Populate self user profile header
+      if (data.user) {
+        myRoll = data.user.rollNumber;
+        document.getElementById('userName').textContent = data.user.name || 'Student';
+        document.getElementById('userYear').textContent = `Year ${data.user.year || '1'}`;
+        
+        const avatarEl = document.getElementById('userAvatar');
+        if (data.user.avatarUrl) {
+            avatarEl.innerHTML = `<img src="${data.user.avatarUrl}" alt="Avatar">`;
+        } else {
+            avatarEl.textContent = (data.user.name || 'S').charAt(0).toUpperCase();
+        }
+      }
       
       checkStatusAndLoad();
-      setInterval(checkStatusAndLoad, 5000); // Poll status/messages
+      setInterval(checkStatusAndLoad, 5000);
     }
 
     async function checkStatusAndLoad() {
@@ -95,30 +496,39 @@
         const connStatus = document.getElementById('connection-status');
         
         if (chatStatus === 'accepted') {
-          // CASE 3: ACCEPTED -> Enable chat, Load messages
+          connStatus.textContent = 'CONNECTED';
+          connStatus.style.background = 'rgba(45, 106, 79, 0.08)';
+          connStatus.style.color = 'var(--green-accent)';
+          
           const msgRes = await fetch(`/api/chat/private/${targetRoll}`);
           if (msgRes.ok) renderChat(await msgRes.json());
         } else if (chatStatus === 'pending') {
-          // CASE 2: PENDING -> Show "Request Pending...", Disable chat input
           connStatus.textContent = 'PENDING';
-          connStatus.style.color = 'var(--warning)';
+          connStatus.style.background = 'rgba(201, 168, 76, 0.12)';
+          connStatus.style.color = 'var(--gold-accent)';
+          
           chatContent.innerHTML = `
             <div class="status-overlay">
-              <i class="fas fa-clock status-icon"></i>
+              <div class="status-icon-box">
+                <i class="far fa-clock"></i>
+              </div>
               <h3>Request Pending...</h3>
-              <p>Waiting for the chat request to be accepted. Check your Chat Requests page for updates.</p>
+              <p>Waiting for the chat request to be accepted by ${targetRoll}. Check your Chat Requests page for updates.</p>
             </div>
           `;
         } else {
-          // CASE 1: NO REQUEST -> Show "Send Request", Disable chat input
           connStatus.textContent = 'NOT CONNECTED';
-          connStatus.style.color = 'var(--text-muted)';
+          connStatus.style.background = '#e5e3dc';
+          connStatus.style.color = 'var(--text-secondary)';
+          
           chatContent.innerHTML = `
             <div class="status-overlay">
-              <i class="fas fa-user-plus status-icon"></i>
+              <div class="status-icon-box">
+                <i class="fas fa-user-plus"></i>
+              </div>
               <h3>Start a Conversation</h3>
               <p>Send a chat request to begin messaging with ${targetRoll}.</p>
-              <button id="req-btn" onclick="sendReq()" class="btn-primary" style="width:auto; padding: 12px 32px;">Send Request</button>
+              <button id="req-btn" onclick="sendReq()" class="btn-primary" style="padding: 12px 32px;"><i class="fas fa-paper-plane" style="margin-right: 8px;"></i> Send Request</button>
             </div>
           `;
         }
@@ -126,28 +536,35 @@
     }
 
     function renderChat(messages) {
-      document.getElementById('connection-status').textContent = 'CONNECTED';
-      document.getElementById('connection-status').style.color = 'var(--success)';
-      
       const chatContent = document.getElementById('chat-content');
-      const messagesHtml = messages.length === 0 ? '<div style="text-align:center; padding: 40px; color: var(--text-muted);">No messages yet. Send a greeting!</div>' : 
-        messages.map(m => `
+      
+      const messagesHtml = messages.length === 0 ? `
+        <div class="date-separator"><span>TODAY</span></div>
+        <div style="display:flex; flex-direction:column; align-items:center; justify-content:center; flex:1; color: var(--text-muted); font-size:14px; text-align:center;">
+          No messages yet. Start the conversation!
+        </div>
+      ` : `
+        <div class="date-separator"><span>TODAY</span></div>
+        ${messages.map(m => `
           <div class="message-bubble ${m.senderRollNumber === myRoll ? 'msg-sent' : 'msg-received'}">
             <div>${m.message}</div>
-            <div style="font-size: 9px; opacity: 0.5; margin-top: 4px; text-align: right;">${new Date(m.createdAt).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}</div>
+            <div class="msg-time">${new Date(m.createdAt).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}</div>
           </div>
-        `).join('');
+        `).join('')}
+      `;
 
       let area = document.getElementById('messages-area');
 
       if (!area) {
-        // First render: create the layout and the input field
         chatContent.innerHTML = `
           <div id="messages-area" class="messages-area">${messagesHtml}</div>
-          <form id="chat-form" class="input-area">
-            <input type="text" id="chat-input" class="chat-input" placeholder="Type a message..." required />
-            <button type="submit" class="btn-primary" style="width: 44px; padding: 0;"><i class="fas fa-paper-plane"></i></button>
-          </form>
+          <div class="input-panel">
+            <button class="plus-btn"><i class="fas fa-plus"></i></button>
+            <form id="chat-form" class="input-form">
+              <input type="text" id="chat-input" class="chat-input" placeholder="Say something to everyone..." required autocomplete="off" />
+              <button type="submit" class="send-btn"><i class="fas fa-paper-plane"></i></button>
+            </form>
+          </div>
         `;
 
         area = document.getElementById('messages-area');
@@ -167,7 +584,6 @@
           checkStatusAndLoad();
         };
       } else {
-        // Subsequent poll: just update messages to avoid destroying user input
         const isAtBottom = area.scrollHeight - area.scrollTop <= area.clientHeight + 100;
         area.innerHTML = messagesHtml;
         if (isAtBottom) area.scrollTop = area.scrollHeight;
@@ -176,9 +592,9 @@
 
     async function sendReq() {
       const btn = document.getElementById('req-btn');
-      if(btn) {
+      if (btn) {
         btn.disabled = true;
-        btn.textContent = 'Sending...';
+        btn.innerHTML = '<i class="fas fa-circle-notch fa-spin"></i> Sending...';
       }
       try {
         const res = await fetch('/api/chat-request', {
@@ -192,14 +608,17 @@
         } else {
           const data = await res.json();
           alert(data.error);
-          if(btn){
+          if (btn) {
             btn.disabled = false;
-            btn.textContent = 'Send Request';
+            btn.innerHTML = '<i class="fas fa-paper-plane" style="margin-right: 8px;"></i> Send Request';
           }
         }
       } catch (err) { 
         alert('Network error'); 
-        if(btn) btn.disabled = false; 
+        if (btn) {
+          btn.disabled = false;
+          btn.innerHTML = '<i class="fas fa-paper-plane" style="margin-right: 8px;"></i> Send Request';
+        }
       }
     }
 

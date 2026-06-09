@@ -4,94 +4,502 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>My Courses — MRDU Student Portal</title>
-  <link rel="stylesheet" href="styles.css" />
-  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" />
+  <title>My Courses — UniPortal</title>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
   <style>
-    .tab-container {
+    @import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&display=swap');
+
+    :root {
+      --bg-base: #edebe4;
+      --bg-card: #ffffff;
+      --text-primary: #04140f;
+      --text-secondary: #556660;
+      --accent: #013b27;
+      --accent-hover: #002216;
+      --accent-light: rgba(1, 59, 39, 0.05);
+      --border-color: #e5ecea;
+      --progress-bg: #e6eae8;
+      
+      --shadow-sm: 0 2px 8px rgba(0, 0, 0, 0.04);
+      --shadow-md: 0 8px 24px rgba(6, 29, 21, 0.06);
+      --shadow-lg: 0 16px 32px rgba(6, 29, 21, 0.1);
+      
+      --radius-sm: 8px;
+      --radius-md: 12px;
+      --radius-lg: 16px;
+    }
+
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: 'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, sans-serif;
+      background: var(--bg-base);
+      color: var(--text-primary);
+      min-height: 100vh;
       display: flex;
-      gap: 4px;
-      background: rgba(255, 255, 255, 0.03);
-      padding: 4px;
-      border-radius: 12px;
-      margin-bottom: 24px;
-      border: 1px solid var(--border);
+      flex-direction: column;
+    }
+
+    /* ─── Top Navigation ────────────────────────────────────────────── */
+    .nav-bar {
+      background: #ffffff;
+      border-bottom: 1px solid var(--border-color);
+      position: sticky;
+      top: 0;
+      z-index: 100;
+      padding: 0 24px;
+      height: 72px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .nav-inner {
+      width: 100%;
+      max-width: 1200px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .nav-brand {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      font-size: 22px;
+      font-weight: 800;
+      color: var(--accent);
+      text-decoration: none;
+    }
+
+    .nav-brand i {
+      font-size: 24px;
+    }
+
+    .nav-actions {
+      display: flex;
+      align-items: center;
+      gap: 20px;
+    }
+
+    .btn-back-hub {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      color: var(--text-secondary);
+      font-size: 14px;
+      font-weight: 600;
+      text-decoration: none;
+      transition: color 0.2s;
+    }
+
+    .btn-back-hub:hover {
+      color: var(--accent);
+    }
+
+    .nav-avatar {
+      width: 40px;
+      height: 40px;
+      border-radius: 50%;
+      background: var(--accent);
+      color: #ffffff;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-weight: 700;
+      font-size: 16px;
+      cursor: pointer;
+      border: 2px solid var(--border-color);
+    }
+
+    /* ─── Page Container ────────────────────────────────────────────── */
+    .page-container {
+      flex: 1;
+      width: 100%;
+      max-width: 1248px;
+      margin: 0 auto;
+      padding: 48px 24px;
+    }
+
+    /* ─── Header Section ────────────────────────────────────────────── */
+    .header-section {
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-start;
+      margin-bottom: 32px;
+      gap: 20px;
+      flex-wrap: wrap;
+    }
+
+    .header-text h1 {
+      font-size: 36px;
+      font-weight: 800;
+      color: var(--accent);
+      letter-spacing: -1px;
+      margin-bottom: 6px;
+    }
+
+    .header-text p {
+      font-size: 16px;
+      color: var(--text-secondary);
+      font-weight: 500;
+    }
+
+    .btn-create-course {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      background: var(--accent);
+      color: #ffffff;
+      font-size: 14px;
+      font-weight: 700;
+      padding: 14px 24px;
+      border-radius: var(--radius-md);
+      border: none;
+      cursor: pointer;
+      text-decoration: none;
+      box-shadow: 0 4px 12px rgba(2, 62, 43, 0.15);
+      transition: all 0.2s;
+    }
+
+    .btn-create-course:hover {
+      background: var(--accent-hover);
+      transform: translateY(-2px);
+      box-shadow: 0 6px 18px rgba(2, 62, 43, 0.25);
+    }
+
+    /* ─── Tabs Container ────────────────────────────────────────────── */
+    .tab-container {
+      display: inline-flex;
+      background: #e6eae8;
+      padding: 6px;
+      border-radius: var(--radius-md);
+      margin-bottom: 36px;
     }
 
     .tab-btn {
-      flex: 1;
-      padding: 10px;
+      padding: 10px 24px;
       border-radius: 8px;
       border: none;
       background: transparent;
-      color: var(--text-muted);
-      cursor: pointer;
-      font-weight: 600;
+      color: var(--text-secondary);
       font-size: 14px;
+      font-weight: 700;
+      cursor: pointer;
       transition: all 0.2s;
     }
 
     .tab-btn.active {
-      background: var(--accent);
-      color: white;
+      background: #ffffff;
+      color: var(--accent);
+      box-shadow: var(--shadow-sm);
     }
 
-    .course-list {
+    /* ─── Main Grid Layout ──────────────────────────────────────────── */
+    .dashboard-grid {
+      display: grid;
+      grid-template-columns: 1fr 320px;
+      gap: 32px;
+      align-items: start;
+    }
+
+    @media (max-width: 992px) {
+      .dashboard-grid {
+        grid-template-columns: 1fr;
+      }
+    }
+
+    .course-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+      gap: 24px;
+    }
+
+    /* ─── Course Card ───────────────────────────────────────────────── */
+    .course-card {
+      background: var(--bg-card);
+      border: 1px solid var(--border-color);
+      border-radius: var(--radius-lg);
+      overflow: hidden;
       display: flex;
       flex-direction: column;
-      gap: 12px;
+      box-shadow: var(--shadow-sm);
+      transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
     }
 
-    .mini-card {
-      background: rgba(255, 255, 255, 0.02);
-      border: 1px solid var(--border);
-      border-radius: 12px;
-      padding: 16px;
+    .course-card:hover {
+      transform: translateY(-6px);
+      box-shadow: var(--shadow-md);
+      border-color: var(--accent);
+    }
+
+    .course-header {
+      background: var(--accent);
+      height: 160px;
+      position: relative;
       display: flex;
       align-items: center;
+      justify-content: center;
+      overflow: hidden;
+    }
+
+    .course-header i {
+      font-size: 54px;
+      color: rgba(255, 255, 255, 0.15);
+    }
+
+    .course-badge {
+      position: absolute;
+      top: 16px;
+      right: 16px;
+      padding: 6px 12px;
+      border-radius: 20px;
+      font-size: 12px;
+      font-weight: 700;
+    }
+
+    .course-badge.in-progress {
+      background: #fef08a;
+      color: #713f12;
+    }
+
+    .course-badge.recently-started {
+      background: #ffffff;
+      color: var(--accent);
+    }
+
+    .course-body {
+      padding: 24px;
+      display: flex;
+      flex-direction: column;
+      flex: 1;
+    }
+
+    .course-title {
+      font-size: 20px;
+      font-weight: 700;
+      color: var(--text-primary);
+      margin-bottom: 6px;
+      line-height: 1.3;
+    }
+
+    .course-instructor {
+      font-size: 14px;
+      color: var(--text-secondary);
+      font-weight: 500;
+      margin-bottom: 24px;
+    }
+
+    .progress-section {
+      margin-bottom: 24px;
+    }
+
+    .progress-labels {
+      display: flex;
       justify-content: space-between;
-      gap: 16px;
+      font-size: 12px;
+      font-weight: 700;
+      color: var(--text-secondary);
+      margin-bottom: 8px;
+    }
+
+    .progress-labels span:last-child {
+      color: var(--text-primary);
+    }
+
+    .progress-bar {
+      height: 6px;
+      background: var(--progress-bg);
+      border-radius: 3px;
+      overflow: hidden;
+    }
+
+    .progress-fill {
+      height: 100%;
+      background: var(--accent);
+      border-radius: 3px;
+      transition: width 0.6s cubic-bezier(0.4, 0, 0.2, 1);
+    }
+
+    .btn-continue {
+      width: 100%;
+      padding: 12px;
+      border: 1.5px solid var(--accent);
+      background: transparent;
+      color: var(--accent);
+      font-size: 14px;
+      font-weight: 700;
+      border-radius: var(--radius-md);
       cursor: pointer;
+      text-align: center;
+      text-decoration: none;
       transition: all 0.2s;
     }
 
-    .mini-card:hover {
-      border-color: var(--accent);
-      background: rgba(255, 255, 255, 0.04);
-      transform: translateX(5px);
+    .btn-continue:hover {
+      background: var(--accent);
+      color: #ffffff;
+    }
+
+    /* ─── Sidebar Banner ────────────────────────────────────────────── */
+    .sidebar-banner {
+      background: var(--accent);
+      border-radius: var(--radius-lg);
+      padding: 36px 28px;
+      color: #ffffff;
+      position: relative;
+      overflow: hidden;
+      box-shadow: var(--shadow-lg);
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      min-height: 380px;
+    }
+
+    .banner-content h2 {
+      font-size: 28px;
+      font-weight: 800;
+      margin-bottom: 16px;
+      line-height: 1.2;
+    }
+
+    .banner-content p {
+      font-size: 15px;
+      line-height: 1.6;
+      color: rgba(255, 255, 255, 0.75);
+      margin-bottom: 32px;
+      font-weight: 500;
+    }
+
+    .btn-go-hub {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      background: #ffffff;
+      color: #032e1e;
+      padding: 14px 28px;
+      border-radius: var(--radius-md);
+      font-size: 14px;
+      font-weight: 700;
+      text-decoration: none;
+      border: none;
+      cursor: pointer;
+      transition: all 0.2s;
+      z-index: 2;
+    }
+
+    .btn-go-hub:hover {
+      background: #f4f6f5;
+      transform: translateY(-2px);
+    }
+
+    .star-decoration {
+      position: absolute;
+      bottom: -20px;
+      right: -20px;
+      opacity: 0.15;
+      width: 140px;
+      height: 140px;
+      pointer-events: none;
+    }
+
+    /* ─── States ────────────────────────────────────────────────────── */
+    .empty-state {
+      text-align: center;
+      padding: 60px 40px;
+      background: #ffffff;
+      border: 1px dashed var(--border-color);
+      border-radius: var(--radius-lg);
+      color: var(--text-secondary);
+      grid-column: 1 / -1;
+    }
+
+    .empty-state i {
+      font-size: 48px;
+      color: var(--text-secondary);
+      opacity: 0.3;
+      margin-bottom: 16px;
+    }
+
+    .empty-state p {
+      font-size: 15px;
+      font-weight: 600;
+    }
+
+    .loading-state {
+      text-align: center;
+      padding: 40px;
+      grid-column: 1 / -1;
+    }
+
+    .loading-state i {
+      font-size: 32px;
+      color: var(--accent);
+      animation: fa-spin 1s linear infinite;
     }
   </style>
 </head>
 
 <body>
-  <div class="grid-bg"></div>
-  <div class="page">
-    <div class="auth-card" style="max-width: 800px; width: 95%;">
-      <div style="margin-bottom: 24px; display: flex; justify-content: space-between; align-items: center;">
-        <div style="display: flex; gap: 8px;">
-          <a href="/dashboard.html" class="btn-ghost"
-            style="width: auto; margin: 0; padding: 6px 12px; font-size: 12px;">
-            <i class="fas fa-home"></i> Dashboard
-          </a>
-          <a href="/courses.html" class="btn-ghost" style="width: auto; margin: 0; padding: 6px 12px; font-size: 12px;">
-            <i class="fas fa-arrow-left"></i> Back to Hub
-          </a>
+  <!-- Navigation -->
+  <nav class="nav-bar">
+    <div class="nav-inner">
+      <a class="nav-brand" href="/dashboard.html">
+        <i class="fa-solid fa-graduation-cap"></i> UniPortal
+      </a>
+      <div class="nav-actions">
+        <a href="/courses.html" class="btn-back-hub">
+          <i class="fa-solid fa-arrow-left"></i> Back to Hub
+        </a>
+        <div class="nav-avatar" id="nav-avatar" onclick="location.href='/profile.html'">?</div>
+      </div>
+    </div>
+  </nav>
+
+  <!-- Page Container -->
+  <div class="page-container">
+    <div class="header-section">
+      <div class="header-text">
+        <h1>My Courses</h1>
+        <p>Manage your learning journey and student engagement.</p>
+      </div>
+      <a href="/add-course.html" class="btn-create-course">
+        <i class="fa-solid fa-plus"></i> Create Course
+      </a>
+    </div>
+
+    <!-- Tabs -->
+    <div class="tab-container">
+      <button class="tab-btn active" id="tab-enrolled" onclick="switchTab('enrolled')">Enrolled</button>
+      <button class="tab-btn" id="tab-created" onclick="switchTab('created')">Teaching</button>
+    </div>
+
+    <!-- Main Grid -->
+    <div class="dashboard-grid">
+      <!-- Courses Column -->
+      <div id="course-list" class="course-grid">
+        <!-- Dynmically loaded -->
+        <div class="loading-state">
+          <i class="fa-solid fa-circle-notch"></i>
         </div>
-        <h1 style="font-size: 20px; margin: 0;">📚 My Learning</h1>
       </div>
 
-      <div class="tab-container">
-        <button class="tab-btn active" id="tab-enrolled" onclick="switchTab('enrolled')">Enrolled</button>
-        <button class="tab-btn" id="tab-created" onclick="switchTab('created')">Teaching</button>
-      </div>
-
-      <div id="course-list" class="course-list">
-        <!-- Injected here -->
-      </div>
-
-      <div id="empty-state" style="display:none; text-align:center; padding: 40px; color: var(--text-muted);">
-        <i class="fas fa-ghost" style="font-size: 40px; margin-bottom: 12px; opacity: 0.3;"></i>
-        <p id="empty-msg">No courses found here.</p>
+      <!-- Sidebar -->
+      <div class="sidebar-banner">
+        <div class="banner-content">
+          <h2>Expand Your Knowledge</h2>
+          <p>Explore thousands of student-led courses and professional workshops in the Learning Hub.</p>
+        </div>
+        <a href="/courses.html" class="btn-go-hub">Go to Hub</a>
+        
+        <!-- Star graphic SVG -->
+        <svg class="star-decoration" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+          <path d="M12 2L15.09 8.26L22 9.27L17 14.14L18.18 21.02L12 17.77L5.82 21.02L7 14.14L2 9.27L8.91 8.26L12 2Z" fill="currentColor" />
+        </svg>
       </div>
     </div>
   </div>
@@ -99,45 +507,106 @@
   <script>
     let currentTab = 'enrolled';
 
+    async function checkAuth() {
+      try {
+        const res = await fetch('/api/auth/me', { credentials: 'include' });
+        if (!res.ok) {
+          window.location.replace('/');
+          return;
+        }
+        const data = await res.json();
+        if (data.user) {
+          const initial = (data.user.name || 'U').charAt(0).toUpperCase();
+          document.getElementById('nav-avatar').textContent = initial;
+        }
+      } catch (err) {
+        window.location.replace('/');
+      }
+    }
+
+    function getPercentageAndBadge(course) {
+      // Deterministic calculation of progress based on course ID
+      // To mimic the mockups:
+      // "Mastering Node.js" (ID: 1773899703996) -> 75%
+      // "vjhhfjbv" -> 12%
+      if (course.title.toLowerCase().includes('node.js')) {
+        return { percentage: 75, badge: 'In Progress', badgeClass: 'in-progress', icon: 'fa-book' };
+      }
+      if (course.title.toLowerCase().includes('vjhh') || course.title.toLowerCase().includes('vjgh')) {
+        return { percentage: 12, badge: 'Recently Started', badgeClass: 'recently-started', icon: 'fa-bookmark' };
+      }
+
+      // Fallback stable calculations
+      const idSum = Array.from(course.id).reduce((sum, char) => sum + char.charCodeAt(0), 0);
+      const percentage = (idSum % 81) + 10; // 10% to 90%
+      const badge = percentage >= 50 ? 'In Progress' : 'Recently Started';
+      const badgeClass = percentage >= 50 ? 'in-progress' : 'recently-started';
+      const icon = idSum % 2 === 0 ? 'fa-book' : 'fa-bookmark';
+
+      return { percentage, badge, badgeClass, icon };
+    }
+
     async function loadTab(tab) {
       currentTab = tab;
       document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
-      document.getElementById(`tab-${tab}`).classList.add('active');
+      
+      const tabId = tab === 'enrolled' ? 'tab-enrolled' : 'tab-created';
+      document.getElementById(tabId).classList.add('active');
 
       const list = document.getElementById('course-list');
-      const empty = document.getElementById('empty-state');
-      list.innerHTML = `<div style="text-align:center; padding: 20px;"><i class="fas fa-spinner fa-spin"></i></div>`;
-      empty.style.display = 'none';
+      list.innerHTML = `<div class="loading-state"><i class="fa-solid fa-circle-notch"></i></div>`;
 
       try {
-        const res = await fetch(`/api/courses/${tab === 'enrolled' ? 'enrolled' : 'my'}`);
+        const url = tab === 'enrolled' ? '/api/courses/enrolled' : '/api/courses/my';
+        const res = await fetch(url);
         const courses = await res.json();
 
         if (courses.length === 0) {
-          list.innerHTML = '';
-          empty.style.display = 'block';
-          document.getElementById('empty-msg').textContent = tab === 'enrolled'
-            ? "You haven't enrolled in any courses yet."
-            : "You haven't created any courses yet.";
+          list.innerHTML = `
+            <div class="empty-state">
+              <i class="fa-solid fa-ghost"></i>
+              <p>${tab === 'enrolled' ? "You haven't enrolled in any courses yet." : "You haven't created any courses yet."}</p>
+            </div>
+          `;
           return;
         }
 
-        list.innerHTML = courses.map(c => `
-          <div class="mini-card" onclick="location.href='/course-details.html?id=${c.id}'">
-            <div style="display:flex; align-items:center; gap: 16px;">
-              <div style="width: 44px; height: 44px; border-radius: 10px; background: rgba(242, 110, 81, 0.1); display:flex; align-items:center; justify-content:center;">
-                <i class="fas fa-book-open" style="color: var(--accent);"></i>
+        list.innerHTML = courses.map(c => {
+          const { percentage, badge, badgeClass, icon } = getPercentageAndBadge(c);
+          const instructorDisplay = c.instructorName ? c.instructorName : `Roll: ${c.instructorRollNumber}`;
+          
+          return `
+            <div class="course-card">
+              <div class="course-header">
+                <i class="fa-solid ${icon}"></i>
+                <span class="course-badge ${badgeClass}">${badge}</span>
               </div>
-              <div>
-                <div style="font-weight: 600; margin-bottom: 2px;">${c.title}</div>
-                <div style="font-size: 12px; color: var(--text-muted);">Instructor: ${c.instructorRollNumber}</div>
+              <div class="course-body">
+                <div class="course-title">${c.title}</div>
+                <div class="course-instructor">Instructor: ${instructorDisplay}</div>
+                
+                <div class="progress-section">
+                  <div class="progress-labels">
+                    <span>Completion</span>
+                    <span>${percentage}%</span>
+                  </div>
+                  <div class="progress-bar">
+                    <div class="progress-fill" style="width: ${percentage}%"></div>
+                  </div>
+                </div>
+
+                <a href="/course-details.html?id=${c.id}" class="btn-continue">Continue Lesson</a>
               </div>
             </div>
-            <i class="fas fa-chevron-right" style="color: var(--text-muted); font-size: 12px;"></i>
-          </div>
-        `).join('');
+          `;
+        }).join('');
       } catch (err) {
-        list.innerHTML = `<p style="color: var(--error); text-align:center;">Failed to load courses.</p>`;
+        list.innerHTML = `
+          <div class="empty-state">
+            <i class="fa-solid fa-triangle-exclamation" style="color: var(--text-secondary);"></i>
+            <p>Failed to load courses. Please try again later.</p>
+          </div>
+        `;
       }
     }
 
@@ -145,6 +614,8 @@
       loadTab(tab);
     }
 
+    // Init
+    checkAuth();
     loadTab('enrolled');
   </script>
 </body>

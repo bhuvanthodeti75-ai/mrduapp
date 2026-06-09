@@ -53,10 +53,25 @@ app.use((err, req, res, next) => {
 });
 
 // ─── Start ───────────────────────────────────────────────────────────────────────
-app.listen(PORT, () => {
+const { users } = require('./db/database');
+
+app.listen(PORT, async () => {
   console.log(`\n🎓 MRDU Auth Server running at http://localhost:${PORT}`);
   console.log(`   → Login:           http://localhost:${PORT}/`);
   console.log(`   → OTP Screen:      http://localhost:${PORT}/otp.html`);
   console.log(`   → Dashboard:       http://localhost:${PORT}/dashboard.html`);
-  console.log(`\n   Tip: Run 'node db/seed.js' first to populate the database.\n`);
+  
+  try {
+    const anyUser = await users.findOne();
+    if (!anyUser) {
+      console.log(`\n   Tip: Your database is empty. Run 'node db/seed.js' to populate the database.\n`);
+    } else {
+      console.log(`\n   Info: Supabase database has existing student accounts. You do NOT need to run 'node db/seed.js' again.\n`);
+    }
+  } catch (err) {
+    console.log(`\n   Warning: Could not query Supabase database: ${err.message}\n`);
+  }
 });
+
+module.exports = app;
+

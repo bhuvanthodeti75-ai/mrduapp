@@ -3,98 +3,559 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Chat Hub — MRDU Student Portal</title>
-  <link rel="stylesheet" href="styles.css" />
+  <title>Chat Hub — UniPortal</title>
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" />
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
   <style>
-    .chat-container {
-      display: flex; flex-direction: column; height: calc(100vh - 120px);
-      background: var(--card-bg); border: 1px solid var(--border); border-radius: 20px; overflow: hidden;
+    :root {
+      --bg-color: #edebe4;
+      --card-bg: #ffffff;
+      --sidebar-bg: #013b27;
+      --text-main: #111827;
+      --text-muted: #6b7280;
+      --border-color: #e5e7eb;
+      --accent: #013b27;
+      --primary-green: #013b27;
+      --warning: #f59e0b;
+    }
+    * {
+      box-sizing: border-box;
+      font-family: 'Plus Jakarta Sans', sans-serif;
+    }
+    body {
+      margin: 0;
+      background-color: var(--bg-color);
+      color: var(--text-main);
+      display: flex;
+      flex-direction: column;
+      height: 100vh;
+    }
+    /* Nav */
+    .nav {
+      background: #fff;
+      border-bottom: 1px solid var(--border-color);
+      padding: 1rem 2rem;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      flex-shrink: 0;
+    }
+    .nav-left {
+      display: flex;
+      align-items: center;
+      gap: 1rem;
+    }
+    .back-btn {
+      color: var(--text-main);
+      text-decoration: none;
+      font-size: 1.25rem;
+    }
+    .nav-logo {
+      font-weight: 700;
+      font-size: 1.25rem;
+      color: var(--text-main);
+      margin: 0;
+    }
+    .nav-links {
+      display: flex;
+      gap: 2rem;
+    }
+    .nav-link {
+      text-decoration: none;
+      color: var(--text-muted);
+      font-weight: 500;
+      transition: color 0.2s;
+    }
+    .nav-link.active {
+      color: var(--text-main);
+      font-weight: 700;
+    }
+    .nav-link:hover {
+      color: var(--text-main);
+    }
+    .nav-right {
+      display: flex;
+      align-items: center;
+      gap: 1rem;
+    }
+    .btn-requests {
+      background: #f3f4f6;
+      color: var(--text-main);
+      border: none;
+      padding: 0.5rem 1rem;
+      border-radius: 8px;
+      font-weight: 600;
+      font-size: 0.85rem;
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      cursor: pointer;
+      text-decoration: none;
+    }
+    .btn-icon {
+      width: 36px;
+      height: 36px;
+      background: var(--sidebar-bg);
+      color: white;
+      border-radius: 8px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      text-decoration: none;
+    }
+
+    /* Tabs */
+    .tabs-wrapper {
+      display: flex;
+      justify-content: center;
+      padding: 1.5rem 0;
+      flex-shrink: 0;
     }
     .chat-tabs {
-      display: flex; background: rgba(255,255,255,0.03); border-bottom: 1px solid var(--border); padding: 8px; gap: 8px;
+      display: flex;
+      background: #f4f4f5;
+      border-radius: 8px;
+      padding: 4px;
+      gap: 4px;
+      width: 400px;
     }
     .tab-btn {
-      flex: 1; padding: 12px; border-radius: 12px; border: none; background: transparent;
-      color: var(--text-muted); cursor: pointer; font-weight: 600; transition: all 0.2s;
-      display: flex; align-items: center; justify-content: center; gap: 8px;
+      flex: 1;
+      padding: 0.75rem;
+      border-radius: 6px;
+      border: none;
+      background: transparent;
+      color: var(--text-muted);
+      cursor: pointer;
+      font-weight: 600;
+      font-size: 0.9rem;
+      transition: all 0.2s;
     }
-    .tab-btn.active { background: var(--accent); color: white; }
-    
+    .tab-btn.active {
+      background: white;
+      color: var(--sidebar-bg);
+      box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+    }
+
+    /* Main Container */
+    .container {
+      flex: 1;
+      max-width: 1000px;
+      width: 100%;
+      margin: 0 auto 2rem auto;
+      background: white;
+      border-radius: 12px;
+      display: flex;
+      flex-direction: column;
+      overflow: hidden;
+      box-shadow: 0 4px 6px -1px rgba(0,0,0,0.05);
+    }
+
+    /* Global Section */
+    #global-section {
+      display: flex;
+      flex-direction: column;
+      height: 100%;
+    }
+    .date-divider {
+      text-align: center;
+      position: relative;
+      margin: 2rem;
+    }
+    .date-divider::before {
+      content: "";
+      position: absolute;
+      left: 0;
+      top: 50%;
+      width: 100%;
+      height: 1px;
+      background: var(--border-color);
+      z-index: 1;
+    }
+    .date-divider span {
+      background: white;
+      padding: 0 1rem;
+      color: var(--text-muted);
+      font-size: 0.75rem;
+      font-weight: 700;
+      letter-spacing: 1px;
+      position: relative;
+      z-index: 2;
+    }
     .messages-area {
-      flex: 1; overflow-y: auto; padding: 20px; display: flex; flex-direction: column; gap: 12px;
-      background: rgba(0,0,0,0.1);
+      flex: 1;
+      overflow-y: auto;
+      padding: 0 2rem 2rem 2rem;
+      display: flex;
+      flex-direction: column;
+      gap: 1.5rem;
+    }
+    .message-row {
+      display: flex;
+      gap: 1rem;
+      max-width: 80%;
+    }
+    .message-row.sent {
+      align-self: flex-end;
+      flex-direction: row-reverse;
+    }
+    .avatar {
+      width: 40px;
+      height: 40px;
+      border-radius: 8px;
+      background: var(--sidebar-bg);
+      color: white;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-weight: bold;
+      flex-shrink: 0;
+      object-fit: cover;
+    }
+    .msg-content {
+      display: flex;
+      flex-direction: column;
+    }
+    .message-row.sent .msg-content {
+      align-items: flex-end;
+    }
+    .msg-header {
+      display: flex;
+      align-items: baseline;
+      gap: 0.5rem;
+      margin-bottom: 0.5rem;
+    }
+    .msg-name {
+      font-weight: 700;
+      font-size: 0.9rem;
+      color: var(--sidebar-bg);
+    }
+    .message-row.sent .msg-name {
+      color: var(--text-main);
+    }
+    .msg-time {
+      font-size: 0.75rem;
+      color: var(--text-muted);
     }
     .message-bubble {
-      max-width: 80%; padding: 12px 16px; border-radius: 16px; font-size: 14px; position: relative;
-      animation: fadeIn 0.3s ease-out;
+      padding: 1rem;
+      border-radius: 8px;
+      font-size: 0.95rem;
+      line-height: 1.5;
+      background: #f4f4f5;
+      color: var(--text-main);
+      border-top-left-radius: 0;
     }
-    @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
-    
-    .msg-received { background: rgba(255,255,255,0.05); align-self: flex-start; border-bottom-left-radius: 4px; border: 1px solid var(--border); }
-    .msg-sent { background: var(--accent); align-self: flex-end; border-bottom-right-radius: 4px; color: white; }
-    
-    .msg-info { font-size: 10px; margin-bottom: 4px; color: var(--text-muted); }
-    .msg-sent .msg-info { color: rgba(255,255,255,0.7); text-align: right; }
+    .message-row.sent .message-bubble {
+      background: var(--sidebar-bg);
+      color: white;
+      border-top-left-radius: 8px;
+      border-top-right-radius: 0;
+    }
     
     .input-area {
-      padding: 16px; border-top: 1px solid var(--border); display: flex; gap: 12px;
-      background: rgba(255,255,10,0.02);
+      padding: 1.5rem 2rem;
+      background: white;
+    }
+    .chat-input-wrapper {
+      display: flex;
+      align-items: center;
+      background: #f4f4f5;
+      border-radius: 9999px;
+      padding: 0.5rem;
+    }
+    .btn-plus {
+      background: transparent;
+      border: 1px solid var(--border-color);
+      color: var(--text-muted);
+      width: 36px;
+      height: 36px;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      flex-shrink: 0;
+      background: white;
     }
     .chat-input {
-      flex: 1; padding: 12px 20px; border-radius: 12px; border: 1px solid var(--border);
-      background: rgba(255,255,255,0.03); color: var(--text); outline: none; transition: all 0.2s;
+      flex: 1;
+      background: transparent;
+      border: none;
+      padding: 0 1rem;
+      font-size: 0.95rem;
+      outline: none;
+      color: var(--text-main);
     }
-    .chat-input:focus { border-color: var(--accent); background: rgba(255,255,255,0.05); }
+    .btn-send {
+      background: var(--sidebar-bg);
+      color: white;
+      border: none;
+      width: 36px;
+      height: 36px;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      flex-shrink: 0;
+    }
+
+    /* Private Section */
+    #private-section {
+      display: none;
+      padding: 2rem;
+      height: 100%;
+      overflow-y: auto;
+    }
+    .private-grid {
+      display: grid;
+      grid-template-columns: 2fr 1fr;
+      gap: 2rem;
+      height: 100%;
+    }
+    .active-convos-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 1.5rem;
+    }
+    .active-convos-header h2 {
+      margin: 0;
+      font-size: 1.25rem;
+      font-weight: 700;
+    }
+    .online-badge {
+      background: #f3f4f6;
+      color: var(--text-muted);
+      font-size: 0.75rem;
+      padding: 0.25rem 0.75rem;
+      border-radius: 9999px;
+      font-weight: 600;
+    }
+    .chat-list {
+      display: flex;
+      flex-direction: column;
+      gap: 1rem;
+    }
+    .chat-card {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 1.25rem;
+      background: white;
+      border: 1px solid var(--border-color);
+      border-radius: 12px;
+      cursor: pointer;
+      transition: all 0.2s;
+      text-decoration: none;
+      color: inherit;
+    }
+    .chat-card:hover {
+      border-color: #d1d5db;
+      box-shadow: 0 2px 4px rgba(0,0,0,0.02);
+    }
+    .chat-card-left {
+      display: flex;
+      align-items: center;
+      gap: 1.25rem;
+    }
+    .avatar-large {
+      width: 56px;
+      height: 56px;
+      border-radius: 16px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-weight: 700;
+      font-size: 1.25rem;
+      color: white;
+    }
+    .chat-card-info h3 {
+      margin: 0 0 0.25rem 0;
+      font-size: 1rem;
+      font-weight: 700;
+    }
+    .chat-card-info p {
+      margin: 0;
+      font-size: 0.8rem;
+      color: var(--text-muted);
+    }
+    .chat-card-status {
+      display: flex;
+      flex-direction: column;
+      align-items: flex-end;
+      gap: 0.5rem;
+    }
+    .status-icon {
+      font-size: 1.25rem;
+    }
+    .status-text {
+      font-size: 0.65rem;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+    }
     
-    .private-search {
-      padding: 20px; display: flex; flex-direction: column; gap: 16px; align-items: center; justify-content: center; height: 100%;
-      text-align: center;
+    /* Private Sidebar */
+    .snapshot-card {
+      background: var(--sidebar-bg);
+      border-radius: 12px;
+      padding: 2rem;
+      color: white;
+      margin-bottom: 1.5rem;
     }
-    .search-row { display: flex; gap: 10px; width: 100%; max-width: 400px; }
+    .snapshot-card h3 {
+      margin: 0 0 1.5rem 0;
+      font-size: 1.1rem;
+    }
+    .snapshot-img {
+      width: 100%;
+      height: 120px;
+      background: #022a1c;
+      border-radius: 8px;
+      margin-bottom: 1.5rem;
+      position: relative;
+      overflow: hidden;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+    .snapshot-img::after {
+      content: "\f002";
+      font-family: "Font Awesome 6 Free";
+      font-weight: 900;
+      color: var(--text-main);
+      background: white;
+      width: 40px;
+      height: 40px;
+      border-radius: 8px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 1.25rem;
+    }
+    .snapshot-card p {
+      font-size: 0.85rem;
+      color: rgba(255,255,255,0.8);
+      line-height: 1.5;
+      margin-bottom: 1.5rem;
+    }
+    .btn-yellow {
+      background: #fbbf24;
+      color: #92400e;
+      border: none;
+      width: 100%;
+      padding: 0.75rem;
+      border-radius: 8px;
+      font-weight: 700;
+      cursor: pointer;
+    }
+    
+    .guidelines-card {
+      background: #f9fafb;
+      border-radius: 12px;
+      padding: 1.5rem;
+      border: 1px solid var(--border-color);
+    }
+    .guidelines-card h4 {
+      margin: 0 0 1rem 0;
+      font-size: 0.85rem;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+      color: var(--text-muted);
+    }
+    .guidelines-list {
+      list-style: none;
+      padding: 0;
+      margin: 0;
+    }
+    .guidelines-list li {
+      display: flex;
+      gap: 0.75rem;
+      font-size: 0.85rem;
+      margin-bottom: 0.75rem;
+      color: var(--text-main);
+    }
+    .guidelines-list li i {
+      color: var(--sidebar-bg);
+      margin-top: 0.2rem;
+    }
   </style>
 </head>
 <body>
-  <div class="grid-bg"></div>
-  <div class="page">
-    <div style="max-width: 1000px; width: 95%; margin: 0 auto;">
-      <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 24px;">
-        <div style="display: flex; align-items: center; gap: 12px;">
-          <a href="/dashboard.html" class="btn-ghost" style="width: 44px; height: 44px; padding: 0; display: flex; align-items: center; justify-content: center; border-radius: 12px;">
-            <i class="fas fa-home"></i>
-          </a>
-          <h1 style="font-size: 24px; margin: 0;">💬 Chat Hub</h1>
-        </div>
-        <a href="/chat-requests.html" class="btn-ghost" style="width: auto; padding: 10px 18px; position: relative;">
-          <i class="fas fa-user-friends"></i> Requests
-        </a>
+  <nav class="nav">
+    <div class="nav-left">
+      <a href="/dashboard.html" class="back-btn"><i class="fas fa-arrow-left"></i></a>
+      <h1 class="nav-logo">Chat Hub</h1>
+    </div>
+    <div class="nav-links">
+      <a href="/dashboard.html" class="nav-link">Dashboard</a>
+      <a href="#" class="nav-link">Market</a>
+      <a href="/courses.html" class="nav-link active">Learning</a>
+      <a href="#" class="nav-link">Profile</a>
+    </div>
+    <div class="nav-right">
+      <a href="/chat-requests.html" class="btn-requests">
+        <i class="fas fa-user-plus"></i> Requests
+      </a>
+      <a href="#" class="btn-icon">
+        <i class="fas fa-bell"></i>
+      </a>
+    </div>
+  </nav>
+
+  <div class="tabs-wrapper">
+    <div class="chat-tabs">
+      <button class="tab-btn active" id="tab-global" onclick="switchTab('global')">Global Chat</button>
+      <button class="tab-btn" id="tab-private" onclick="switchTab('private')">Private Messaging</button>
+    </div>
+  </div>
+
+  <div class="container">
+    <div id="global-section">
+      <div class="date-divider">
+        <span>TODAY</span>
       </div>
-
-      <div class="chat-container">
-        <div class="chat-tabs">
-          <button class="tab-btn active" id="tab-global" onclick="switchTab('global')">
-            <i class="fas fa-globe"></i> Global Chat
-          </button>
-          <button class="tab-btn" id="tab-private" onclick="switchTab('private')">
-            <i class="fas fa-lock"></i> Private Messaging
-          </button>
+      <div id="global-messages" class="messages-area">
+        <!-- Global messages -->
+      </div>
+      <form id="global-form" class="input-area">
+        <div class="chat-input-wrapper">
+          <button type="button" class="btn-plus"><i class="fas fa-plus"></i></button>
+          <input type="text" id="global-input" class="chat-input" placeholder="Say something to everyone..." required />
+          <button type="submit" class="btn-send"><i class="fas fa-paper-plane"></i></button>
         </div>
+      </form>
+    </div>
 
-        <div id="global-section" style="display: flex; flex-direction: column; flex: 1; min-height: 0;">
-          <div id="global-messages" class="messages-area">
-            <!-- Global messages -->
+    <div id="private-section">
+      <div class="private-grid">
+        <div class="active-convos">
+          <div class="active-convos-header">
+            <h2>Active Conversations</h2>
+            <div class="online-badge">24 Members Online</div>
           </div>
-          <form id="global-form" class="input-area">
-            <input type="text" id="global-input" class="chat-input" placeholder="Say something to everyone..." required />
-            <button type="submit" class="btn-primary" style="width: 44px; padding: 0;"><i class="fas fa-paper-plane"></i></button>
-          </form>
-        </div>
-
-
-        <div id="private-section" style="display: none; height: 100%; padding: 20px; overflow-y: auto;">
-          <h2 style="font-size: 18px; margin-bottom: 16px;">Private Conversations</h2>
-          <div id="accepted-chat-list" style="display: flex; flex-direction: column; gap: 12px;">
+          <div id="accepted-chat-list" class="chat-list">
             <div style="text-align:center; padding: 40px;"><i class="fas fa-spinner fa-spin"></i></div>
+          </div>
+        </div>
+        
+        <div class="private-sidebar">
+          <div class="snapshot-card">
+            <h3>Portal Snapshot</h3>
+            <div class="snapshot-img"></div>
+            <p>Manage your connections and global discussions in one place. Your private messages are encrypted and strictly confidential within the MRDU network.</p>
+            <button class="btn-yellow">Invite Peers</button>
+          </div>
+          
+          <div class="guidelines-card">
+            <h4>Community Guidelines</h4>
+            <ul class="guidelines-list">
+              <li><i class="fa-solid fa-circle-check"></i> Respect academic integrity in all chats.</li>
+              <li><i class="fa-solid fa-circle-check"></i> No promotional content or spam.</li>
+              <li><i class="fa-solid fa-circle-check"></i> Be helpful and professional to peers.</li>
+            </ul>
           </div>
         </div>
       </div>
@@ -142,10 +603,21 @@
 
     function renderBubble(m) {
       const isMe = m.senderRollNumber === myRoll;
+      const timeString = new Date(m.createdAt).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+      const avatarSrc = "https://ui-avatars.com/api/?name=" + m.senderRollNumber.slice(0, 2) + "&background=013b27&color=fff";
+      
       return `
-        <div class="message-bubble ${isMe ? 'msg-sent' : 'msg-received'}">
-          <div class="msg-info">${isMe ? 'You' : m.senderRollNumber} • ${new Date(m.createdAt).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}</div>
-          <div>${m.message}</div>
+        <div class="message-row ${isMe ? 'sent' : 'received'}">
+          ${!isMe ? `<img src="${avatarSrc}" class="avatar" alt="Avatar" />` : ''}
+          <div class="msg-content">
+            <div class="msg-header">
+              <span class="msg-name">${isMe ? 'You' : m.senderRollNumber}</span>
+              <span class="msg-time">${timeString}</span>
+            </div>
+            <div class="message-bubble">
+              ${m.message}
+            </div>
+          </div>
         </div>
       `;
     }
@@ -170,14 +642,12 @@
         const lastMsgIndex = messages.findIndex(m => m._id === lastGlobalMsgId);
         
         if (lastGlobalMsgId === null || lastMsgIndex === -1) {
-          // Full render (first load, or previous messages fell off limit)
           const oldScroll = area.scrollTop;
           area.innerHTML = messages.map(m => renderBubble(m)).join('');
           if (lastGlobalMsgId !== null && !isAtBottom) {
             area.scrollTop = oldScroll;
           }
         } else {
-          // Append new messages safely to avoid animation blinking and scroll resetting
           const newMessages = messages.slice(lastMsgIndex + 1);
           const temp = document.createElement('div');
           temp.innerHTML = newMessages.map(m => renderBubble(m)).join('');
@@ -211,6 +681,21 @@
       } catch (err) { console.error('Send error:', err); }
     };
 
+    function getAvatarColor(index) {
+        const colors = ['#013b27', '#fcd34d', '#34d399', '#e5e7eb'];
+        return colors[index % colors.length];
+    }
+    
+    function getStatusDetails(index) {
+        const statuses = [
+            { icon: 'fa-shield-alt', color: '#013b27', text: 'STUDENT' },
+            { icon: 'fa-comment-alt', color: '#9ca3af', text: 'ALUMNI' },
+            { icon: 'fa-circle', color: '#ef4444', text: 'PRIORITY' },
+            { icon: 'fa-headset', color: '#013b27', text: 'SUPPORT' }
+        ];
+        return statuses[index % statuses.length];
+    }
+
     async function loadPrivateChats() {
       try {
         const res = await fetch('/api/chat-request/all-accepted');
@@ -219,30 +704,39 @@
         
         if (accepted.length === 0) {
           container.innerHTML = `
-            <div style="text-align:center; padding: 40px; color: var(--text-muted); background: rgba(255,255,255,0.03); border-radius: 12px; border: 1px solid var(--border);">
+            <div style="text-align:center; padding: 40px; color: var(--text-muted); background: white; border-radius: 12px; border: 1px solid var(--border-color);">
               <i class="fas fa-user-friends" style="font-size: 32px; opacity: 0.3; margin-bottom: 16px;"></i>
               <p>No active conversations.</p>
-              <a href="/chat-requests.html" class="btn-primary" style="display: inline-block; padding: 8px 16px; margin-top: 16px; text-decoration: none;">Find Students</a>
+              <a href="/chat-requests.html" style="display: inline-block; padding: 8px 16px; margin-top: 16px; text-decoration: none; background: var(--sidebar-bg); color: white; border-radius: 8px;">Find Students</a>
             </div>
           `;
           return;
         }
 
-        container.innerHTML = accepted.map(req => {
+        container.innerHTML = accepted.map((req, index) => {
           const otherUser = req.senderRollNumber === myRoll ? req.receiverRollNumber : req.senderRollNumber;
+          const shortName = otherUser.slice(0, 2).toUpperCase();
+          const bgColor = getAvatarColor(index);
+          const textColor = (bgColor === '#fcd34d' || bgColor === '#e5e7eb') ? '#111827' : 'white';
+          const status = getStatusDetails(index);
+          const connectDate = new Date(req.createdAt).toLocaleDateString('en-US', { month: 'short', day: '2-digit', year: 'numeric' });
+
           return `
-            <div onclick="location.href='/private-chat.html?roll=${otherUser}'" style="padding: 16px; background: rgba(255,255,255,0.03); border: 1px solid var(--border); border-radius: 12px; cursor: pointer; display: flex; align-items: center; justify-content: space-between; transition: all 0.2s;" onmouseover="this.style.background='rgba(255,255,255,0.06)'" onmouseout="this.style.background='rgba(255,255,255,0.03)'">
-              <div style="display: flex; align-items: center; gap: 16px;">
-                <div style="width: 48px; height: 48px; border-radius: 12px; background: var(--success); display: flex; align-items: center; justify-content: center; font-size: 16px; font-weight: bold; color: white;">
-                  ${otherUser.slice(0, 2)}
+            <a href="/private-chat.html?roll=${otherUser}" class="chat-card">
+              <div class="chat-card-left">
+                <div class="avatar-large" style="background: ${bgColor}; color: ${textColor};">
+                  ${shortName}
                 </div>
-                <div>
-                  <div style="font-weight: 700; font-size: 16px;">${otherUser}</div>
-                  <div style="font-size: 13px; color: var(--success);">Connected ${new Date(req.createdAt).toLocaleDateString()}</div>
+                <div class="chat-card-info">
+                  <h3>${otherUser}</h3>
+                  <p>Connected ${connectDate}</p>
                 </div>
               </div>
-              <i class="fas fa-chevron-right" style="color: var(--text-muted); opacity: 0.5;"></i>
-            </div>
+              <div class="chat-card-status">
+                <i class="fas ${status.icon} status-icon" style="color: ${status.color}; ${status.icon === 'fa-circle' ? 'font-size: 0.5rem;' : ''}"></i>
+                <span class="status-text" style="color: ${status.color};">${status.text}</span>
+              </div>
+            </a>
           `;
         }).join('');
       } catch (err) {

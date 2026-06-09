@@ -5,63 +5,500 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Chat Requests — MRDU Student Portal</title>
   <link rel="stylesheet" href="styles.css" />
-  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" />
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
   <style>
-    .request-list { display: flex; flex-direction: column; gap: 16px; margin-top: 24px; }
-    .request-card {
-      background: var(--card-bg); border: 1px solid var(--border); padding: 20px; border-radius: 16px;
-      display: flex; justify-content: space-between; align-items: center;
-      animation: slideIn 0.3s ease-out;
+    /* Reset styles.css flex-body centering and dark background */
+    body {
+      background: #f3f2eb !important;
+      color: #0e291e !important;
+      font-family: 'Inter', sans-serif !important;
+      min-height: 100vh !important;
+      display: block !important;
+      padding: 0 0 100px 0 !important;
+      margin: 0 !important;
+      position: relative !important;
+      overflow-x: auto !important;
     }
-    @keyframes slideIn { from { opacity: 0; transform: translateX(20px); } to { opacity: 1; transform: translateX(0); } }
-    
-    .user-info { display: flex; align-items: center; gap: 16px; }
-    .avatar {
-      width: 48px; height: 48px; border-radius: 12px; background: var(--accent);
-      display: flex; align-items: center; justify-content: center; font-size: 18px; color: white;
+    body::before, body::after, .grid-bg { display: none !important; }
+
+    /* Navbar */
+    .edu-navbar {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      background: #f3f2eb;
+      border-bottom: 1px solid rgba(14,41,30,0.08);
+      padding: 16px 8%;
+      position: sticky;
+      top: 0;
+      z-index: 100;
+    }
+    .back-arrow {
+      color: #07442d;
+      font-size: 18px;
+      text-decoration: none;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: opacity 0.2s;
+    }
+    .back-arrow:hover {
+      opacity: 0.7;
+    }
+    .nav-brand-title {
+      font-size: 22px;
+      font-weight: 800;
+      color: #07442d;
+    }
+    .nav-actions {
+      display: flex;
+      align-items: center;
+      gap: 20px;
+    }
+    .notification-bell {
+      font-size: 18px;
+      color: #4a5a51;
+      cursor: pointer;
+      transition: color 0.2s;
+    }
+    .notification-bell:hover {
+      color: #07442d;
+    }
+    .nav-avatar {
+      width: 32px;
+      height: 32px;
+      border-radius: 50%;
+      cursor: pointer;
+      border: 1px solid rgba(14,41,30,0.15);
+      object-fit: cover;
+    }
+
+    /* Container */
+    .container {
+      max-width: 1200px;
+      margin: 0 auto;
+      padding: 40px 8%;
+      background: transparent !important;
+      box-shadow: none !important;
+    }
+
+    /* Search card */
+    .search-card {
+      background: #ffffff;
+      border: 1px solid rgba(14,41,30,0.08);
+      border-radius: 12px;
+      padding: 24px;
+      margin-bottom: 40px;
+      box-shadow: 0 4px 20px rgba(14,41,30,0.015);
+    }
+    .search-label {
+      font-size: 11px;
+      font-weight: 700;
+      letter-spacing: 1px;
+      color: #8b9a91;
+      margin-bottom: 12px;
       text-transform: uppercase;
     }
-    .actions { display: flex; gap: 10px; }
+    .search-row {
+      display: flex;
+      gap: 16px;
+    }
+    .search-input-wrap {
+      flex: 1;
+      position: relative;
+      background: #f3f2eb;
+      border: 1px solid rgba(14,41,30,0.15);
+      border-radius: 8px;
+      overflow: hidden;
+      display: flex;
+      align-items: center;
+    }
+    .search-input-wrap .input-icon {
+      position: absolute;
+      left: 16px;
+      color: #8b9a91;
+      font-size: 16px;
+    }
+    .search-input-wrap input {
+      width: 100%;
+      border: none;
+      background: transparent;
+      padding: 14px 16px 14px 44px;
+      font-family: 'Inter', sans-serif;
+      font-size: 14px;
+      color: #0e291e;
+      outline: none;
+    }
+    .search-input-wrap input::placeholder {
+      color: #8b9a91;
+    }
+    .send-req-btn {
+      background: #07442d;
+      color: #ffffff;
+      border: none;
+      border-radius: 8px;
+      padding: 14px 28px;
+      font-family: 'Inter', sans-serif;
+      font-size: 14px;
+      font-weight: 700;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      transition: all 0.2s;
+      white-space: nowrap;
+    }
+    .send-req-btn:hover {
+      background: #0a5a3d;
+      transform: translateY(-1px);
+    }
+    .send-req-btn:disabled {
+      opacity: 0.6;
+      cursor: not-allowed;
+      transform: none;
+    }
+
+    /* Columns layout */
+    .columns-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 32px;
+    }
+    .column-box {
+      display: flex;
+      flex-direction: column;
+    }
+    .column-header {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      margin-bottom: 20px;
+    }
+    .column-header h2 {
+      font-size: 20px;
+      font-weight: 850;
+      color: #0e291e;
+      margin: 0;
+    }
+    .count-badge {
+      background: #a7f3d0;
+      color: #065f46;
+      font-size: 12px;
+      font-weight: 700;
+      padding: 4px 10px;
+      border-radius: 4px;
+    }
+
+    /* Request list / Cards */
+    .request-list {
+      display: flex;
+      flex-direction: column;
+      gap: 16px;
+    }
+    .connection-card {
+      background: #ffffff;
+      border: 1px solid rgba(14,41,30,0.08);
+      border-radius: 12px;
+      padding: 16px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      transition: all 0.2s;
+    }
+    .connection-card.hoverable {
+      cursor: pointer;
+    }
+    .connection-card.hoverable:hover {
+      border-color: rgba(7,68,45,0.15);
+      box-shadow: 0 4px 12px rgba(7,68,45,0.04);
+      transform: translateY(-1px);
+    }
+    .connection-left {
+      display: flex;
+      align-items: center;
+      gap: 16px;
+    }
+    .connection-avatar {
+      width: 48px;
+      height: 48px;
+      border-radius: 10px;
+      object-fit: cover;
+    }
+    .online-indicator {
+      position: absolute;
+      bottom: -2px;
+      right: -2px;
+      width: 12px;
+      height: 12px;
+      background: #10b981;
+      border: 2px solid #ffffff;
+      border-radius: 50%;
+    }
+    .connection-name {
+      font-size: 15px;
+      font-weight: 700;
+      color: #0e291e;
+      margin-bottom: 2px;
+    }
+    .connection-dept {
+      font-size: 12px;
+      color: #4a5a51;
+    }
+    .connection-chat-icon {
+      color: #07442d;
+      font-size: 18px;
+    }
+    .connection-actions {
+      display: flex;
+      gap: 8px;
+    }
+    .accept-btn {
+      background: #07442d;
+      color: #ffffff;
+      border: none;
+      border-radius: 6px;
+      padding: 8px 12px;
+      font-family: 'Inter', sans-serif;
+      font-size: 12px;
+      font-weight: 700;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      gap: 4px;
+      transition: all 0.2s;
+    }
+    .accept-btn:hover {
+      background: #0a5a3d;
+    }
+    .ignore-btn {
+      background: #fee2e2;
+      color: #b91c1c;
+      border: none;
+      border-radius: 6px;
+      padding: 8px 12px;
+      font-family: 'Inter', sans-serif;
+      font-size: 12px;
+      font-weight: 700;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      gap: 4px;
+      transition: all 0.2s;
+    }
+    .ignore-btn:hover {
+      background: #fecaca;
+    }
+
+    /* Empty states */
+    .empty-pending-card {
+      background: #ffffff;
+      border: 1px dashed rgba(14,41,30,0.15);
+      border-radius: 12px;
+      padding: 48px 24px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      gap: 12px;
+      text-align: center;
+    }
+    .hourglass-box {
+      width: 56px;
+      height: 56px;
+      border-radius: 12px;
+      background: rgba(7, 68, 45, 0.05);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: #07442d;
+      font-size: 20px;
+      margin-bottom: 8px;
+    }
+    .empty-pending-card h3 {
+      font-size: 16px;
+      font-weight: 800;
+      color: #0e291e;
+      margin: 0;
+    }
+    .empty-pending-card p {
+      font-size: 13px;
+      color: #8b9a91;
+      margin: 0;
+      line-height: 1.5;
+      max-width: 260px;
+    }
+
+    .empty-chat-box {
+      background: #ffffff;
+      border: 1px solid rgba(14,41,30,0.08);
+      border-radius: 12px;
+      padding: 48px 24px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      gap: 12px;
+      text-align: center;
+    }
+    .empty-chat-icon {
+      font-size: 32px;
+      color: #8b9a91;
+    }
+    .empty-chat-box p {
+      font-size: 14px;
+      color: #4a5a51;
+      margin: 0;
+    }
+
+    /* FAB floating button */
+    .chat-fab {
+      position: fixed;
+      bottom: 24px;
+      right: 24px;
+      width: 56px;
+      height: 56px;
+      border-radius: 50%;
+      background: #07442d;
+      color: #ffffff;
+      border: none;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 20px;
+      cursor: pointer;
+      box-shadow: 0 4px 16px rgba(7,68,45,0.25);
+      transition: all 0.2s;
+      z-index: 1000;
+    }
+    .chat-fab:hover {
+      background: #0a5a3d;
+      transform: scale(1.05);
+    }
+
+    @media (max-width: 768px) {
+      .columns-grid {
+        grid-template-columns: 1fr;
+        gap: 32px;
+      }
+      .container {
+        padding: 24px 4%;
+      }
+    }
   </style>
 </head>
 <body>
-  <div class="grid-bg"></div>
-  <div class="page">
-    <div style="max-width: 600px; width: 95%; margin: 0 auto;">
-      <div style="display: flex; align-items: center; gap: 16px; margin-bottom: 32px;">
-        <a href="/chat.html" class="btn-ghost" style="width: 44px; height: 44px; padding: 0; display: flex; align-items: center; justify-content: center; border-radius: 12px;">
-          <i class="fas fa-arrow-left"></i>
-        </a>
-        <h1 style="font-size: 24px; margin: 0;">📬 Chat Requests</h1>
-      </div>
 
-      <div class="private-search" style="margin-bottom: 32px; background: rgba(255,255,255,0.02); padding: 24px; border-radius: 16px; border: 1px solid var(--border);">
-        <h2 style="font-size: 18px; margin-bottom: 8px;"><i class="fas fa-search" style="color: var(--accent);"></i> Find a Student</h2>
-        <p style="color: var(--text-muted); font-size: 13px; margin-bottom: 16px;">Enter a roll number to send a chat request.</p>
-        <div style="display: flex; gap: 10px;">
-          <input type="text" id="search-roll" class="form-input" placeholder="e.g. 25EU08R0624" style="flex: 1; padding: 12px 16px;" />
-          <button onclick="sendReq()" id="req-btn" class="btn-primary" style="width: auto; margin-top: 0; padding: 12px 24px;">Send Request</button>
-        </div>
-      </div>
+  <!-- Top Header Navbar -->
+  <nav class="edu-navbar">
+    <div style="display: flex; align-items: center; gap: 16px;">
+      <a href="/chat.html" class="back-arrow"><i class="fas fa-arrow-left"></i></a>
+      <div class="nav-brand-title">Chat Requests</div>
+    </div>
+    <div class="nav-actions">
+      <i class="far fa-bell notification-bell"></i>
+      <img src="/avatar.png" alt="Profile" class="nav-avatar" onclick="location.href='/profile.html'">
+    </div>
+  </nav>
 
-      <div style="display: flex; gap: 24px; flex-wrap: wrap;">
-        <div style="flex: 1; min-width: 250px;">
-          <h2 style="font-size: 16px; margin-bottom: 16px; color: var(--text-primary);"><i class="fas fa-clock" style="color: var(--warning); margin-right: 6px;"></i> Pending Requests</h2>
-          <div id="request-container" class="request-list" style="margin-top: 0;">
-            <div style="text-align:center; padding: 40px;"><i class="fas fa-spinner fa-spin"></i></div>
-          </div>
+  <div class="container">
+    
+    <!-- Find a Student Card -->
+    <div class="search-card">
+      <div class="search-label">FIND A STUDENT</div>
+      <div class="search-row">
+        <div class="search-input-wrap">
+          <i class="fas fa-user-plus input-icon"></i>
+          <input type="text" id="search-roll" placeholder="Enter Roll Number (e.g., 25EU08R0624)">
         </div>
-        <div style="flex: 1; min-width: 250px;">
-          <h2 style="font-size: 16px; margin-bottom: 16px; color: var(--text-primary);"><i class="fas fa-check-circle" style="color: var(--success); margin-right: 6px;"></i> Accepted Connections</h2>
-          <div id="accepted-container" class="request-list" style="margin-top: 0;">
-            <div style="text-align:center; padding: 40px;"><i class="fas fa-spinner fa-spin"></i></div>
-          </div>
-        </div>
+        <button onclick="sendReq()" id="req-btn" class="send-req-btn">
+          <i class="fas fa-paper-plane"></i> Send Request
+        </button>
       </div>
     </div>
+
+    <!-- Main Grid -->
+    <div class="columns-grid">
+      
+      <!-- Pending Requests -->
+      <div class="column-box">
+        <div class="column-header">
+          <h2>Pending Requests</h2>
+          <span class="count-badge" id="pending-count">0</span>
+        </div>
+        <div id="request-container" class="request-list">
+          <div style="text-align:center; padding: 40px; color: #8b9a91;">
+            <i class="fas fa-spinner fa-spin"></i> Loading...
+          </div>
+        </div>
+      </div>
+
+      <!-- Accepted Connections -->
+      <div class="column-box">
+        <div class="column-header">
+          <h2>Accepted Connections</h2>
+          <span class="count-badge" id="accepted-count">0</span>
+        </div>
+        <div id="accepted-container" class="request-list">
+          <div style="text-align:center; padding: 40px; color: #8b9a91;">
+            <i class="fas fa-spinner fa-spin"></i> Loading...
+          </div>
+        </div>
+      </div>
+
+    </div>
+
   </div>
 
+  <!-- Floating Chat FAB -->
+  <button class="chat-fab" onclick="location.href='/chat.html'">
+    <i class="fas fa-comment-alt"></i>
+  </button>
+
   <script>
+    // In-memory cache of user details to avoid multiple redundant requests
+    const userCache = {};
+
+    async function getUserDetails(roll) {
+      if (userCache[roll]) return userCache[roll];
+      try {
+        const res = await fetch(`/api/chat-request/user/${roll}`);
+        if (res.ok) {
+          const data = await res.json();
+          userCache[roll] = data;
+          return data;
+        }
+      } catch (err) {}
+      return { rollNumber: roll, name: roll, department: 'Student', course: 'CSE', section: 'A' };
+    }
+
+    function getStudentAvatar(rollNumber) {
+      const avatars = [
+        'https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=100&q=80', // Female
+        'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=100&q=80', // Male
+        'https://images.unsplash.com/photo-1494790108377-be9c29b29330?w=100&q=80', // Female
+        'https://images.unsplash.com/photo-1500648767791-00dcc994a43e?w=100&q=80', // Male
+        'https://images.unsplash.com/photo-1438761681033-6461ffad8d80?w=100&q=80', // Female
+        'https://images.unsplash.com/photo-1522075469751-3a6694fb2f61?w=100&q=80'  // Male
+      ];
+      let hash = 0;
+      for (let i = 0; i < rollNumber.length; i++) {
+        hash = rollNumber.charCodeAt(i) + ((hash << 5) - hash);
+      }
+      const index = Math.abs(hash) % avatars.length;
+      return avatars[index];
+    }
+
+    function getStudentYear(rollNumber) {
+      const rollYear = parseInt(rollNumber.substring(0, 2));
+      if (isNaN(rollYear)) return 'Year 1';
+      const currentYear = 26; // 2026
+      const diff = currentYear - rollYear;
+      if (diff <= 0) return 'Year 1';
+      if (diff === 1) return 'Year 2';
+      if (diff === 2) return 'Year 3';
+      return 'Year 4';
+    }
+
     async function loadRequests() {
       try {
         const [myRollRes, reqRes, accRes] = await Promise.all([
@@ -70,6 +507,11 @@
           fetch('/api/chat-request/all-accepted')
         ]);
         
+        if (!myRollRes.ok) {
+          window.location.href = '/login.html';
+          return;
+        }
+
         const myData = await myRollRes.json();
         const myRoll = myData.user.rollNumber;
         
@@ -79,57 +521,79 @@
         const reqContainer = document.getElementById('request-container');
         const accContainer = document.getElementById('accepted-container');
 
-        // Pending Requests (Incoming)
+        // Update counts
         const pending = requests.filter(r => r.status === 'pending');
+        document.getElementById('pending-count').innerText = pending.length;
+        document.getElementById('accepted-count').innerText = accepted.length;
+
+        // Pending Requests (Incoming)
         if (pending.length === 0) {
           reqContainer.innerHTML = `
-            <div style="text-align:center; padding: 40px; background: var(--card-bg); border: 1px solid var(--border); border-radius: 16px;">
-              <i class="fas fa-envelope-open" style="font-size: 32px; opacity: 0.1; margin-bottom: 16px;"></i>
-              <p style="color: var(--text-muted); font-size: 13px;">No pending requests.</p>
+            <div class="empty-pending-card">
+              <div class="hourglass-box">
+                <i class="fas fa-hourglass-half"></i>
+              </div>
+              <h3>No Pending Requests</h3>
+              <p>New connections will appear here when they reach out to you.</p>
             </div>
           `;
         } else {
-          reqContainer.innerHTML = pending.map(req => `
-            <div class="request-card">
-              <div class="user-info">
-                <div class="avatar">${req.senderRollNumber.slice(0, 2)}</div>
-                <div>
-                  <div style="font-weight: 700; font-size: 14px;">${req.senderRollNumber}</div>
-                  <div style="font-size: 11px; color: var(--text-muted);">Sent ${new Date(req.createdAt).toLocaleDateString()}</div>
+          const pendingCards = await Promise.all(pending.map(async req => {
+            const user = await getUserDetails(req.senderRollNumber);
+            const avatar = getStudentAvatar(req.senderRollNumber);
+            const year = getStudentYear(req.senderRollNumber);
+            return `
+              <div class="connection-card">
+                <div class="connection-left">
+                  <img src="${avatar}" alt="${user.name}" class="connection-avatar">
+                  <div>
+                    <div class="connection-name">${user.name}</div>
+                    <div class="connection-dept">${user.department} • ${year}</div>
+                  </div>
+                </div>
+                <div class="connection-actions">
+                  <button onclick="respond(event, '${req._id}', 'accepted')" class="accept-btn"><i class="fas fa-check"></i> Accept</button>
+                  <button onclick="respond(event, '${req._id}', 'rejected')" class="ignore-btn"><i class="fas fa-times"></i> Ignore</button>
                 </div>
               </div>
-              <div class="actions" style="flex-direction: column; gap: 6px;">
-                <button onclick="respond('${req._id}', 'accepted')" class="btn-primary" style="width: 100%; padding: 6px 12px; font-size: 12px; margin: 0;">Accept</button>
-                <button onclick="respond('${req._id}', 'rejected')" class="btn-ghost" style="width: 100%; padding: 6px 12px; font-size: 12px; margin: 0;">Ignore</button>
-              </div>
-            </div>
-          `).join('');
+            `;
+          }));
+          reqContainer.innerHTML = pendingCards.join('');
         }
         
         // Accepted Connections
         if (accepted.length === 0) {
           accContainer.innerHTML = `
-            <div style="text-align:center; padding: 40px; background: var(--card-bg); border: 1px solid var(--border); border-radius: 16px;">
-              <i class="fas fa-user-friends" style="font-size: 32px; opacity: 0.1; margin-bottom: 16px;"></i>
-              <p style="color: var(--text-muted); font-size: 13px;">No accepted connections.</p>
+            <div class="empty-chat-box">
+              <i class="far fa-user-friends empty-chat-icon"></i>
+              <p>No connections found.</p>
             </div>
           `;
         } else {
-          accContainer.innerHTML = accepted.map(req => {
+          const acceptedCards = await Promise.all(accepted.map(async req => {
             const otherUser = req.senderRollNumber === myRoll ? req.receiverRollNumber : req.senderRollNumber;
+            const user = await getUserDetails(otherUser);
+            const avatar = getStudentAvatar(otherUser);
+            const year = getStudentYear(otherUser);
             return `
-              <div class="request-card" style="cursor: pointer;" onclick="location.href='/private-chat.html?roll=${otherUser}'">
-                <div class="user-info">
-                  <div class="avatar" style="background: var(--success);">${otherUser.slice(0, 2)}</div>
+              <div class="connection-card hoverable" onclick="location.href='/private-chat.html?roll=${otherUser}'">
+                <div class="connection-left">
+                  <div style="position: relative;">
+                    <img src="${avatar}" alt="${user.name}" class="connection-avatar">
+                    <span class="online-indicator"></span>
+                  </div>
                   <div>
-                    <div style="font-weight: 700; font-size: 14px;">${otherUser}</div>
-                    <div style="font-size: 11px; color: var(--success);">Connected ${new Date(req.createdAt).toLocaleDateString()}</div>
+                    <div class="connection-name">${user.name}</div>
+                    <div class="connection-dept">${user.department} • ${year}</div>
                   </div>
                 </div>
-                <i class="fas fa-chevron-right" style="color: var(--text-muted); opacity: 0.5;"></i>
+                <div class="connection-chat-icon">
+                  <i class="far fa-comment-dots"></i>
+                </div>
               </div>
             `;
-          }).join('');
+          }));
+          accContainer.innerHTML = acceptedCards.join('');
         }
 
       } catch (err) {
@@ -137,12 +601,12 @@
       }
     }
 
-    async function respond(id, status) {
+    async function respond(event, id, status) {
       if (event) {
         event.stopPropagation();
-        const btn = event.target;
+        const btn = event.currentTarget;
         btn.disabled = true;
-        btn.textContent = '...';
+        btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i>';
       }
       try {
         await fetch(`/api/chat-request/${id}`, {
@@ -164,7 +628,7 @@
       
       const btn = document.getElementById('req-btn');
       btn.disabled = true;
-      btn.textContent = 'Sending...';
+      btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Sending...';
       
       try {
         const res = await fetch('/api/chat-request', {
@@ -185,11 +649,19 @@
         alert('Network error');
       } finally {
         btn.disabled = false;
-        btn.textContent = 'Send Request';
+        btn.innerHTML = '<i class="fas fa-paper-plane"></i> Send Request';
       }
     }
 
+    // Add enter keypress listener for search input
+    document.getElementById('search-roll').addEventListener('keypress', function(e) {
+      if (e.key === 'Enter') {
+        sendReq();
+      }
+    });
+
     loadRequests();
+    // Poll every 10 seconds for real-time request updates
     setInterval(loadRequests, 10000);
   </script>
 </body>
