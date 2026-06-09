@@ -130,3 +130,9 @@ CREATE POLICY "Allow all select" ON public.contact_requests FOR SELECT USING (tr
 CREATE POLICY "Allow all insert" ON public.contact_requests FOR INSERT WITH CHECK (true);
 CREATE POLICY "Allow all update" ON public.contact_requests FOR UPDATE USING (true);
 CREATE POLICY "Allow all delete" ON public.contact_requests FOR DELETE USING (true);
+
+-- Storage bucket access policies for public mrdu-media bucket
+CREATE POLICY "Allow public select on mrdu-media" ON storage.objects FOR SELECT TO public USING (bucket_id = 'mrdu-media');
+CREATE POLICY "Allow public insert on mrdu-media" ON storage.objects FOR INSERT TO public WITH CHECK (bucket_id = 'mrdu-media');
+CREATE POLICY "Allow public update on mrdu-media" ON storage.objects FOR UPDATE TO public USING (bucket_id = 'mrdu-media');
+CREATE POLICY "Allow public delete on mrdu-media" ON storage.objects FOR DELETE TO public USING (bucket_id = 'mrdu-media');
