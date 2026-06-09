@@ -441,27 +441,33 @@ async function uploadToSupabaseStorage(buffer, filename, mimetype) {
 // Initialize Firebase Admin SDK
 let firebaseDb = null;
 try {
-  const { initializeApp, cert, getApps } = require('firebase-admin/app');
+  const { initializeApp, cert, getApps, getApp } = require('firebase-admin/app');
   const { getFirestore } = require('firebase-admin/firestore');
   const serviceAccountPath = path.join(__dirname, '..', 'firebase-service-account.json');
   
-  if (fs.existsSync(serviceAccountPath)) {
-    const serviceAccount = JSON.parse(fs.readFileSync(serviceAccountPath, 'utf-8'));
-    initializeApp({
-      credential: cert(serviceAccount)
-    });
-    console.log('Firebase initialized using local service account JSON.');
-  } else if (process.env.FIREBASE_PROJECT_ID && process.env.FIREBASE_CLIENT_EMAIL && process.env.FIREBASE_PRIVATE_KEY) {
-    initializeApp({
-      credential: cert({
-        projectId: process.env.FIREBASE_PROJECT_ID,
-        clientEmail: process.env.FIREBASE_CLIENT_EMAIL,
-        privateKey: process.env.FIREBASE_PRIVATE_KEY.replace(/\\n/g, '\n')
-      })
-    });
-    console.log('Firebase initialized using environment variables.');
+  let app;
+  if (getApps().length === 0) {
+    if (fs.existsSync(serviceAccountPath)) {
+      const serviceAccount = JSON.parse(fs.readFileSync(serviceAccountPath, 'utf-8'));
+      app = initializeApp({
+        credential: cert(serviceAccount)
+      });
+      console.log('Firebase initialized using local service account JSON.');
+    } else if (process.env.FIREBASE_PROJECT_ID && process.env.FIREBASE_CLIENT_EMAIL && process.env.FIREBASE_PRIVATE_KEY) {
+      app = initializeApp({
+        credential: cert({
+          projectId: process.env.FIREBASE_PROJECT_ID,
+          clientEmail: process.env.FIREBASE_CLIENT_EMAIL,
+          privateKey: process.env.FIREBASE_PRIVATE_KEY.replace(/\\n/g, '\n')
+        })
+      });
+      console.log('Firebase initialized using environment variables.');
+    } else {
+      console.warn('WARNING: Firebase credentials missing. Falling back to local NeDB mode.');
+    }
   } else {
-    console.warn('WARNING: Firebase credentials missing. Falling back to local NeDB mode.');
+    app = getApp();
+    console.log('Firebase already initialized, reusing existing app.');
   }
   
   if (getApps().length > 0) {
